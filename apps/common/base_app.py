@@ -37,6 +37,7 @@ class BaseApp(hassmqtt.HassMqtt):
     def call_service(self, service, **kwargs):
         domain, svc = _split_service(service)
         event_data = {
+            ATTR_TOPIC: self.get_publish_topic(**kwargs),
             ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
             ATTR_EVENT_DATA: {
                 ATTR_DOMAIN: domain,
