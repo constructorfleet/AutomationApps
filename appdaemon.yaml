@@ -1,5 +1,4 @@
 secrets: /conf/secrets.yaml
-log:
 
 appdaemon:
   threads: 20
