@@ -1,16 +1,15 @@
-import copy
-import string
-import paho.mqtt.client as mqtt
 import asyncio
-import traceback
+import copy
 import json
+import traceback
 
 import appdaemon.utils as utils
+import paho.mqtt.client as mqtt
 
 DEFAULT_EVENT_TYPE = 'MQTT_MESSAGE'
 
 
-class HassMqttPlugin:
+class HassmqttPlugin:
 
     def __init__(self, ad, name, logger, error, loglevel, args):
         """Initialize MQTT Plugin."""
@@ -185,13 +184,18 @@ class HassMqttPlugin:
     def mqtt_on_message(self, client, userdata, msg):
         self.log("{}: Message Received: Topic = {}, Payload = {}".format(self.name, msg.topic,
                                                                          msg.payload), level='INFO')
-        payload_dict = json.loads(msg.payload.decode())
-        payload_dict['topic'] = msg.topic
-        event_type = payload_dict.get("event_type", DEFAULT_EVENT_TYPE)
 
-        data = {'event_type': event_type,
-                'data': payload_dict}
-        self.loop.create_task(self.send_ad_event(data))
+        payload_dict = json.loads(msg.payload.decode())
+        event_type = payload_dict.get("event_type", None)
+        if event_type  ==  '':
+            data = {'event_type': DEFAULT_EVENT_TYPE,
+                    'data': {'topic': msg.topic, 'payload': msg.payload.decode()}}
+            self.loop.create_task(self.send_ad_event(data))
+        else:
+            data = {'event_type': event_type,
+                    'data': payload_dict.get('event_data', {})}
+            self.log(json.dumps(data))
+            self.loop.create_task(self.send_ad_event(data))
 
     def mqtt_service(self, service, **kwargs):
         if not self.initialized:

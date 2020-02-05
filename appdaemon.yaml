@@ -9,8 +9,9 @@ appdaemon:
       client_host: mqtt
       client_id: rules
       verbose: true
+      event_name: MQTT_STATE_EVENT
       client_topics:
-        - events/slaves/#
+        - events/slaves/#/#
     HASS_Master:
       type: hass
       ha_url: http://master:8123
