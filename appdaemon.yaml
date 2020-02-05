@@ -1,4 +1,4 @@
-secrets: ./secrets.yaml
+secrets: /conf/secrets.yaml
 log:
 
 appdaemon:
