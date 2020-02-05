@@ -45,9 +45,9 @@ class BaseApp(hassmqtt.HassMqtt):
             },
             ATTR_SOURCE: self.name
         }
-        return self.mqtt_publish(
-            self.get_publish_topic(**kwargs),
-            event_data
+        return super().call_service(
+            'publish',
+            **event_data
         )
 
 
