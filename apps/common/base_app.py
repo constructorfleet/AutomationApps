@@ -28,6 +28,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def initialize(self):
         """Initialization of Base App class."""
+        self.set_namespace('mqtt')
         self.args = self.config_schema(self.args)
         self.initialize_app()
 
@@ -36,18 +37,6 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def do_service(self, service, **kwargs):
         domain, svc = _split_service(service)
-        event_data = {
-            ATTR_TOPIC: self.get_publish_topic(**kwargs),
-            ATTR_PAYLOAD: {
-                ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
-                ATTR_EVENT_DATA: {
-                    ATTR_DOMAIN: domain,
-                    ATTR_SERVICE: svc,
-                    ATTR_SERVICE_DATA: kwargs or {}
-                },
-
-            }
-        }
         return self.mqtt_publish(
             self.get_publish_topic(**kwargs),
             {
@@ -58,5 +47,7 @@ class BaseApp(hassmqtt.HassMqtt):
                     ATTR_SERVICE_DATA: kwargs or {}
                 },
                 ATTR_SOURCE: self.name
-            }
+            },
+            qos=0,
+            retain=False
         )

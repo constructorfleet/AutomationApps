@@ -11,6 +11,7 @@ appdaemon:
       type: hassmqtt
       client_host: mqtt
       client_id: testrules
+      namespace: mqtt
       verbose: true
       publish_topic: events/master
       client_topics:
