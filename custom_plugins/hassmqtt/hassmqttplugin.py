@@ -187,7 +187,7 @@ class HassmqttPlugin:
 
         payload_dict = json.loads(msg.payload.decode())
         event_type = payload_dict.get("event_type", None)
-        if event_type  ==  '':
+        if event_type != 'state_changed':
             data = {'event_type': DEFAULT_EVENT_TYPE,
                     'data': {'topic': msg.topic, 'payload': msg.payload.decode()}}
             self.loop.create_task(self.send_ad_event(data))

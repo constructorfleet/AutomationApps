@@ -1,3 +1,7 @@
+test:
+  module: test_app
+  class:  TestApp
+
 #global_modules:
 #  - common.base_app
 #  - validation
