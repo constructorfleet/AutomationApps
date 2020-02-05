@@ -8,10 +8,9 @@ appdaemon:
   threads: 20
   plugins:
     MQTT_States:
-      type: mqtt
+      type: hassmqtt
       client_host: mqtt
       client_id: testrules
       verbose: true
-      event_name: MQTT_STATE_EVENT
       client_topics:
         - events/slaves/#
