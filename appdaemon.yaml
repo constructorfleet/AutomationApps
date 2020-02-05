@@ -12,5 +12,6 @@ appdaemon:
       client_host: mqtt
       client_id: testrules
       verbose: true
+      publish_topic: events/master
       client_topics:
         - events/slaves/#

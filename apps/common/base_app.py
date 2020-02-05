@@ -1,10 +1,11 @@
-import hassmqttapi as hassmqtt
-
 import voluptuous as vol
+
+import hassmqttapi as hassmqtt
 
 ATTR_EVENT_TYPE = "event_type"
 ATTR_EVENT_DATA = "event_data"
 ATTR_DOMAIN = "domain"
+ATTR_PAYLOAD = "payload"
 ATTR_SERVICE = "service"
 ATTR_SERVICE_DATA = "service_data"
 ATTR_SOURCE = "source"
@@ -38,13 +39,15 @@ class BaseApp(hassmqtt.HassMqtt):
         domain, svc = _split_service(service)
         event_data = {
             ATTR_TOPIC: self.get_publish_topic(**kwargs),
-            ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
-            ATTR_EVENT_DATA: {
-                ATTR_DOMAIN: domain,
-                ATTR_SERVICE: svc,
-                ATTR_SERVICE_DATA: kwargs or {}
-            },
-            ATTR_SOURCE: self.name
+            ATTR_PAYLOAD: {
+                ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
+                ATTR_EVENT_DATA: {
+                    ATTR_DOMAIN: domain,
+                    ATTR_SERVICE: svc,
+                    ATTR_SERVICE_DATA: kwargs or {}
+                },
+                ATTR_SOURCE: self.name
+            }
         }
         return super().call_service(
             'publish',
