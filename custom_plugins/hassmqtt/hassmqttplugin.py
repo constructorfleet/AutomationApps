@@ -188,6 +188,8 @@ class HassmqttPlugin:
         except:
              self.log("No Payload")
 
+        self.log("GOT  %s" % msg.payload.decode())
+
         event_type = payload_dict.get("event_type", None)
 
         data = {'event_type': event_type,
