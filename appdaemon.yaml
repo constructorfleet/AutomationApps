@@ -6,7 +6,7 @@ appdaemon:
     MQTT_States:
       type: hassmqtt
       client_host: mqtt
-      client_id: rules
+      client_id: testrules
       verbose: true
       event_name: MQTT_STATE_EVENT
       client_topics:
