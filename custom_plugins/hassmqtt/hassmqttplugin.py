@@ -185,8 +185,8 @@ class HassmqttPlugin:
         payload_dict = {}
         try:
             payload_dict = json.loads(msg.payload.decode())
-        except:
-             self.log("No Payload")
+        except TypeError as err:
+            self.log("Payload is not JSON")
 
         self.log("GOT  %s" % msg.payload.decode())
 
@@ -196,7 +196,6 @@ class HassmqttPlugin:
                 'data': payload_dict.get('event_data', {}),
                 'topic': msg.topic
                 }
-        # self.log(json.dumps(data))
         self.loop.create_task(self.send_ad_event(data))
 
     def mqtt_service(self, service, **kwargs):
