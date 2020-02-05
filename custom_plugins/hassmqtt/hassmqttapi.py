@@ -138,6 +138,9 @@ class HassMqtt(appapi.AppDaemon):
         namespace = self._get_namespace(**kwargs)
         return self.AD.get_plugin_meta(namespace)
 
+    def get_publish_topic(self, **kwargs):
+        return self.get_plugin_config(**kwargs)['publish_topic']
+
     #
     # service calls
     #

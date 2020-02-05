@@ -7,6 +7,7 @@ import appdaemon.utils as utils
 import paho.mqtt.client as mqtt
 
 DEFAULT_EVENT_TYPE = 'MQTT_MESSAGE'
+DEFAULT_PUBLISH_TOPIC = 'publish'
 
 
 class HassmqttPlugin:
@@ -44,6 +45,7 @@ class HassmqttPlugin:
         mqtt_transport = self.config.get('client_transport', 'tcp')
         mqtt_session = self.config.get('client_clean_session', True)
         self.mqtt_client_topics = self.config.get('client_topics', ['#'])
+        self.mqtt_publish_topic = self.config.get('publish_topic', DEFAULT_PUBLISH_TOPIC)
         self.mqtt_client_user = self.config.get('client_user', None)
         self.mqtt_client_password = self.config.get('client_password', None)
 
@@ -92,6 +94,7 @@ class HassmqttPlugin:
             "clean_session": mqtt_session,
             "qos": self.mqtt_qos,
             "topics": self.mqtt_client_topics,
+            "publish_topic": self.mqtt_publish_topic,
             "username": self.mqtt_client_user,
             "password": self.mqtt_client_password,
             "status_topic": status_topic,
