@@ -19,7 +19,7 @@ def _split_service(service):
     elif '/' in service:
         return service.split('/')
     else:
-        raise ValueError("Invalid service")
+        raise ValueError("Invalid service %s" % service)
 
 
 class BaseApp(hassmqtt.HassMqtt):
