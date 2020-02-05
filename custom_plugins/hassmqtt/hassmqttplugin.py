@@ -182,23 +182,20 @@ class HassmqttPlugin:
         return
 
     def mqtt_on_message(self, client, userdata, msg):
-        payload_dict = json.loads(msg.payload.decode())
+        payload_dict = {}
+        try:
+            payload_dict = json.loads(msg.payload.decode())
+        except:
+             self.log("No Payload")
+
         event_type = payload_dict.get("event_type", None)
-        # self.log(
-        #     "{}: Message Received: {} on Topic = {}, Payload = {}".format(self.name,
-        #                                                                   event_type,
-        #                                                                   msg.topic,
-        #                                                                   msg.payload),
-        #     level='INFO')
-        if event_type != 'state_changed':
-            data = {'event_type': DEFAULT_EVENT_TYPE,
-                    'data': {'topic': msg.topic, 'payload': msg.payload.decode()}}
-            self.loop.create_task(self.send_ad_event(data))
-        else:
-            data = {'event_type': event_type,
-                    'data': payload_dict.get('event_data', {})}
-            # self.log(json.dumps(data))
-            self.loop.create_task(self.send_ad_event(data))
+
+        data = {'event_type': event_type,
+                'data': payload_dict.get('event_data', {}),
+                'topic': msg.topic
+                }
+        # self.log(json.dumps(data))
+        self.loop.create_task(self.send_ad_event(data))
 
     def mqtt_service(self, service, **kwargs):
         if not self.initialized:
