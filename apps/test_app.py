@@ -1,11 +1,13 @@
-import hassmqttapi as hass_mqtt
+import appdaemon.plugins.mqtt.mqttapi as mqtt
 import json
 
 
-class TestApp(hass_mqtt.HassMqtt):
+class TestApp(mqtt.Mqtt):
 
     def initialize(self):
-         self.listen_event(self.handle_state, event="state_changed")
+        self.listen_event(self.handle_event)
 
-    def handle_state(self, event_name, data, kwargs):
-        self.log("GOT %S WITH %S", event_name, json.dumps(data));
+    def handle_event(self, event_name, data, kwargs):
+        self.log("EVENT_NAME %s", event_name)
+        self.log("topic %s", data.get("topic"))
+        self.log("payload %s", data.get("payload"))
