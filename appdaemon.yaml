@@ -1,0 +1,17 @@
+secrets: ./secrets.yaml
+log:
+
+appdaemon:
+  threads: 20
+  plugins:
+    MQTT_States:
+      type: mqtt
+      client_host: mqtt
+      client_id: rules
+      verbose: true
+      client_topics:
+        - events/slaves/#
+    HASS_Master:
+      type: hass
+      ha_url: http://master:8123
+      token: !secret ha_token
