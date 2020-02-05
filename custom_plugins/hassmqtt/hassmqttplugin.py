@@ -184,12 +184,12 @@ class HassmqttPlugin:
     def mqtt_on_message(self, client, userdata, msg):
         payload_dict = json.loads(msg.payload.decode())
         event_type = payload_dict.get("event_type", None)
-        self.log(
-            "{}: Message Received: {} on Topic = {}, Payload = {}".format(self.name,
-                                                                          event_type,
-                                                                          msg.topic,
-                                                                          msg.payload),
-            level='INFO')
+        # self.log(
+        #     "{}: Message Received: {} on Topic = {}, Payload = {}".format(self.name,
+        #                                                                   event_type,
+        #                                                                   msg.topic,
+        #                                                                   msg.payload),
+        #     level='INFO')
         if event_type != 'state_changed':
             data = {'event_type': DEFAULT_EVENT_TYPE,
                     'data': {'topic': msg.topic, 'payload': msg.payload.decode()}}
