@@ -9,6 +9,7 @@ class BaseApp:
 
     def initialize(self):
         """Initialization of Base App class."""
+        self.log("INIIALIZING")
         self.args = self.config_schema(self.args)
         self.initialize_app()
 

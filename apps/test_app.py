@@ -15,6 +15,7 @@ class TestApp(hassmqtt.HassMqtt, BaseApp):
     def initialize_app(self):
         self.listen_state(self.handle_state,
                           entity=self.args[CONF_ENTITY_ID])
+        self.log("LISTENING " + self.args[CONF_ENTITY_ID])
 
     def handle_state(self, entity, attribute, old, new, kwargs):
         self.log("STATE CHANGE " + entity + " " + str(old) + " " + str(new))
