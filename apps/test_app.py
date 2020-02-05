@@ -1,8 +1,8 @@
-import appdaemon.plugins.mqtt.mqttapi as mqtt
+import hassmqttapi as hassmqtt
 import json
 
 
-class TestApp(mqtt.Mqtt):
+class TestApp(hassmqtt.HassMqtt):
 
     def initialize(self):
         self.listen_event(self.handle_event)
