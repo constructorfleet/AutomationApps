@@ -8,7 +8,7 @@ CONF_ENTITY_ID = 'entity_id'
 
 class TestApp(hassmqtt.HassMqtt, BaseApp):
 
-    config_schema = super(BaseApp).config_schema.extend({
+    config_schema = super().config_schema.extend({
         vol.Required(CONF_ENTITY_ID): entity_id
     })
 
