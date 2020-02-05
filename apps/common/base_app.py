@@ -24,7 +24,6 @@ def _split_service(service):
 
 
 class BaseApp(hassmqtt.HassMqtt):
-
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
 
     def initialize(self):
@@ -46,12 +45,18 @@ class BaseApp(hassmqtt.HassMqtt):
                     ATTR_SERVICE: svc,
                     ATTR_SERVICE_DATA: kwargs or {}
                 },
-                ATTR_SOURCE: self.name
+
             }
         }
         return self.mqtt_publish(
             self.get_publish_topic(**kwargs),
-            event_data
+            {
+                ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
+                ATTR_EVENT_DATA: {
+                    ATTR_DOMAIN: domain,
+                    ATTR_SERVICE: svc,
+                    ATTR_SERVICE_DATA: kwargs or {}
+                },
+                ATTR_SOURCE: self.name
+            }
         )
-
-
