@@ -1,16 +1,16 @@
+import voluptuous as vol
+
 import hassmqttapi as hassmqtt
 from common.base_app import BaseApp
 from common.validation import entity_id
-import voluptuous as vol
 
 CONF_ENTITY_ID = 'entity_id'
 
 
 class TestApp(hassmqtt.HassMqtt, BaseApp):
-
-    config_schema = super().config_schema.extend({
+    config_schema = vol.Schema({
         vol.Required(CONF_ENTITY_ID): entity_id
-    })
+    }, extra=vol.ALLOW_EXTRA)
 
     def initialize_app(self):
         self.listen_state(self.handle_state,
