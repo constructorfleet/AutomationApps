@@ -1,5 +1,7 @@
-import voluptuous as vol
 import json
+
+import voluptuous as vol
+
 import hassmqttapi as hassmqtt
 
 ATTR_EVENT_TYPE = "event_type"
@@ -37,6 +39,9 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def publish(self, service, **kwargs):
         domain, svc = _split_service(service)
+        return self.publish(domain, service)
+
+    def publish(self, domain, service, **kwargs):
         return self.mqtt_publish(
             self.get_publish_topic(**kwargs),
             payload=json.dumps({
