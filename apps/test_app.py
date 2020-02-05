@@ -2,7 +2,7 @@ import hassmqttapi as hass_mqtt
 import json
 
 
-class TestApp(hass_mqtt):
+class TestApp(hass_mqtt.HassMqtt):
 
     def initialize(self):
          self.listen_event(self.handle_state, event="state_changed")
