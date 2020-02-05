@@ -5,7 +5,8 @@ import json
 class TestApp(hassmqtt.HassMqtt):
 
     def initialize(self):
-        self.listen_event(self.handle_event)
+        self.listen_event(self.handle_event,
+                          event='state_changed')
 
     def handle_event(self, event_name, data, kwargs):
         self.log("EVENT_NAME " + event_name)
