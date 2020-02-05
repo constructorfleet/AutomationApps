@@ -8,7 +8,7 @@ appdaemon:
   threads: 20
   plugins:
     MQTT_States:
-      type: hassmqtt
+      type: mqtt
       client_host: mqtt
       client_id: testrules
       verbose: true
