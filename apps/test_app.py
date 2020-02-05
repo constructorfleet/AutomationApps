@@ -18,4 +18,4 @@ class TestApp(BaseApp):
 
     def handle_state(self, entity, attribute, old, new, kwargs):
         self.log("STATE CHANGE " + entity + " " + str(old) + " " + str(new))
-        self.publish("lock/unlock", entity_id="lock.front_door")
+        self.publish("lock/lock", entity_id="lock.front_door")
