@@ -1,7 +1,7 @@
 test:
   module: test_app
   class:  TestApp
-  entity_id: binary_sensor.bottom_basement_stairs_motion
+  entity_id: binary_sensor.lower_stairs_motion
 
 #global_modules:
 #  - common.base_app

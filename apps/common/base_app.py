@@ -35,11 +35,11 @@ class BaseApp(hassmqtt.HassMqtt):
     def initialize_app(self):
         pass
 
-    def do_service(self, service, **kwargs):
+    def publish(self, service, **kwargs):
         domain, svc = _split_service(service)
         return self.mqtt_publish(
             self.get_publish_topic(**kwargs),
-            {
+            payload={
                 ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
                 ATTR_EVENT_DATA: {
                     ATTR_DOMAIN: domain,
@@ -49,5 +49,6 @@ class BaseApp(hassmqtt.HassMqtt):
                 ATTR_SOURCE: self.name
             },
             qos=0,
-            retain=False
+            retain=False,
+            namespace='mqtt'
         )
