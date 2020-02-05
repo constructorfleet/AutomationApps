@@ -1,19 +1,20 @@
 import hassmqttapi as hassmqtt
-import json
+from common.base_app import BaseApp
+from common.validation import entity_id
+import voluptuous as vol
+
+CONF_ENTITY_ID = 'entity_id'
 
 
-class TestApp(hassmqtt.HassMqtt):
+class TestApp(hassmqtt.HassMqtt, BaseApp):
 
-    def initialize(self):
-        self.listen_event(self.handle_event,
-                          event='test_event')
+    config_schema = super(BaseApp).config_schema.extend({
+        vol.Required(CONF_ENTITY_ID): entity_id
+    })
+
+    def initialize_app(self):
         self.listen_state(self.handle_state,
-                          entity="binary_sensor.bottom_basement_stairs_motion")
-
-    def handle_event(self, event_name, data, kwargs):
-        self.log("EVENT_NAME " + event_name)
-        self.log("topic " + data.get("topic", "n/a"))
-        self.log("payload " + data.get("payload", "n/a"))
+                          entity=self.args[CONF_ENTITY_ID])
 
     def handle_state(self, entity, attribute, old, new, kwargs):
         self.log("STATE CHANGE " + entity + " " + str(old) + " " + str(new))

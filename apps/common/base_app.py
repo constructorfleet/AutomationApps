@@ -1,18 +1,16 @@
-import appdaemon.plugins.mqtt.mqttapi as mqtt
+from abc import ABC
 
-EVENT_MQTT_STATTE = 'MQTT_STATE_EVENT'
+import voluptuous as vol
 
 
-class MQTTBase(mqtt.Mqtt):
-
-    _callback_handle = None
+class BaseApp:
+    args = {}
+    config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
 
     def initialize(self):
         """Initialization of Base App class."""
-        self._callback_handle = self.listen_event(
-            self._handle_mqtt_event,
-            EVENT_MQTT_STATTE
-        )
+        self.args = self.config_schema(self.args)
+        self.initialize_app()
 
-    def _handle_mqtt_event(self, event, data, kwargs):
-        """Handle MQTT event received."""
+    def initialize_app(self):
+        pass
