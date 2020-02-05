@@ -170,6 +170,8 @@ class HassMqtt(appapi.AppDaemon):
         )
 
         namespace = self._get_namespace(**kwargs)
+        self.log("NAMESPACE " + namespace)
+        self.log("KW " + str(kwargs))
 
         if 'topic' in kwargs:
             try:
@@ -177,7 +179,7 @@ class HassMqtt(appapi.AppDaemon):
 
             except Exception as e:
                 config = self.AD.get_plugin(namespace).config
-                if config['type'] == 'mqtt':
+                if config['type'] == 'hassmqtt':
                     self.AD.log('DEBUG',
                                 'Got the following Error {}, when trying to retrieve Mqtt Plugin'.format(
                                     e))
