@@ -194,7 +194,7 @@ class HassmqttPlugin:
         else:
             data = {'event_type': event_type,
                     'data': payload_dict.get('event_data', {})}
-            self.log(json.dumps(data))
+            # self.log(json.dumps(data))
             self.loop.create_task(self.send_ad_event(data))
 
     def mqtt_service(self, service, **kwargs):
