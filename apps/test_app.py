@@ -9,5 +9,5 @@ class TestApp(mqtt.Mqtt):
 
     def handle_event(self, event_name, data, kwargs):
         self.log("EVENT_NAME " + event_name)
-        self.log("topic " + data.get("topic"))
-        self.log("payload " + data.get("payload"))
+        self.log("topic " + data.get("topic", "n/a"))
+        self.log("payload " + data.get("payload", "n/a"))
