@@ -1,0 +1,487 @@
+#global_modules:
+#  - common.base_app
+#  - validation
+#  - notifiers.notification_action
+#  - notifiers.notification_category
+#  - notifiers.notification_channels
+#
+#mqtt_notifier:
+#  module: mqtt_notifier
+#  class: MqttNotifier
+#  global_dependencies:
+#    - validation
+#    - notifiers.notification_action
+#    - notifiers.notification_category
+#    - notifiers.notification_channels
+#
+#fcm_notifier:
+#  module: fcm_notifier
+#  class: FcmNotifier
+#  global_dependencies:
+#    - validation
+#    - notifiers.notification_action
+#    - notifiers.notification_category
+#    - notifiers.notification_channels
+#
+#ios_notifier:
+#  module: ios_notifier
+#  class: iOSNotifier
+#  global_dependencies:
+#    - validation
+#    - notifiers.notification_action
+#    - notifiers.notification_category
+#    - notifiers.notification_channels
+#
+#notifiers:
+#  module: person_notifier
+#  class: PersonNotifier
+#  global_dependencies:
+#    - validation
+#    - notifiers.notification_action
+#    - notification.notification_category
+#    - notification.notification_channels
+#  dependencies:
+#    - mqtt_notifier
+#    - ios_notifier
+#    - fcm_notifier
+#  people:
+#    - name: Teagan
+#      notifier:
+#        - name: ios
+#          service: notify/mobile_app_agrajag
+#    - name: Alan
+#      notifier:
+#        - name: ios
+#          service: notify/mobile_app_deviphone
+#    - name: Grace
+#      notifier:
+#        - name: fcm
+#          service: notify/fcm_grace
+#
+#notification_action_processor:
+#  module: notification_action_processor
+#  class: NotificationActionProcessor
+#  global_dependencies:
+#    - validation
+#    - notifiers.notification_action
+#    - notification.notification_category
+#    - notification.notification_channels
+#  dependencies:
+#    - notifiers
+#    - mqtt_notifier
+#    - ios_notifier
+#    - fcm_notifier
+#
+#people:
+#  module: people
+#  class: People
+#  global_dependencies:
+#    - validation
+#  groups:
+#    family:
+#      - person.teagan
+#      - person.grace
+#      - device_tracker.keith
+#      - device_tracker.becky
+#      - person.alan
+#      - person.persia
+#      - person.gina
+#    friends:
+#      - device_tracker.alex
+#      - device_tracker.taylor
+#      - device_tracker.patrick
+#      - device_tracker.james
+#      - device_tracker.valerie
+#      - device_tracker.heather
+#      - device_tracker.rhema
+#      - device_tracker.seb
+#
+#sun_lights:
+#  module: sun_lights
+#  class: SunLights
+#  global_dependencies:
+#    - validation
+#  lights:
+#    - entity_id: light.garage_lower_east_light
+#      service_data:
+#        brightness: 255
+#        rgb_color: [255, 0, 0]
+#    - entity_id: light.garage_upper_east
+#      service_data:
+#        brightness: 255
+#        rgb_color: [0, 255, 0]
+#    - entity_id: light.garage_lower_west
+#      service_data:
+#        brightness: 255
+#        rgb_color: [255, 0, 0]
+#    - entity_id: light.garage_upper_west
+#      service_data:
+#        brightness: 255
+#        rgb_color: [0, 255, 0]
+#    - entity_id: light.porch_upper
+#      service_data:
+#        brightness: 255
+#        rgb_color: [255, 255, 255]
+#    - entity_id: light.porch_lower
+#      service_data:
+#        brightness: 255
+#        rgb_color: [255, 255, 255]
+#    - entity_id: light.entry_light
+#      service_data:
+#        brightness: 255
+#        transition: 120
+#  offset_minutes: 60
+#
+#kitchen_lights:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.kitchen_light
+#  motion_sensor:  binary_sensor.kitchen_motion
+#  motion_duration:  input_number.kitchen_motion_duration
+#
+#laundry_room_lights:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.laundry_room_lights
+#  motion_sensor: binary_sensor.basement_motion
+#  motion_duration: 10
+#  light_sensor: sensor.server_rack_luminance
+#  light_level: 5.0
+#
+#dining_lights:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.dining_room_ceiling_light
+#  motion_sensor: binary_sensor.dining_room_motion
+#  motion_duration: input_number.dining_room_motion_duration
+#  light_sensor: sensor.dining_room_luminance
+#  light_level: 5.5
+#
+#basement_stair_light:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.basement_stair_light
+#  motion_sensor: binary_sensor.basement_stairs_motion
+#  motion_duration: input_number.basement_stairs_motion_duration
+#  max_duration: input_number.basement_stairs_max_duration
+#  light_sensor: sensor.basement_stairs_luminance
+#  light_level: 2
+#  switches:
+#    - switch.basement_stair_switch_1
+#    - switch.basement_stair_switch_2
+#
+#garage_light:
+#  module: motion_lights
+#    class: MotionLights
+#    global_dependencies:
+#      - validation
+#    light: switch.lower_hall_light
+#    motion_sensor: binary_sensor.lower_stair_motion
+#    motion_duration: input_number.lower_hall_motion_duration
+#    max_duration: input_number.lower_hall_max_duration
+#    light_sensor: sensor.lower_stair_luminance
+#    light_level: 1
+#    switches:
+#      - switch.lower_hall_switch_1
+#      - switch.lower_hall_switch_2
+#
+#lower_hall_light:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.lower_hall_light
+#  motion_sensor: binary_sensor.lower_stair_motion
+#  motion_duration: input_number.lower_hall_motion_duration
+#  max_duration: input_number.lower_hall_max_duration
+#  light_sensor: sensor.lower_stair_luminance
+#  light_level: 1
+#  switches:
+#    - switch.lower_hall_switch_1
+#    - switch.lower_hall_switch_2
+#
+#upper_landing_hall_light:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.upper_landing_light
+#  motion_sensor: binary_sensor.upstairs_landing_motion
+#  motion_duration: input_number.lower_hall_max_duration
+#  max_duration: input_number.upper_stairs_max_duration
+#  switches:
+#    - switch.upper_landing_switch_1
+#    - switch.upper_landing_switch_2
+#
+#doorbell:
+#  module: doorbell
+#  class: Doorbell
+#  global_dependencies:
+#    - validation
+#  dependencies:
+#    - people
+#    - notifiers
+#    - mqtt_notifier
+#    - ios_notifier
+#    - fcm_notifier
+##  doorbell: switch.doorbell
+#  lock: lock.front_door
+#  image_detection:
+#    entity_id: sensor.front_door
+#    min_score: 60.0
+#    class: person
+##    ignore_if:
+##      entity_id: binary_sensor.front_door_sensor
+##      state: 'on'
+#  image:
+#    camera: camera.doorbell
+#    url: https://automation.home.prettybaked.com/local/camera_snapshot/
+#
+#security:
+#  module: security_system
+#  class: SecuritySystem
+#  global_dependencies:
+#    - validation
+#  dependencies:
+#    - people
+#    - notifiers
+#    - mqtt_notifier
+#    - ios_notifier
+#    - fcm_notifier
+#  people: all
+#  ignored:
+#    - person.persia
+#  alarm_panel: alarm_control_panel.magrathea_alarm
+#  locks:
+#    for:
+#      - person.teagan
+#      - person.grace
+#      - device_tracker.keith
+#      - device_tracker.becky
+#      - person.alan
+#      - person.persia
+#      - person.gina
+#      - device_tracker.taylor
+#      - device_tracker.patrick
+#      - device_tracker.james
+#      - device_tracker.valerie
+#      - device_tracker.rhema
+#      - device_tracker.heather
+#      - device_tracker.seb
+#    entities:
+#      - lock.front_door
+#  covers:
+#    for:
+#      - device_tracker.2011_subaru_impreza_wagon
+#      - device_tracker.2015_jeep_cherokee
+#      - device_tracker.2019_jeep_compass
+#    entities:
+#      - cover.garage_door_2
+#  notify: True
+#
+#front_door_lock_timeout:
+# module: entity_timeout
+# class: EntityTimeout
+# global_dependencies:
+#   - validation
+# dependencies:
+#   - people
+#   - notifiers
+#   - mqtt_notifier
+#   - ios_notifier
+#   - fcm_notifier
+# entity_id: lock.front_door
+# state: unlocked
+# service: lock/lock
+# timeout: input_number.front_door_lock_timeout
+# wait: 60
+# delay_if:
+#   entity_id: binary_sensor.front_door_sensor
+#   state: 'on'
+#   notify: SECURITY_LOCK_TIMEOUT_DELAY
+#   acknowledge_id: front_door_delay_ack
+# notify: SECURITY_LOCK_TIMEOUT
+#
+#chill_room_lights_timeout:
+#  module: entity_timeout
+#  class: EntityTimeout
+#  global_dependencies:
+#    - validation
+#  entity_id: switch.chill_room_lights
+#  state: 'on'
+#  service: switch/turn_off
+#  timeout: 300
+#
+#garage_timeout:
+#  module: entity_timeout
+#  class: EntityTimeout
+#  global_dependencies:
+#    - validation
+#  dependencies:
+#    - people
+#    - notifiers
+#    - mqtt_notifier
+#    - ios_notifier
+#    - fcm_notifier
+#  entity_id: cover.garage_door_2
+#  state: open
+#  wait: 120
+#  service: cover/close_cover
+#  timeout: input_number.front_door_lock_timeout
+#  notify: SECURITY_COVER_CLOSED_TIMEOUT
+#
+#living_room_movie_mode:
+#  module: movie_mode
+#  class: MovieMode
+#  global_dependencies:
+#    - validation
+#  media_player: media_player.plex_living_room
+#  media_types:
+#    - movie
+#    - video
+#  reset_on_pause: turn_on_between_episodes
+#  check_sun: True
+#  tv_delay: 30
+#  turn_on_between_episodes:
+#    - switch.lower_hall_light
+#    - switch.lower_hall_switch_1
+#    - switch.lower_hall_switch_2
+#  turn_off:
+#    - switch.lower_hall_light
+#    - entity_id: switch.living_room_ceiling_light
+#      remember: True
+#    - switch.lower_hall_switch_1
+#    - switch.lower_hall_switch_2
+#  tv: remote.living_room
+#  toggle: light.toggle_movie_mode
+#
+#turn_off_interior_recording:
+#  module: call_on_state
+#  class: CallOnState
+#  global_dependencie:
+#    - validation
+#  when:
+#    entity_id: alarm_control_panel.magrathea_alarm
+#    state: disabled
+#  service: camera/disable_motion_detection
+#  service_data:
+#    entity_id: camera.entry_room
+#
+#turn_on_interior_recording:
+#  module: call_on_state
+#  class: CallOnState
+#  global_dependencie:
+#    - validation
+#  when:
+#    entity_id: alarm_control_panel.magrathea_alarm
+#    state: armed_away
+#  service: camera/enable_motion_detection
+#  service_data:
+#    entity_id: camera.entry_room
+#
+#bhg_callin:
+#  module: bhg_call_in
+#  class: CallBHG
+#  global_dependencies:
+#    - common.validation.validation
+#    - common.utils
+#  dependencies:
+#    - people
+#    - notifiers
+#    - mqtt_notifier
+#    - ios_notifier
+#    - fcm_notifier
+#  call_from: "+17403344465"
+#  call_to: "+13036195293"
+#  message: https://handler.twilio.com/EH1bb4e79fb6d9e855c75616f7a1940f3
+#  daily_at:
+#    hour: 0
+#    minute: 5
+#  twilio_credential:
+#    account_sid: ACb3350706e9ba17f4c92f5f55271541f9
+#    token: c48b29365192c2472f5844257a419a10
+#
+#
+##update_dining_room:
+##  module: call_service_every
+##  class: CallServiceEvery
+##  global_dependencies:
+##    - validation
+##  service: zwave/refresh_node_value
+##  service_data:
+##    node_id: '31'
+##    value_id: '72057594563018802'
+##  every: 25
+##
+##front_door_lock_battery_level:
+##  module: battery_low
+##  class: BatteryLow
+##  global_dependencie:
+##    - validation
+##  dependencies:
+##    - people
+##    - notifiers
+##    - mqtt_notifier
+##    - ios_notifier
+##    - fcm_notifier
+##  entity_id: lock.slave01_front_door
+##  value: Battery too low to operate
+##  attribute: lock_status
+##
+##climate:
+##  module: climate
+##  class: Climate
+##  global_dependencies:
+##    - validation
+##  dependencies:
+##    - people
+##  thermostat: climate.radio_thermostat_company_of_america_unknown_type_6e02_id_0101_cooling_1
+##  temperature:
+##    - sensor: sensor.dining_room_temperature
+##      weight: 0.75
+##    - sensor: sensor.kitchen_temperature
+##      weight: 0.10
+##    - sensor: sensor.slave01_lower_hall_temperature
+##      weight: 1.7
+##  home:
+##    target_temp: input_number.thermostat_target_temp
+##    temp_swing: 2
+##  away:
+##    max: input_number.thermostat_away_max
+##    min: input_number.thermostat_away_min
+##
+##night_mode:
+##  module: night_mode
+##  class: NightMode
+##  global_dependencies:
+##    - validation
+##  toggle_entity_id: input_boolean.sleep_mode
+##  turn_off:
+##    - switch.basement_stair_light
+##    - switch.lower_hall_light
+##    - switch.dining_room_ceiling_light
+##    - switch.chill_room_lights
+##    - switch.living_room_ceiling_light
+##    - switch.upper_landing_light
+##    - switch.laundry_room_lights
+##    - media_player.living_room_tv
+##    - media_player.living_room
+##    - media_player.living_room_receiver
+##    - media_player.tripping_room_tv
+##
+##test_app:
+##  module: test_app
+##  class: TestApp
+##  global_dependencies:
+##    - validation
+##    - common.base_app
+##  some_int: "50"
+##  some_str: Test
