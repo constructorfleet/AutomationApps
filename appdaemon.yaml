@@ -10,4 +10,4 @@ appdaemon:
       verbose: true
       event_name: MQTT_STATE_EVENT
       client_topics:
-        - events/slaves/#/#
+        - events/slaves/#
