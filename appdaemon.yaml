@@ -1,6 +1,10 @@
 secrets: /conf/secrets.yaml
 
 appdaemon:
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  elevation: !secret home_elevation
+  time_zone: !secret home_timezone
   threads: 20
   plugins:
     MQTT_States:
