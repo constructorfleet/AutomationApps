@@ -30,6 +30,7 @@ class BaseApp(hassmqtt.HassMqtt):
     def initialize(self):
         """Initialization of Base App class."""
         self.args = self.config_schema(self.args)
+        self.set_namespace('mqtt')
         self.initialize_app()
 
     def initialize_app(self):
@@ -49,10 +50,9 @@ class BaseApp(hassmqtt.HassMqtt):
                 ATTR_SOURCE: self.name
             }
         }
-        return super().call_service(
-            'publish',
-            **event_data
+        return self.mqtt_publish(
+            self.get_publish_topic(**kwargs),
+            event_data
         )
-
 
 
