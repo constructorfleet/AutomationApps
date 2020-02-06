@@ -37,9 +37,25 @@ class BaseApp(hassmqtt.HassMqtt):
     def initialize_app(self):
         pass
 
+    def turn_off(self, entity_id, **kwargs):
+        if kwargs == {}:
+            rargs = {"entity_id": entity_id}
+        else:
+            rargs = kwargs
+            rargs["entity_id"] = entity_id
+        return self.publish('homeassistant', 'turn_off', **rargs)
+
+    def turn_on(self, entity_id, **kwargs):
+        if kwargs == {}:
+            rargs = {"entity_id": entity_id}
+        else:
+            rargs = kwargs
+            rargs["entity_id"] = entity_id
+        return self.publish('homeassistant', 'turn_on', **rargs)
+
     def publish(self, service, **kwargs):
         domain, svc = _split_service(service)
-        return self.publish(domain, service)
+        return self.publish(domain, service, **kwargs)
 
     def publish(self, domain, service, **kwargs):
         return self.mqtt_publish(
@@ -48,7 +64,7 @@ class BaseApp(hassmqtt.HassMqtt):
                 ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
                 ATTR_EVENT_DATA: {
                     ATTR_DOMAIN: domain,
-                    ATTR_SERVICE: svc,
+                    ATTR_SERVICE: service,
                     ATTR_SERVICE_DATA: kwargs or {}
                 },
                 ATTR_SOURCE: self.name
