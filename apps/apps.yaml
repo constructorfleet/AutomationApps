@@ -1,11 +1,14 @@
-test:
-  module: test_app
-  class:  TestApp
-  entity_id: binary_sensor.lower_stairs_motion
+global_modules:
+  - common.base_app
+  - validation
+  - utils
 
-#global_modules:
-#  - common.base_app
-#  - validation
+#test:
+#  module: test_app
+#  class:  TestApp
+#  entity_id: binary_sensor.lower_stairs_motion
+
+
 #  - notifiers.notification_action
 #  - notifiers.notification_category
 #  - notifiers.notification_channels
@@ -137,15 +140,15 @@ test:
 #        transition: 120
 #  offset_minutes: 60
 #
-#kitchen_lights:
-#  module: motion_lights
-#  class: MotionLights
-#  global_dependencies:
-#    - validation
-#  light: switch.kitchen_light
-#  motion_sensor:  binary_sensor.kitchen_motion
-#  motion_duration:  input_number.kitchen_motion_duration
-#
+kitchen_lights:
+  module: timeout
+  class: MotionLights
+  global_dependencies:
+    - validation
+  light: switch.kitchen_light
+  motion_sensor:  binary_sensor.kitchen_motion
+  motion_duration:  input_number.kitchen_motion_duration
+
 #laundry_room_lights:
 #  module: motion_lights
 #  class: MotionLights
