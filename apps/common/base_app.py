@@ -30,7 +30,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def initialize(self):
         """Initialization of Base App class."""
-        self.set_namespace('mqtt')
+        # self.set_namespace('mqtt')
         self.args = self.config_schema(self.args)
         self.initialize_app()
 
@@ -71,5 +71,5 @@ class BaseApp(hassmqtt.HassMqtt):
             }),
             qos=0,
             retain=False,
-            namespace='mqtt'
+            namespace='default'
         )
