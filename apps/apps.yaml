@@ -160,16 +160,16 @@ laundry_room_lights:
   light_sensor: sensor.server_rack_luminance
   light_level: 5.0
 
-#dining_lights:
-#  module: motion_lights
-#  class: MotionLights
-#  global_dependencies:
-#    - validation
-#  light: switch.dining_room_ceiling_light
-#  motion_sensor: binary_sensor.dining_room_motion
-#  motion_duration: input_number.dining_room_motion_duration
-#  light_sensor: sensor.dining_room_luminance
-#  light_level: 5.5
+dining_lights:
+  module: timeout
+  class: MotionLights
+  global_dependencies:
+    - validation
+  light: switch.dining_room_ceiling_light
+  motion_sensor: 40
+  motion_duration: 180
+  light_sensor: sensor.dining_room_luminance
+  light_level: 5.5
 #
 #basement_stair_light:
 #  module: motion_lights
