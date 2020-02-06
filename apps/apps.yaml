@@ -166,7 +166,7 @@ dining_lights:
   global_dependencies:
     - validation
   light: switch.dining_room_ceiling_light
-  motion_sensor: 40
+  motion_sensor: binary_sensor.dining_room_motion
   motion_duration: 180
   light_sensor: sensor.dining_room_luminance
   light_level: 5.5
