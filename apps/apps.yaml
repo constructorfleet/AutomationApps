@@ -215,18 +215,18 @@ garage_light:
 #    - switch.lower_hall_switch_1
 #    - switch.lower_hall_switch_2
 #
-#upper_landing_hall_light:
-#  module: motion_lights
-#  class: MotionLights
-#  global_dependencies:
-#    - validation
-#  light: switch.upper_landing_light
-#  motion_sensor: binary_sensor.upstairs_landing_motion
-#  motion_duration: input_number.lower_hall_max_duration
-#  max_duration: input_number.upper_stairs_max_duration
-#  switches:
-#    - switch.upper_landing_switch_1
-#    - switch.upper_landing_switch_2
+upper_landing_hall_light:
+  module: timeout
+  class: MotionLights
+  global_dependencies:
+    - validation
+  light: switch.upper_landing_light
+  motion_sensor: binary_sensor.upper_landing_motion
+  motion_duration: 20
+  max_duration: 2
+  switches:
+    - switch.upper_landing_switch_1
+    - switch.upper_landing_switch_2
 #
 #doorbell:
 #  module: doorbell
