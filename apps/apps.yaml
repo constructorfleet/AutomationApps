@@ -177,7 +177,7 @@ basement_stair_light:
   global_dependencies:
     - validation
   light: switch.basement_stair_light
-  motion_sensor: binary_sensor.basement_stairs_motion
+  motion_sensor: binary_sensor.basement_stair_motion
   motion_duration: 5
   max_duration: 1
   light_sensor: sensor.bottom_basement_stairs_luminance
