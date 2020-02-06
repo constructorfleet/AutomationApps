@@ -155,7 +155,7 @@ laundry_room_lights:
   global_dependencies:
     - validation
   light: switch.laundry_room_lights
-  motion_sensor: binary_sensor.basement_motion
+  motion_sensor: binary_sensor.laundry_motion
   motion_duration: 10
   light_sensor: sensor.server_rack_luminance
   light_level: 5.0
