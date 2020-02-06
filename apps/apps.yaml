@@ -170,22 +170,22 @@ dining_lights:
   motion_duration: 180
   light_sensor: sensor.dining_room_luminance
   light_level: 5.5
-#
-#basement_stair_light:
-#  module: motion_lights
-#  class: MotionLights
-#  global_dependencies:
-#    - validation
-#  light: switch.basement_stair_light
-#  motion_sensor: binary_sensor.basement_stairs_motion
-#  motion_duration: input_number.basement_stairs_motion_duration
-#  max_duration: input_number.basement_stairs_max_duration
-#  light_sensor: sensor.basement_stairs_luminance
-#  light_level: 2
-#  switches:
-#    - switch.basement_stair_switch_1
-#    - switch.basement_stair_switch_2
-#
+
+basement_stair_light:
+  module: timeout
+  class: MotionLights
+  global_dependencies:
+    - validation
+  light: switch.basement_stair_light
+  motion_sensor: binary_sensor.basement_stairs_motion
+  motion_duration: 5
+  max_duration: 1
+  light_sensor: sensor.bottom_basement_stairs_luminance
+  light_level: 2
+  switches:
+    - switch.basement_stair_switch_1
+    - switch.basement_stair_switch_2
+
 garage_light:
   module: timeout
   class: MotionLights
