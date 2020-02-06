@@ -55,7 +55,10 @@ class MotionLights(BaseApp):
             if isinstance(arg, int):
                 self.motion_duration = arg
             elif isinstance(arg, str):
-                self.motion_duration = int(float(self.get_state(arg)))
+                try:
+                    self.motion_duration = int(float(self.get_state(arg)))
+                except:
+                    self.log("Cant get initial duration")
                 self.listen_state(self.duration_changed,
                                   entity=arg)
 
@@ -64,7 +67,10 @@ class MotionLights(BaseApp):
             if isinstance(arg, int):
                 self.max_duration = arg
             elif isinstance(arg, str):
-                self.max_duration = int(float(self.get_state(arg)))
+                try:
+                    self.max_duration = int(float(self.get_state(arg)))
+                except:
+                    self.log("Cant get initial duration")
                 self.listen_state(self.duration_changed,
                                   entity=arg)
 
@@ -79,7 +85,10 @@ class MotionLights(BaseApp):
                           entity=self.args[ARG_LIGHT])
 
         if ARG_LIGHT_SENSOR in self.args:
-            self.light_level = float(self.get_state(self.args[ARG_LIGHT_SENSOR]))
+            try:
+                self.light_level = float(self.get_state(self.args[ARG_LIGHT_SENSOR]))
+            except:
+                self.log("Cant get initial light level")
             self.listen_state(self.light_level_changed,
                               entity=self.args[ARG_LIGHT_SENSOR])
         else:
