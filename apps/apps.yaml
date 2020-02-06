@@ -206,7 +206,7 @@ lower_hall_light:
   global_dependencies:
     - validation
   light: switch.lower_hall_light
-  motion_sensor: binary_sensor.lower_stair_motion
+  motion_sensor: binary_sensor.lower_stairs_motion
   motion_duration: 1
   max_duration: 5
   light_sensor: sensor.lower_stairs_luminance
