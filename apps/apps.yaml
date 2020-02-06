@@ -186,20 +186,19 @@ laundry_room_lights:
 #    - switch.basement_stair_switch_1
 #    - switch.basement_stair_switch_2
 #
-#garage_light:
-#  module: motion_lights
-#    class: MotionLights
-#    global_dependencies:
-#      - validation
-#    light: switch.lower_hall_light
-#    motion_sensor: binary_sensor.lower_stair_motion
-#    motion_duration: input_number.lower_hall_motion_duration
-#    max_duration: input_number.lower_hall_max_duration
-#    light_sensor: sensor.lower_stair_luminance
-#    light_level: 1
-#    switches:
-#      - switch.lower_hall_switch_1
-#      - switch.lower_hall_switch_2
+garage_light:
+  module: timeout
+  class: MotionLights
+  global_dependencies:
+    - validation
+  light: switch.garage_light
+  motion_sensor:  binary_sensor.garage_motion
+  motion_duration: 30
+  max_duration: 180
+  light_sensor: sensor.garage_sensor_1_luminance
+  light_level: 1
+  switches:
+    - switch.garage_light_2
 #
 #lower_hall_light:
 #  module: motion_lights
