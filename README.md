@@ -1,2 +1,2 @@
-# HomeAssistant-Apps
-Appdameon applications for Home-Assistant
+# AutomationApps
+Appdaemon Apps
