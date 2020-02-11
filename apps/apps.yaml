@@ -4,7 +4,7 @@ global_modules:
   - utils
 
 kitchen_lights:
-  module: timeout
+  module: motion_lights
   class: MotionLights
   global_dependencies:
     - validation
@@ -13,7 +13,7 @@ kitchen_lights:
   motion_duration:  40
 
 laundry_room_lights:
-  module: timeout
+  module: motion_lights
   class: MotionLights
   global_dependencies:
     - validation
@@ -24,7 +24,7 @@ laundry_room_lights:
   light_level: 5.0
 
 dining_lights:
-  module: timeout
+  module: motion_lights
   class: MotionLights
   global_dependencies:
     - validation
@@ -35,7 +35,7 @@ dining_lights:
   light_level: 5.5
 
 basement_stair_light:
-  module: timeout
+  module: motion_lights
   class: MotionLights
   global_dependencies:
     - validation
@@ -50,7 +50,7 @@ basement_stair_light:
     - switch.basement_stair_switch_2
 
 garage_light:
-  module: timeout
+  module: motion_lights
   class: MotionLights
   global_dependencies:
     - validation
@@ -64,7 +64,7 @@ garage_light:
     - switch.garage_light_2
 
 lower_hall_light:
-  module: timeout
+  module: motion_lights
   class: MotionLights
   global_dependencies:
     - validation
@@ -80,7 +80,7 @@ lower_hall_light:
     - switch.lower_hall_light
 
 upper_landing_hall_light:
-  module: timeout
+  module: motion_lights
   class: MotionLights
   global_dependencies:
     - validation
