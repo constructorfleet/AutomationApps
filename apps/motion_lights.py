@@ -50,6 +50,7 @@ class MotionLights(BaseApp):
 
     def initialize_app(self):
         self.light_on = self.get_state(self.args[ARG_LIGHT]) == "on"
+        self.log("LIGHT_ON %s" % self.light_on)
 
         for arg_duration in [ARG_INPUT_MAX_DURATION, ARG_INPUT_MOTION_DURATION]:
             if arg_duration not in self.args:
@@ -72,9 +73,11 @@ class MotionLights(BaseApp):
             self.listen_for_max_duration()
 
         if ARG_MOTION_SENSOR in self.args:
+            self.log("LISTENING FOR MOTION")
             self.listen_state(self.motion_detected,
                               entity=self.args[ARG_MOTION_SENSOR],
                               new="on")
+        self.log("LISTENING_FOR LIGHT CHANGES")
         self.listen_state(self.light_changed,
                           entity=self.args[ARG_LIGHT])
 
@@ -249,15 +252,17 @@ class ExternalStateControlledMotionLights(MotionLights):
 
     def initialize_sub_app(self):
         try:
+            self.log("Trying to get state of external control")
             self.external_state = self.get_state(self.args[ARG_ENTITY_ID])
             self.log("External state %s" % self.external_state)
         except:
             self.log("Unable to get initial exterrnal state")
+        self.log("Listening for external entity change")
         self.listen_state(self._handle_external_state_change,
                           entity=self.args[ARG_ENTITY_ID])
 
     def meets_criteria(self):
-        self.log("%s %s" % (self.args[ARG_ENTITY_BLOCKING_STATE], self.external_state))
+        self.log("Meets criteria %s %s" % (self.args[ARG_ENTITY_BLOCKING_STATE], self.external_state))
         return self.args[ARG_ENTITY_BLOCKING_STATE] != self.external_state
 
     def _handle_external_state_change(self, entity, attribute, old, new, kwargs):
