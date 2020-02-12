@@ -117,4 +117,4 @@ class NightLights(BaseApp):
                 entity_service[ARG_SERVICE],
                 **data
             )
-            sleep(1)
+            sleep(1.5)
