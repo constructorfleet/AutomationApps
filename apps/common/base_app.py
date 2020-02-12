@@ -55,7 +55,8 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def invoke_service(self, service, **kwargs):
         self.log("Invoke Service %s" % service)
-        return self.publish(service, kwargs)
+        [domain, svc] = _split_service(service)
+        return self.publish(domain, svc, **kwargs)
 
     def publish(self, service, **kwargs):
         [domain, svc] = _split_service(service)
