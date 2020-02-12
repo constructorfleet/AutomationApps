@@ -205,7 +205,7 @@ class LuminanceMotionLights(MotionLights):
     lux_trigger = 0
 
     def initialize_app(self):
-        MotionLights.initialize_app()
+        MotionLights.initialize_app(self)
         try:
             self.luminance = int(float(self.get_state(self.args[ARG_LIGHT_SENSOR])))
         except:
@@ -247,7 +247,7 @@ class ExternalStateControlledMotionLights(MotionLights):
     external_state = None
 
     def initialize_app(self):
-        MotionLights.initialize_app()
+        MotionLights.initialize_app(self)
         try:
             self.external_state = self.get_state(self.args[ARG_ENTITY_ID])
             self.log("External state %s" % self.external_state)
