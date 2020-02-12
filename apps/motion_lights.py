@@ -48,7 +48,7 @@ class MotionLights(BaseApp):
     light_handler = None
     args = None
 
-    def Ωinitialize_app(self):
+    def initialize_app(self):
         self.light_on = self.get_state(self.args[ARG_LIGHT]) == "on"
 
         for arg_duration in [ARG_INPUT_MAX_DURATION, ARG_INPUT_MOTION_DURATION]:
