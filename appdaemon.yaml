@@ -6,6 +6,8 @@ http:
 
 admin:
   title: The Guide
+  headers:
+    Access-Control-Allow-Origin: "*"
 
 
 appdaemon:
