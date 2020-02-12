@@ -7,10 +7,14 @@ night_lights:
   module: night_lights
   class: NightLights
   dawn:
-    - entity_id: light.entry_light
+    offset: 60
+    entities:
+      - entity_id: light.entry_light
         service: light/turn_off
   dusk:
-    - entity_id: light.entry_light
+    offset: 60
+    entities:
+      - entity_id: light.entry_light
         service: light/turn_on
         service_data:
           brightness_pct: 100
