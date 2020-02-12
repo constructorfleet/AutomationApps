@@ -16,6 +16,5 @@ appdaemon:
       client_host: mqtt
       client_id: rules
       verbose: false
-      publish_topic: events/master
       client_topics:
         - events/slaves/#

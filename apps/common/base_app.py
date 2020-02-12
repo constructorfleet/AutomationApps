@@ -15,6 +15,8 @@ ATTR_TOPIC = "topic"
 
 EVENT_CALL_SERVICE = "call_service"
 
+DEFAULT_PUBLISH_TOPIC = "events/master"
+
 
 def _split_service(service):
     if '/' in service:
@@ -36,6 +38,10 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def initialize_app(self):
         pass
+
+    @property
+    def publish_topic(self):
+        return DEFAULT_PUBLISH_TOPIC
 
     def turn_off(self, entity_id, **kwargs):
         if kwargs == {}:
@@ -66,7 +72,7 @@ class BaseApp(hassmqtt.HassMqtt):
     def publish(self, domain, service, **kwargs):
         self.log("Publish Domain %s Service %s" % (domain, service))
         return self.mqtt_publish(
-            self.get_publish_topic(**kwargs),
+            self.publish_topic,
             payload=json.dumps({
                 ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
                 ATTR_EVENT_DATA: {
