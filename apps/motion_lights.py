@@ -244,7 +244,7 @@ class ExternalStateControlledMotionLights(MotionLights):
     })
 
     external_state = None
-x
+
     def initialize_app(self):
         super().initialize_app()
         try:
