@@ -73,7 +73,7 @@ class MotionLights(BaseApp):
             self.listen_for_max_duration()
 
         if ARG_MOTION_SENSOR in self.args:
-            self.log("LISTENING FOR MOTION")
+            self.log("LISTENING FOR MOTION %s" % self.args[ARG_MOTION_SENSOR])
             self.listen_state(self.motion_detected,
                               entity=self.args[ARG_MOTION_SENSOR],
                               new="on")
