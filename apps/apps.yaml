@@ -2,139 +2,139 @@ global_modules:
   - common.base_app
   - validation
   - utils
-
-night_lights:
-  module: night_lights
-  class: NightLights
-  dawn:
-    offset: 60
-    entities:
-      - entity_id: light.entry_light
-        service: light/turn_off
-      - entity_id: light.porch_upper
-        service: light/turn_off
-      - entity_id: light.porch_lower
-        service: light/turn_off
-      - entity_id: light.garage_upper_1
-        service: light/turn_off
-      - entity_id: light.garage_upper_2
-        service: light/turn_off
-      - entity_id: light.garage_lower_1
-        service: light/turn_off
-      - entity_id: light.garage_lower_2
-        service: light/turn_off
-  dusk:
-    offset: 60
-    entities:
-      - entity_id: light.entry_light
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.porch_upper
-        service: light/turn_off
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.porch_lower
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_upper_1
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_upper_2
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_lower_1
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_lower_2
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-  night:
-    - entity_id: light.entry_light
-      service: light/turn_on
-      service_data:
-        brightness_pct: 30
-
-kitchen_lights:
-  module: motion_lights
-  class: MotionLights
-  global_dependencies:
-    - validation
-  light: switch.kitchen_light
-  motion_sensor:  binary_sensor.kitchen_motion
-  motion_duration:  40
-
-laundry_room_lights:
-  module: motion_lights
-  class: MotionLights
-  global_dependencies:
-    - validation
-  light: switch.laundry_room_lights
-  motion_sensor: binary_sensor.laundry_motion
-  motion_duration: 10
-  light_sensor: sensor.server_rack_luminance
-  light_level: 5.0
-
-dining_lights:
-  module: motion_lights
-  class: MotionLights
-  global_dependencies:
-    - validation
-  light: switch.dining_room_ceiling_light
-  motion_sensor: binary_sensor.dining_room_motion
-  motion_duration: 180
-  light_sensor: sensor.dining_room_luminance
-  light_level: 5.5
-
-basement_stair_light:
-  module: motion_lights
-  class: MotionLights
-  global_dependencies:
-    - validation
-  light: switch.basement_stair_light
-  motion_sensor: binary_sensor.basement_stair_motion
-  motion_duration: 5
-  max_duration: 1
-  light_sensor: sensor.bottom_basement_stairs_luminance
-  light_level: 2
-  switches:
-    - switch.basement_stair_switch_1
-    - switch.basement_stair_switch_2
-
-garage_light:
-  module: motion_lights
-  class: MotionLights
-  global_dependencies:
-    - validation
-  light: switch.garage_light
-  motion_sensor:  binary_sensor.garage_motion
-  motion_duration: 30
-  max_duration: 180
-  light_sensor: sensor.garage_sensor_1_luminance
-  light_level: 1
-  switches:
-    - switch.garage_light_2
-
-lower_hall_light:
-  module: motion_lights
-  class: MotionLights
-  global_dependencies:
-    - validation
-  light: switch.lower_hall_light
-  motion_sensor: binary_sensor.lower_stairs_motion
-  motion_duration: 1
-  max_duration: 5
-  light_sensor: sensor.lower_stairs_luminance
-  light_level: 1
-  switches:
-    - switch.lower_hall_switch_1
-    - switch.lower_hall_switch_2
-    - switch.lower_hall_light
+#
+#night_lights:
+#  module: night_lights
+#  class: NightLights
+#  dawn:
+#    offset: 60
+#    entities:
+#      - entity_id: light.entry_light
+#        service: light/turn_off
+#      - entity_id: light.porch_upper
+#        service: light/turn_off
+#      - entity_id: light.porch_lower
+#        service: light/turn_off
+#      - entity_id: light.garage_upper_1
+#        service: light/turn_off
+#      - entity_id: light.garage_upper_2
+#        service: light/turn_off
+#      - entity_id: light.garage_lower_1
+#        service: light/turn_off
+#      - entity_id: light.garage_lower_2
+#        service: light/turn_off
+#  dusk:
+#    offset: 60
+#    entities:
+#      - entity_id: light.entry_light
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.porch_upper
+#        service: light/turn_off
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.porch_lower
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_upper_1
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_upper_2
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_lower_1
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_lower_2
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#  night:
+#    - entity_id: light.entry_light
+#      service: light/turn_on
+#      service_data:
+#        brightness_pct: 30
+#
+#kitchen_lights:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.kitchen_light
+#  motion_sensor:  binary_sensor.kitchen_motion
+#  motion_duration:  40
+#
+#laundry_room_lights:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.laundry_room_lights
+#  motion_sensor: binary_sensor.laundry_motion
+#  motion_duration: 10
+#  light_sensor: sensor.server_rack_luminance
+#  light_level: 5.0
+#
+#dining_lights:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.dining_room_ceiling_light
+#  motion_sensor: binary_sensor.dining_room_motion
+#  motion_duration: 180
+#  light_sensor: sensor.dining_room_luminance
+#  light_level: 5.5
+#
+#basement_stair_light:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.basement_stair_light
+#  motion_sensor: binary_sensor.basement_stair_motion
+#  motion_duration: 5
+#  max_duration: 1
+#  light_sensor: sensor.bottom_basement_stairs_luminance
+#  light_level: 2
+#  switches:
+#    - switch.basement_stair_switch_1
+#    - switch.basement_stair_switch_2
+#
+#garage_light:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.garage_light
+#  motion_sensor:  binary_sensor.garage_motion
+#  motion_duration: 30
+#  max_duration: 180
+#  light_sensor: sensor.garage_sensor_1_luminance
+#  light_level: 1
+#  switches:
+#    - switch.garage_light_2
+#
+#lower_hall_light:
+#  module: motion_lights
+#  class: MotionLights
+#  global_dependencies:
+#    - validation
+#  light: switch.lower_hall_light
+#  motion_sensor: binary_sensor.lower_stairs_motion
+#  motion_duration: 1
+#  max_duration: 5
+#  light_sensor: sensor.lower_stairs_luminance
+#  light_level: 1
+#  switches:
+#    - switch.lower_hall_switch_1
+#    - switch.lower_hall_switch_2
+#    - switch.lower_hall_light
 
 upper_landing_hall_light:
   module: motion_lights
