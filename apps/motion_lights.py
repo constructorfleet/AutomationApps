@@ -81,7 +81,12 @@ class MotionLights(BaseApp):
         if self.get_state(self.args[ARG_MOTION_SENSOR]) == 'on':
             self.listen_for_no_motion()
 
+        self.initialize_sub_app()
+
         self.log("Initialized")
+
+    def initialize_sub_app(self):
+        return
 
     def duration_changed(self, entity, attribute, old, new, kwargs):
         if not new or old == new:
@@ -204,8 +209,7 @@ class LuminanceMotionLights(MotionLights):
     luminance = 0
     lux_trigger = 0
 
-    def initialize_app(self):
-        MotionLights.initialize_app(self)
+    def initialize_sub_app(self):
         try:
             self.luminance = int(float(self.get_state(self.args[ARG_LIGHT_SENSOR])))
         except:
@@ -246,8 +250,7 @@ class ExternalStateControlledMotionLights(MotionLights):
 
     external_state = None
 
-    def initialize_app(self):
-        MotionLights.initialize_app(self)
+    def initialize_sub_app(self):
         try:
             self.external_state = self.get_state(self.args[ARG_ENTITY_ID])
             self.log("External state %s" % self.external_state)
