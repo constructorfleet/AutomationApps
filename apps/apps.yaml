@@ -206,7 +206,7 @@ upper_landing_hall_light:
   motion_sensor: binary_sensor.upper_landing_motion
   max_duration: 1
   entity_id: light.entry_light
-  blocking_state: on
+  blocking_state: off
   switches:
     - switch.upper_landing_switch_1
     - switch.upper_landing_switch_2
