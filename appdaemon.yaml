@@ -1,13 +1,13 @@
 secrets: /conf/secrets.yaml
 
-#http:
-#  url: http://0.0.0.0:5050
-#  password: !secret http_password
-#api:
-#admin:
-#  title: The Guide
-#  headers:
-#    Access-Control-Allow-Origin: "*"
+http:
+  url: http://0.0.0.0:5050
+  password: !secret http_password
+api:
+admin:
+  title: The Guide
+  headers:
+    Access-Control-Allow-Origin: "*"
 
 
 appdaemon:
