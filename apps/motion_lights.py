@@ -240,11 +240,11 @@ class LuminanceMotionLights(MotionLights):
 class ExternalStateControlledMotionLights(MotionLights):
     config_schema = BASE_SCHEMA.extend({
         vol.Required(ARG_ENTITY_ID): entity_id,
-        vol.Required(ARG_ENTITY_BLOCKING_STATE): any
+        vol.Required(ARG_ENTITY_BLOCKING_STATE): vol.Coerce(str)
     })
 
     external_state = None
-
+x
     def initialize_app(self):
         super().initialize_app()
         try:
