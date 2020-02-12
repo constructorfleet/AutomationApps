@@ -91,7 +91,6 @@ class MotionLights(BaseApp):
     def duration_changed(self, entity, attribute, old, new, kwargs):
         if not new or old == new:
             return
-        self.log("DURATTION CHANGED TO %w" % new)
         if entity == self.args[ARG_INPUT_MOTION_DURATION]:
             self.motion_duration = int(float(new))
             self.listen_for_no_motion()
@@ -122,9 +121,7 @@ class MotionLights(BaseApp):
         self.turn_off_devices()
 
     def motion_detected(self, entity, attribute, old, new, kwargs):
-        self.log("ΩMotion detected")
-        if not self.light_from_motion or not self.meets_criteria():
-            self.log("Motion %s Criteria %s" % (self.light_from_motion, self.meets_criteria()))
+        if not self.light_from_motion and not self.meets_criteria():
             return
         self._reset_timer()
 
@@ -132,7 +129,6 @@ class MotionLights(BaseApp):
         return True
 
     def turn_on_devices(self):
-        self.log("Turning on devices")
         self.turn_on(self.args[ARG_LIGHT])
         switches = self.args.get(ARG_SWITCHES, None)
         if switches is None:
@@ -142,7 +138,6 @@ class MotionLights(BaseApp):
             self.turn_on(device)
 
     def turn_off_devices(self):
-        self.log("Turning off devices")
         self.turn_off(self.args[ARG_LIGHT])
 
         for device in self.args.get(ARG_SWITCHES, []):
