@@ -249,6 +249,7 @@ class ExternalStateControlledMotionLights(MotionLights):
         super().initialize_app()
         try:
             self.external_state = self.get_state(self.args[ARG_ENTITY_ID])
+            self.log("External state %s" % self.external_state)
         except:
             self.log("Unable to get initial exterrnal state")
         self.listen_state(self._handle_external_state_change,
@@ -258,4 +259,5 @@ class ExternalStateControlledMotionLights(MotionLights):
         return self.args[ARG_ENTITY_BLOCKING_STATE] != self.external_state
 
     def _handle_external_state_change(self, entity, attribute, old, new, kwargs):
+        self.log("State change %s" %  new)
         self.external_state = new
