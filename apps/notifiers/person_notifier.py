@@ -4,7 +4,7 @@ import traceback
 import appdaemon.plugins.hass.hassapi as hass
 import voluptuous as vol
 
-from common.validation.validation import ensure_list, service
+from common.validation import ensure_list, service
 from notifiers.notification_channel import NotificationChannel
 
 NOTIFIER_MQTT = "mqtt"
