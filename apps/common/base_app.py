@@ -17,10 +17,10 @@ EVENT_CALL_SERVICE = "call_service"
 
 
 def _split_service(service):
+    if '/' in service:
+        return service.split('/')
     if '.' in service:
         return service.split('.')
-    elif '/' in service:
-        return service.split('/')
     else:
         raise ValueError("Invalid service %s" % service)
 
