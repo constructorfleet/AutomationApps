@@ -1,7 +1,68 @@
 global_modules:
   - common.base_app
-  - validation
-  - utils
+  - common.validation
+  - common.utils
+  - notifiers.notification_action
+  - notifiers.notification_category
+  - notifiers.notification_channels
+
+fcm_notifier:
+  module: fcm_notifier
+  class: FcmNotifier
+  global_dependencies:
+    - common.validation
+    - notifiers.notification_action
+    - notifiers.notification_category
+    - notifiers.notification_channels
+
+ios_notifier:
+  module: ios_notifier
+  class: iOSNotifier
+  global_dependencies:
+    - common.validation
+    - notifiers.notification_action
+    - notifiers.notification_category
+    - notifiers.notification_channels
+
+notifiers:
+  module: person_notifier
+  class: PersonNotifier
+  global_dependencies:
+    - common.validation
+    - notifiers.notification_action
+    - notification.notification_category
+    - notification.notification_channels
+  dependencies:
+    - mqtt_notifier
+    - ios_notifier
+    - fcm_notifier
+  people:
+    - name: Teagan
+      notifier:
+        - name: ios
+          service: notify/mobile_app_agrajag
+    - name: Alan
+      notifier:
+        - name: ios
+          service: notify/mobile_app_deviphone
+    - name: Grace
+      notifier:
+        - name: fcm
+          service: notify/fcm_grace
+
+notification_action_processor:
+  module: notification_action_processor
+  class: NotificationActionProcessor
+  global_dependencies:
+    - common.validation
+    - notifiers.notification_action
+    - notification.notification_category
+    - notification.notification_channels
+  dependencies:
+    - notifiers
+    - mqtt_notifier
+    - ios_notifier
+    - fcm_notifier
 
 night_lights:
   module: night_lights
@@ -64,7 +125,7 @@ kitchen_lights:
   module: motion_lights
   class: MotionLights
   global_dependencies:
-    - validation
+    - common.validation
   light: switch.kitchen_light
   motion_sensor:  binary_sensor.kitchen_motion
   motion_duration:  40
@@ -73,7 +134,7 @@ laundry_room_lights:
   module: motion_lights
   class: MotionLights
   global_dependencies:
-    - validation
+    - common.validation
   light: switch.laundry_room_lights
   motion_sensor: binary_sensor.laundry_motion
   motion_duration: 10
@@ -84,7 +145,7 @@ dining_lights:
   module: motion_lights
   class: MotionLights
   global_dependencies:
-    - validation
+    - common.validation
   light: switch.dining_room_ceiling_light
   motion_sensor: binary_sensor.dining_room_motion
   motion_duration: 180
@@ -95,7 +156,7 @@ basement_stair_light:
   module: motion_lights
   class: MotionLights
   global_dependencies:
-    - validation
+    - common.validation
   light: switch.basement_stair_light
   motion_sensor: binary_sensor.basement_stair_motion
   motion_duration: 5
@@ -110,7 +171,7 @@ garage_light:
   module: motion_lights
   class: MotionLights
   global_dependencies:
-    - validation
+    - common.validation
   light: switch.garage_light
   motion_sensor:  binary_sensor.garage_motion
   motion_duration: 30
@@ -124,7 +185,7 @@ lower_hall_light:
   module: motion_lights
   class: MotionLights
   global_dependencies:
-    - validation
+    - common.validation
   light: switch.lower_hall_light
   motion_sensor: binary_sensor.lower_stairs_motion
   motion_duration: 1
@@ -140,7 +201,7 @@ upper_landing_hall_light:
   module: motion_lights
   class: ExternalStateControlledMotionLights
   global_dependencies:
-    - validation
+    - common.validation
   light: switch.upper_landing
   motion_sensor: binary_sensor.upper_landing_motion
   max_duration: 1
