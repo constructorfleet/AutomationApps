@@ -266,7 +266,7 @@ class ExternalStateControlledMotionLights(MotionLights):
     @property
     def fail_condition_check(self):
         return self.args[ARG_ENTITY_BLOCKING_STATE] == (
-                    self.external_state | | self.get_state(self.args[ARG_ENTITY_ID]))
+                    self.external_state or self.get_state(self.args[ARG_ENTITY_ID]))
 
     def _handle_external_state_change(self, entity, attribute, old, new, kwargs):
         self.log("State change %s" %  new)
