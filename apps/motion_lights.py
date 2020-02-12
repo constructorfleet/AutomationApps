@@ -122,7 +122,9 @@ class MotionLights(BaseApp):
         self.turn_off_devices()
 
     def motion_detected(self, entity, attribute, old, new, kwargs):
+        self.log("Motion detected")
         if not self.light_from_motion or not self.meets_criteria():
+            self.log("Motion %s Criteria %s" % (self.light_from_motion, self.meets_criteria()))
             return
         self._reset_timer()
 
