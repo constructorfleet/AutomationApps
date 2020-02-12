@@ -53,16 +53,16 @@ class BaseApp(hassmqtt.HassMqtt):
             rargs["entity_id"] = entity_id
         return self.publish('homeassistant', 'turn_on', **rargs)
 
-    def invoke_service(self, service, **kwargs):
+    def invoke_service(self, service, kwargs):
         self.log("Invoke Service %s" % service)
-        return self.publish(service, **kwargs)
+        return self.publish(service, kwargs)
 
-    def publish(self, service, **kwargs):
+    def publish(self, service, kwargs):
         domain, svc = _split_service(service)
         self.log("Publish Domain %s Service %s" % (domain, svc))
         return self.publish(domain, svc, **kwargs)
 
-    def publish(self, domain, service, **kwargs):
+    def publish(self, domain, service, kwargs):
         self.log("Publish Domain %s Service %s" % (domain, service))
         return self.mqtt_publish(
             self.get_publish_topic(**kwargs),
