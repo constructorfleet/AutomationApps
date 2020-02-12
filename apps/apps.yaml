@@ -3,6 +3,23 @@ global_modules:
   - validation
   - utils
 
+night_lights:
+  module: night_lights
+  class: NightLights
+  dawn:
+    - entity_id: light.entry_light
+        service: light/turn_off
+  dusk:
+    - entity_id: light.entry_light
+        service: light/turn_on
+        service_data:
+          brightness_pct: 100
+  night:
+    - entity_id: light.entry_light
+      service: light/turn_on
+      service_data:
+        brightness_pct: 30
+
 kitchen_lights:
   module: motion_lights
   class: MotionLights
