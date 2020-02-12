@@ -258,6 +258,4 @@ class ExternalStateControlledMotionLights(MotionLights):
         return self.args[ARG_ENTITY_BLOCKING_STATE] != self.external_state
 
     def _handle_external_state_change(self, entity, attribute, old, new, kwargs):
-        if old == new:
-            return
         self.external_state = new
