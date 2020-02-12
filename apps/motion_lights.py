@@ -173,7 +173,7 @@ class MotionLights(BaseApp):
 
         self.light_handler = \
             self.run_in(self.handle_max_duration,
-                        seconds=self.max_duration * 60)
+                        self.max_duration * 60)
 
     def listen_for_no_motion(self):
         if ARG_MOTION_SENSOR not in self.args:

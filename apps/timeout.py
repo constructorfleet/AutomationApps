@@ -211,7 +211,7 @@ class EntityTimeout(BaseApp):
         self.stop_delay()
         self.stop_timer()
         self.timer_handle = self.run_in(self.handle_timed_out,
-                                        seconds=self.timeout * 60,
+                                        self.timeout * 60,
                                         immediate=True)
 
     def should_delay(self):
