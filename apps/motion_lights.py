@@ -124,12 +124,13 @@ class MotionLights(BaseApp):
         self.turn_off_devices()
 
     def motion_detected(self, entity, attribute, old, new, kwargs):
-        if not self.light_from_motion and not self.meets_criteria():
+        if not self.light_from_motion and self.fail_condition_check:
             return
         self._reset_timer()
 
-    def meets_criteria(self):
-        return True
+    @property
+    def fail_condition_check(self):
+        return False
 
     def turn_on_devices(self):
         self.turn_on(self.args[ARG_LIGHT])
@@ -228,8 +229,9 @@ class LuminanceMotionLights(MotionLights):
             self.listen_state(self._handle_luminance_change,
                               entity=self.args[ARG_LIGHT_LEVEL])
 
-    def meets_criteria(self):
-        return self.luminance < self.lux_trigger
+    @property
+    def fail_condition_check(self):
+        return self.lux_trigger < self.luminance
 
     def _handle_luminance_change(self, entity, attribute, old, new, kwargs):
         if new == old:
@@ -261,9 +263,10 @@ class ExternalStateControlledMotionLights(MotionLights):
         self.listen_state(self._handle_external_state_change,
                           entity=self.args[ARG_ENTITY_ID])
 
-    def meets_criteria(self):
-        self.log("Meets criteria %s %s" % (self.args[ARG_ENTITY_BLOCKING_STATE], self.external_state))
-        return self.args[ARG_ENTITY_BLOCKING_STATE] != self.external_state
+    @property
+    def fail_condition_check(self):
+        return self.args[ARG_ENTITY_BLOCKING_STATE] == (
+                    self.external_state | | self.get_state(self.args[ARG_ENTITY_ID]))
 
     def _handle_external_state_change(self, entity, attribute, old, new, kwargs):
         self.log("State change %s" %  new)
