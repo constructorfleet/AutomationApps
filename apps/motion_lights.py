@@ -78,7 +78,7 @@ class MotionLights(BaseApp):
         self.listen_state(self.light_changed,
                           entity=self.args[ARG_LIGHT])
 
-        if self.get_state(self.argq[ARG_MOTION_SENSOR]) == 'on';
+        if self.get_state(self.argq[ARG_MOTION_SENSOR]) == 'on':
             self.listen_for_no_motion()
 
         self.log("Initialized")
