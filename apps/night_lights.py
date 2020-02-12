@@ -112,8 +112,8 @@ class NightLights(BaseApp):
             data = entity_service.get(ARG_SERVICE_DATA, {})
             data[ARG_ENTITY_ID] = entity_service[ARG_ENTITY_ID]
 
-            self.publish(
+            self.invoke_service(
                 entity_service[ARG_SERVICE],
-                data
+                **data
             )
             sleep(1)
