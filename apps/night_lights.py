@@ -92,7 +92,8 @@ class NightLights(BaseApp):
         if self.night_entities:
             self.run_daily(self._handle_night,
                            MIDNIGHT)
-            if self.sun_down() and datetime.datetime.now().time() > MIDNIGHT:
+            now = datetime.datetime.now().time()
+            if self.sun_down() and now.hour < 12 and now > MIDNIGHT:
                 self._handle_night(None)
 
     def _handle_dawn(self, kwargs):
