@@ -58,7 +58,7 @@ class BaseApp(hassmqtt.HassMqtt):
         return self.publish(service, kwargs)
 
     def publish(self, service, **kwargs):
-        domain, svc = _split_service(service)
+        [domain, svc] = _split_service(service)
         self.log("Publish Domain %s Service %s" % (domain, svc))
         return self.publish(domain, svc, **kwargs)
 
