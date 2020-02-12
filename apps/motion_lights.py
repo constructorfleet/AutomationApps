@@ -17,21 +17,23 @@ ARG_ENTITY_BLOCKING_STATE = "blocking_state"
 
 DEFAULT_MOTION_DURATION = 5  # Turn off after 5 minutes of no motion
 
+BASE_SCHEMA = vol.Schema({
+    vol.Optional(ARG_MOTION_SENSOR): entity_id,
+    vol.Required(ARG_LIGHT): entity_id,
+    vol.Optional(ARG_SWITCHES, default=[]): [entity_id],
+    vol.Optional(ARG_INPUT_MOTION_DURATION, default=DEFAULT_MOTION_DURATION): vol.Any(
+        entity_id,
+        vol.Coerce(int)
+    ),
+    vol.Optional(ARG_INPUT_MAX_DURATION): vol.Any(
+        entity_id,
+        vol.Coerce(int)
+    )
+}, extra=vol.ALLOW_EXTRA)
+
 
 class MotionLights(BaseApp):
-    config_schema = vol.Schema({
-        vol.Optional(ARG_MOTION_SENSOR): entity_id,
-        vol.Required(ARG_LIGHT): entity_id,
-        vol.Optional(ARG_SWITCHES, default=[]): [entity_id],
-        vol.Optional(ARG_INPUT_MOTION_DURATION, default=DEFAULT_MOTION_DURATION): vol.Any(
-            entity_id,
-            vol.Coerce(int)
-        ),
-        vol.Optional(ARG_INPUT_MAX_DURATION): vol.Any(
-            entity_id,
-            vol.Coerce(int)
-        )
-    }, extra=vol.ALLOW_EXTRA)
+    config_schema = BASE_SCHEMA
 
     _MAP_DURATION_ARG_TO_PROP = {
         ARG_INPUT_MAX_DURATION: 'max_duration',
@@ -190,7 +192,7 @@ class MotionLights(BaseApp):
 
 
 class LuminanceMotionLights(MotionLights):
-    config_schema = super(MotionLights).config_schema.extend({
+    config_schema = BASE_SCHEMA.extend({
         vol.Inclusive(ARG_LIGHT_SENSOR, 'sensor'): entity_id,
         vol.Inclusive(ARG_LIGHT_LEVEL, 'sensor'): vol.Or(
             entity_id,
@@ -236,7 +238,7 @@ class LuminanceMotionLights(MotionLights):
 
 
 class ExternalStateControlledMotionLights(MotionLights):
-    config_schema = super(MotionLights).config_schema.extend({
+    config_schema = BASE_SCHEMA.extend({
         vol.Required(ARG_ENTITY_ID): entity_id,
         vol.Required(ARG_ENTITY_BLOCKING_STATE): any
     })
