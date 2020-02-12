@@ -1,4 +1,4 @@
-from builtins import int, float, isinstance, str, property
+from builtins import int, float, isinstance, str
 
 import voluptuous as vol
 
@@ -12,6 +12,8 @@ ARG_LIGHT_LEVEL = "light_level"
 ARG_SWITCHES = "switches"
 ARG_INPUT_MOTION_DURATION = "motion_duration"
 ARG_INPUT_MAX_DURATION = "max_duration"
+ARG_ENTITY_ID = "entity_id"
+ARG_ENTITY_BLOCKING_STATE = "blocking_state"
 
 DEFAULT_MOTION_DURATION = 5  # Turn off after 5 minutes of no motion
 
@@ -28,14 +30,16 @@ class MotionLights(BaseApp):
         vol.Optional(ARG_INPUT_MAX_DURATION): vol.Any(
             entity_id,
             vol.Coerce(int)
-        ),
-        vol.Inclusive(ARG_LIGHT_SENSOR, "sensor"): entity_id,
-        vol.Inclusive(ARG_LIGHT_LEVEL, "sensor"): vol.Coerce(float)
+        )
     }, extra=vol.ALLOW_EXTRA)
+
+    _MAP_DURATION_ARG_TO_PROP = {
+        ARG_INPUT_MAX_DURATION: 'max_duration',
+        ARG_INPUT_MOTION_DURATION: 'motion_duration'
+    }
 
     motion_duration = DEFAULT_MOTION_DURATION
     max_duration = None
-    light_level = -1
     light_on = False
     light_from_motion = False
     motion_handler = None
@@ -45,31 +49,24 @@ class MotionLights(BaseApp):
     def initialize_app(self):
         self.light_on = self.get_state(self.args[ARG_LIGHT]) == "on"
 
-        if ARG_INPUT_MOTION_DURATION in self.args:
-            arg = self.args[ARG_INPUT_MOTION_DURATION]
-            if isinstance(arg, int):
-                self.motion_duration = arg
-            elif isinstance(arg, str):
+        for arg_duration in [ARG_INPUT_MAX_DURATION, ARG_INPUT_MOTION_DURATION]:
+            if arg_duration not in self.args:
+                continue
+            field = self._MAP_DURATION_ARG_TO_PROP[arg_duration]
+            arg_value = self.args[arg_duration]
+            if isinstance(arg_value, int):
+                self.__setattr__(field,
+                                 arg_value)
+            elif isinstance(arg_value, str):
                 try:
-                    self.motion_duration = int(float(self.get_state(arg)))
+                    self.__setattr__(field, int(float(self.get_state(arg_value))))
                 except:
-                    self.log("Cant get initial duration")
-                self.listen_state(self.duration_changed,
-                                  entity=arg)
+                    self.log("Cannot retrieve initial duration")
 
-        if ARG_INPUT_MAX_DURATION in self.args:
-            arg = self.args[ARG_INPUT_MAX_DURATION]
-            if isinstance(arg, int):
-                self.max_duration = arg
-            elif isinstance(arg, str):
-                try:
-                    self.max_duration = int(float(self.get_state(arg)))
-                except:
-                    self.log("Cant get initial duration")
                 self.listen_state(self.duration_changed,
-                                  entity=arg)
+                                  entity=arg_value)
 
-        if self.max_duration and self.get_state(self.args[ARG_LIGHT]) == "on":
+        if self.max_duration and self.light_on:
             self.listen_for_max_duration()
 
         if ARG_MOTION_SENSOR in self.args:
@@ -79,29 +76,12 @@ class MotionLights(BaseApp):
         self.listen_state(self.light_changed,
                           entity=self.args[ARG_LIGHT])
 
-        if ARG_LIGHT_SENSOR in self.args:
-            try:
-                self.light_level = float(self.get_state(self.args[ARG_LIGHT_SENSOR]))
-            except:
-                self.log("Cant get initial light level")
-            self.listen_state(self.light_level_changed,
-                              entity=self.args[ARG_LIGHT_SENSOR])
-        else:
-            self.light_livel = -10
-
         self.listen_for_no_motion()
 
         self.log("Initialized")
 
-    @property
-    def is_dark(self):
-        return float(self.light_level) < float(self.args.get(ARG_LIGHT_LEVEL, 1000))
-
-    def light_level_changed(self, entity, attribute, old, new, kwargs):
-        self.light_level = float(new)
-
     def duration_changed(self, entity, attribute, old, new, kwargs):
-        if not new:
+        if not new or old == new:
             return
 
         if entity == self.args[ARG_INPUT_MOTION_DURATION]:
@@ -134,11 +114,12 @@ class MotionLights(BaseApp):
         self.turn_off_devices()
 
     def motion_detected(self, entity, attribute, old, new, kwargs):
-        self.log("Motion detected. Dark? {} Light from motion".format(self.is_dark,
-                                                                      self.light_from_motion))
-        if not self.is_dark and not self.light_from_motion:
+        if not self.light_from_motion or not self.meets_criteria():
             return
         self._reset_timer()
+
+    def meets_criteria(self):
+        return True
 
     def turn_on_devices(self):
         self.log("Turning on devices")
@@ -206,3 +187,75 @@ class MotionLights(BaseApp):
         self.light_from_motion = True
         self.turn_on_devices()
         self.listen_for_no_motion()
+
+
+class LuminanceMotionLights(MotionLights):
+    config_schema = super(MotionLights).config_schema.extend({
+        vol.Inclusive(ARG_LIGHT_SENSOR, 'sensor'): entity_id,
+        vol.Inclusive(ARG_LIGHT_LEVEL, 'sensor'): vol.Or(
+            entity_id,
+            vol.Coerce(int)
+        )
+    })
+
+    luminance = 0
+    lux_trigger = 0
+
+    def initialize_app(self):
+        super().initialize_app()
+        try:
+            self.luminance = int(float(self.get_state(self.args[ARG_LIGHT_SENSOR])))
+        except:
+            self.log("Cannot retrieve initial luminance")
+
+        self.listen_state(self._handle_luminance_change,
+                          entity=self.args[ARG_LIGHT_SENSOR])
+
+        if isinstance(self.args[ARG_LIGHT_LEVEL], int):
+            self.lux_trigger = int(self.args[ARG_LIGHT_LEVEL])
+        elif isinstance(self.args[ARG_LIGHT_LEVEL], str):
+            try:
+                self.lux_trigger = int(float(self.get_state(self.arg[ARG_LIGHT_LEVEL])))
+            except:
+                self.log("Cannot retrieve initial lux limit")
+            self.listen_state(self._handle_luminance_change,
+                              entity=self.args[ARG_LIGHT_LEVEL])
+
+    def meets_criteria(self):
+        return self.luminance < self.lux_trigger
+
+    def _handle_luminance_change(self, entity, attribute, old, new, kwargs):
+        if new == old:
+            return
+        self.luminance = int(float(new))
+
+    def _handle_limit_change(self, entity, attribute, old, new, kwargs):
+        if new == old:
+            return
+        self.lux_trigger = new
+
+
+class ExternalStateControlledMotionLights(MotionLights):
+    config_schema = super(MotionLights).config_schema.extend({
+        vol.Required(ARG_ENTITY_ID): entity_id,
+        vol.Required(ARG_ENTITY_BLOCKING_STATE): any
+    })
+
+    external_state = None
+
+    def initialize_app(self):
+        super().initialize_app()
+        try:
+            self.external_state = self.get_state(self.args[ARG_ENTITY_ID])
+        except:
+            self.log("Unable to get initial exterrnal state")
+        self.listen_state(self._handle_external_state_change,
+                          entity=self.args[ARG_ENTITY_ID])
+
+    def meets_criteria(self):
+        return self.args[ARG_ENTITY_BLOCKING_STATE] != self.external_state
+
+    def _handle_external_state_change(self, entity, attribute, old, new, kwargs):
+        if old == new:
+            return
+        self.external_state = new
