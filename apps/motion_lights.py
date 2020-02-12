@@ -13,11 +13,6 @@ ARG_SWITCHES = "switches"
 ARG_INPUT_MOTION_DURATION = "motion_duration"
 ARG_INPUT_MAX_DURATION = "max_duration"
 
-ARG_IF_BETWEEN = "if_between"
-ARG_BETWEEN_START = "start"
-ARG_BETWEEN_END = "end"
-ARG_BETWEEN_DURATION_MULTIPLIER = "multiplier"
-
 DEFAULT_MOTION_DURATION = 5  # Turn off after 5 minutes of no motion
 
 
