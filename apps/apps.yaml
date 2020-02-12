@@ -32,16 +32,28 @@ night_lights:
           brightness_pct: 100
       - entity_id: light.porch_upper
         service: light/turn_off
+        service_data:
+          brightness_pct: 100
       - entity_id: light.porch_lower
         service: light/turn_on
+        service_data:
+          brightness_pct: 100
       - entity_id: light.garage_upper_1
         service: light/turn_on
+        service_data:
+          brightness_pct: 100
       - entity_id: light.garage_upper_2
         service: light/turn_on
+        service_data:
+          brightness_pct: 100
       - entity_id: light.garage_lower_1
         service: light/turn_on
+        service_data:
+          brightness_pct: 100
       - entity_id: light.garage_lower_2
         service: light/turn_on
+        service_data:
+          brightness_pct: 100
   night:
     - entity_id: light.entry_light
       service: light/turn_on
