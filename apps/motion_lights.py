@@ -256,6 +256,7 @@ class ExternalStateControlledMotionLights(MotionLights):
                           entity=self.args[ARG_ENTITY_ID])
 
     def meets_criteria(self):
+        self.log("%s %s" % (self.args[ARG_ENTITY_BLOCKING_STATE], self.external_state))
         return self.args[ARG_ENTITY_BLOCKING_STATE] != self.external_state
 
     def _handle_external_state_change(self, entity, attribute, old, new, kwargs):
