@@ -114,6 +114,6 @@ class NightLights(BaseApp):
 
             self.publish(
                 entity_service[ARG_SERVICE],
-                **data
+                data
             )
             sleep(1)
