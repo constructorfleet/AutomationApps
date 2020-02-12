@@ -4,6 +4,10 @@ http:
   url: http://0.0.0.0:5050
   password: !secret http_password
 
+admin:
+  title: The Guide
+
+
 appdaemon:
   latitude: !secret home_latitude
   longitude: !secret home_longitude
