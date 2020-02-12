@@ -4,7 +4,7 @@ from appdaemon.appdaemon import AppDaemon
 import appdaemon.utils as utils
 
 
-class Mqtt(adbase.ADBase, adapi.ADAPI):
+class HassMqtt(adbase.ADBase, adapi.ADAPI):
     """
     A list of API calls and information specific to the MQTT plugin.
 

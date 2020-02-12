@@ -10,7 +10,7 @@ from appdaemon.appdaemon import AppDaemon
 from appdaemon.plugin_management import PluginBase
 
 
-class MqttPlugin(PluginBase):
+class HassmqttPlugin(PluginBase):
 
     def __init__(self, ad: AppDaemon, name, args):
         super().__init__(ad, name, args)
