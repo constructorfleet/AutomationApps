@@ -110,7 +110,7 @@ class NightLights(BaseApp):
     def _handle_entity_services(self, entity_services):
         for entity_service in entity_services:
             self.invoke_service(
-                entity_service[ARG_SERVICE],
+                service=entity_service[ARG_SERVICE],
                 entity_id=entity_service[ARG_ENTITY_ID],
                 **entity_service[ARG_SERVICE_DATA]
             )
