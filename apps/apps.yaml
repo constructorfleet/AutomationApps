@@ -132,7 +132,7 @@ kitchen_lights:
 
 laundry_room_lights:
   module: motion_lights
-  class: MotionLights
+  class: LuminanceMotionLights
   global_dependencies:
     - common.validation
   light: switch.laundry_room_lights
@@ -143,7 +143,7 @@ laundry_room_lights:
 
 dining_lights:
   module: motion_lights
-  class: MotionLights
+  class: LuminanceMotionLights
   global_dependencies:
     - common.validation
   light: switch.dining_room_ceiling_light
