@@ -183,7 +183,7 @@ garage_light:
 
 lower_hall_light:
   module: motion_lights
-  class: MotionLights
+  class: LuminanceMotionLights
   global_dependencies:
     - common.validation
   light: switch.lower_hall_light
