@@ -244,7 +244,7 @@ class LuminanceMotionLights(MotionLights):
         self.lux_trigger = new
 
 
-class ExternalStateControlledMotionLights(MotionLights):
+class ExternalStateControlledMotionLights(LuminanceMotionLights):
     config_schema = BASE_SCHEMA.extend({
         vol.Required(ARG_ENTITY_ID): entity_id,
         vol.Required(ARG_ENTITY_BLOCKING_STATE): vol.Coerce(str)
@@ -258,16 +258,18 @@ class ExternalStateControlledMotionLights(MotionLights):
             self.external_state = self.get_state(self.args[ARG_ENTITY_ID])
             self.log("External state %s" % self.external_state)
         except:
-            self.log("Unable to get initial exterrnal state")
+            self.log("Unable to get initial external state")
         self.log("Listening for external entity change")
         self.listen_state(self._handle_external_state_change,
                           entity=self.args[ARG_ENTITY_ID])
 
     @property
     def fail_condition_check(self):
-        return self.args[ARG_ENTITY_BLOCKING_STATE] == (
-                    self.external_state or self.get_state(self.args[ARG_ENTITY_ID]))
+        return super().fail_condition_check or \
+               self.args[ARG_ENTITY_BLOCKING_STATE] == (
+                       self.external_state or
+                       self.get_state(self.args[ARG_ENTITY_ID]))
 
     def _handle_external_state_change(self, entity, attribute, old, new, kwargs):
-        self.log("State change %s" %  new)
+        self.log("State change %s" % new)
         self.external_state = new
