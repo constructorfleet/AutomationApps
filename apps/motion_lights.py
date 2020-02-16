@@ -202,8 +202,8 @@ class LuminanceMotionLights(MotionLights):
     config_schema = BASE_SCHEMA.extend({
         vol.Inclusive(ARG_LIGHT_SENSOR, 'sensor'): entity_id,
         vol.Inclusive(ARG_LIGHT_LEVEL, 'sensor'): vol.Or(
-            entity_id,
-            vol.Coerce(int)
+            vol.Coerce(int),
+            entity_id
         )
     })
 
