@@ -148,9 +148,9 @@ dining_lights:
     - common.validation
   light: switch.dining_room_ceiling_light
   motion_sensor: binary_sensor.dining_room_motion
-  motion_duration: 180
+  motion_duration: input_number.dining_room_motion_duration
   light_sensor: sensor.dining_room_luminance
-  light_level: 5.5
+  light_level: 10
 
 basement_stair_light:
   module: motion_lights
