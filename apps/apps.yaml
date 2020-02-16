@@ -195,7 +195,6 @@ lower_hall_light:
   switches:
     - switch.lower_hall_switch_1
     - switch.lower_hall_switch_2
-    - switch.lower_hall_light
 
 upper_landing_hall_light:
   module: motion_lights
