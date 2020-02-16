@@ -154,13 +154,13 @@ dining_lights:
 
 basement_stair_light:
   module: motion_lights
-  class: MotionLights
+  class: LuminanceMotionLights
   global_dependencies:
     - common.validation
   light: switch.basement_stair_light
   motion_sensor: binary_sensor.basement_stair_motion
-  motion_duration: 5
-  max_duration: 1
+  motion_duration: input_number.basement_stairs_max_duration
+  max_duration: input_number.basement_stairs_max_duration
   light_sensor: sensor.bottom_basement_stairs_luminance
   light_level: 2
   switches:
