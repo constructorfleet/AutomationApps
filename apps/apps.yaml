@@ -188,10 +188,10 @@ lower_hall_light:
     - common.validation
   light: switch.lower_hall_light
   motion_sensor: binary_sensor.lower_stairs_motion
-  motion_duration: 1
-  max_duration: 5
+  motion_duration: input_number.lower_hall_motion_duration
+  max_duration: input_number.lower_hall_max_duration
   light_sensor: sensor.lower_stairs_luminance
-  light_level: 1
+  light_level: 10
   switches:
     - switch.lower_hall_switch_1
     - switch.lower_hall_switch_2
