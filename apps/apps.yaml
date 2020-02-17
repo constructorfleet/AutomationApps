@@ -213,7 +213,7 @@ upper_landing_hall_light:
     - switch.upper_landing_switch_2
 
 front_door_lock_timeout:
- module: entity_timeout
+ module: timeout
  class: EntityTimeout
  global_dependencies:
    - validation
