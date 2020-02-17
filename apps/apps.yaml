@@ -6,120 +6,120 @@ global_modules:
   - notifiers.notification_category
   - notifiers.notification_channels
 
-fcm_notifier:
-  module: fcm_notifier
-  class: FcmNotifier
-  global_dependencies:
-    - common.validation
-    - notifiers.notification_action
-    - notifiers.notification_category
-    - notifiers.notification_channels
-
-ios_notifier:
-  module: ios_notifier
-  class: iOSNotifier
-  global_dependencies:
-    - common.validation
-    - notifiers.notification_action
-    - notifiers.notification_category
-    - notifiers.notification_channels
-
-notifiers:
-  module: person_notifier
-  class: PersonNotifier
-  global_dependencies:
-    - common.validation
-    - notifiers.notification_action
-    - notification.notification_category
-    - notification.notification_channels
-  dependencies:
-    - mqtt_notifier
-    - ios_notifier
-    - fcm_notifier
-  people:
-    - name: Teagan
-      notifier:
-        - name: ios
-          service: notify/mobile_app_agrajag
-    - name: Alan
-      notifier:
-        - name: ios
-          service: notify/mobile_app_deviphone
-    - name: Grace
-      notifier:
-        - name: ios
-          service: notify/mobile_app_graces_iphone
-
-notification_action_processor:
-  module: notification_action_processor
-  class: NotificationActionProcessor
-  global_dependencies:
-    - common.validation
-    - notifiers.notification_action
-    - notification.notification_category
-    - notification.notification_channels
-  dependencies:
-    - notifiers
-    - mqtt_notifier
-    - ios_notifier
-    - fcm_notifier
-
-night_lights:
-  module: night_lights
-  class: NightLights
-  dawn:
-    offset: 60
-    entities:
-      - entity_id: light.entry_light
-        service: light/turn_off
-      - entity_id: light.porch_upper
-        service: light/turn_off
-      - entity_id: light.porch_lower
-        service: light/turn_off
-      - entity_id: light.garage_upper_1
-        service: light/turn_off
-      - entity_id: light.garage_upper_2
-        service: light/turn_off
-      - entity_id: light.garage_lower_1
-        service: light/turn_off
-      - entity_id: light.garage_lower_2
-        service: light/turn_off
-  dusk:
-    offset: 60
-    entities:
-      - entity_id: light.entry_light
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.porch_upper
-        service: light/turn_off
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.porch_lower
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_upper_1
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_upper_2
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_lower_1
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_lower_2
-        service: light/turn_on
-        service_data:
-          brightness_pct: 100
-  night:
-    - entity_id: light.entry_light
-      service: light/turn_on
-      service_data:
-        brightness_pct: 30
+#fcm_notifier:
+#  module: fcm_notifier
+#  class: FcmNotifier
+#  global_dependencies:
+#    - common.validation
+#    - notifiers.notification_action
+#    - notifiers.notification_category
+#    - notifiers.notification_channels
+#
+#ios_notifier:
+#  module: ios_notifier
+#  class: iOSNotifier
+#  global_dependencies:
+#    - common.validation
+#    - notifiers.notification_action
+#    - notifiers.notification_category
+#    - notifiers.notification_channels
+#
+#notifiers:
+#  module: person_notifier
+#  class: PersonNotifier
+#  global_dependencies:
+#    - common.validation
+#    - notifiers.notification_action
+#    - notification.notification_category
+#    - notification.notification_channels
+#  dependencies:
+#    - mqtt_notifier
+#    - ios_notifier
+#    - fcm_notifier
+#  people:
+#    - name: Teagan
+#      notifier:
+#        - name: ios
+#          service: notify/mobile_app_agrajag
+#    - name: Alan
+#      notifier:
+#        - name: ios
+#          service: notify/mobile_app_deviphone
+#    - name: Grace
+#      notifier:
+#        - name: ios
+#          service: notify/mobile_app_graces_iphone
+#
+#notification_action_processor:
+#  module: notification_action_processor
+#  class: NotificationActionProcessor
+#  global_dependencies:
+#    - common.validation
+#    - notifiers.notification_action
+#    - notification.notification_category
+#    - notification.notification_channels
+#  dependencies:
+#    - notifiers
+#    - mqtt_notifier
+#    - ios_notifier
+#    - fcm_notifier
+#
+#night_lights:
+#  module: night_lights
+#  class: NightLights
+#  dawn:
+#    offset: 60
+#    entities:
+#      - entity_id: light.entry_light
+#        service: light/turn_off
+#      - entity_id: light.porch_upper
+#        service: light/turn_off
+#      - entity_id: light.porch_lower
+#        service: light/turn_off
+#      - entity_id: light.garage_upper_1
+#        service: light/turn_off
+#      - entity_id: light.garage_upper_2
+#        service: light/turn_off
+#      - entity_id: light.garage_lower_1
+#        service: light/turn_off
+#      - entity_id: light.garage_lower_2
+#        service: light/turn_off
+#  dusk:
+#    offset: 60
+#    entities:
+#      - entity_id: light.entry_light
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.porch_upper
+#        service: light/turn_off
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.porch_lower
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_upper_1
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_upper_2
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_lower_1
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_lower_2
+#        service: light/turn_on
+#        service_data:
+#          brightness_pct: 100
+#  night:
+#    - entity_id: light.entry_light
+#      service: light/turn_on
+#      service_data:
+#        brightness_pct: 30
 #
 #kitchen_lights:
 #  module: motion_lights
