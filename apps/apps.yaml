@@ -47,8 +47,8 @@ notifiers:
           service: notify/mobile_app_deviphone
     - name: Grace
       notifier:
-        - name: fcm
-          service: notify/fcm_grace
+        - name: ios
+          service: notify/mobile_app_graces_iphone
 
 notification_action_processor:
   module: notification_action_processor
