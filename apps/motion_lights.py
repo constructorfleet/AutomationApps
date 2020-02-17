@@ -231,6 +231,8 @@ class LuminanceMotionLights(MotionLights):
 
     @property
     def fail_condition_check(self):
+        self.log("LUX TRIGGER {} LUMINANCE {} fails: {}".format(self.lux_trigger, self.luminance,
+                                                                self.lux_trigger < self.luminance))
         return self.lux_trigger < self.luminance
 
     def _handle_luminance_change(self, entity, attribute, old, new, kwargs):
@@ -265,6 +267,14 @@ class ExternalStateControlledMotionLights(LuminanceMotionLights):
 
     @property
     def fail_condition_check(self):
+        self.log("BLOCK STATE {} external state {} retrieved {} blocked? {}".format(
+            self.args[ARG_ENTITY_BLOCKING_STATE],
+            self.external_state,
+            self.get_state(self.args[ARG_ENTITY_ID]),
+            self.args[ARG_ENTITY_BLOCKING_STATE] == (
+                    self.external_state or
+                    self.get_state(self.args[ARG_ENTITY_ID]))
+        ))
         return super().fail_condition_check or \
                self.args[ARG_ENTITY_BLOCKING_STATE] == (
                        self.external_state or
