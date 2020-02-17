@@ -4,8 +4,8 @@ import voluptuous as vol
 
 from common.base_app import BaseApp
 from common.validation import entity_id, service
-from notifiers.notification_category import get_category_by_name
 from notifiers.notification_action import NotificationAction
+from notifiers.notification_category import get_category_by_name
 
 ARG_ENTITY_ID = "entity_id"
 ARG_NOTIFY = "notify"
@@ -162,8 +162,8 @@ class EntityTimeout(BaseApp):
             service_data = {
                 'entity_id': self.args[ARG_ENTITY_ID]
             }
-        self.call_service(service=self.args[ARG_SERVICE],
-                          **service_data)
+        self.publish(service=self.args[ARG_SERVICE],
+                     **service_data)
 
         if self.args.get(ARG_NOTIFY, None):
             self._notify(
