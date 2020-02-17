@@ -4,6 +4,11 @@ from notifiers.notification_action import NotificationAction
 from notifiers.notification_channel import NotificationChannel
 
 
+def get_category_by_name(category_name):
+    return [member for name, member in NotificationCategory.__members__.items() if
+            name.lower().replace(' ', '_') == category_name.lower()][0]
+
+
 class NotificationCategory(Enum):
     SECURITY_COVER_OPENED = (
         NotificationChannel.SECURITY, "Opened {entity_name} for {person_name}",

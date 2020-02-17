@@ -2,6 +2,11 @@ from enum import Enum
 from string import Formatter
 
 
+def get_action_by_name(action_name):
+    return [member for name, member in NotificationAction.__members__.items() if
+            name.lower().replace(' ', '_') == action_name.lower()][0]
+
+
 class KWArgFormatter(Formatter):
     def get_value(self, key, args, kwds):
         if isinstance(key, str):

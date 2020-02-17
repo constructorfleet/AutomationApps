@@ -4,6 +4,8 @@ import voluptuous as vol
 
 from common.base_app import BaseApp
 from common.validation import entity_id, service
+from notifiers.notification_category import get_category_by_name
+from notifiers.notification_action import NotificationAction
 
 ARG_ENTITY_ID = "entity_id"
 ARG_NOTIFY = "notify"
@@ -24,16 +26,6 @@ ARG_DELAY_SILENCE_MINUTES = "silence_minutes"
 DEFAULT_DELAY_SECONDS = 30
 DEFAULT_SILENCE_MINUTES = 30
 
-# def get_category_by_name(category_name):
-#     return [member for name, member in NotificationCategory.__members__.items() if
-#             name.lower().replace(' ', '_') == category_name.lower()][0]
-#
-#
-# def get_action_by_name(action_name):
-#     return [member for name, member in NotificationAction.__members__.items() if
-#             name.lower().replace(' ', '_') == action_name.lower()][0]
-
-
 DELAY_SCHEMA = vol.Schema({
     vol.Required(ARG_DELAY_ENTITY): entity_id,
     vol.Required(ARG_DELAY_STATE): str,
@@ -52,8 +44,8 @@ class EntityTimeout(BaseApp):
         vol.Required(ARG_STATE): str,
         vol.Optional(ARG_TIMEOUT_WAIT, default=1): vol.Coerce(int),
         vol.Required(ARG_TIMEOUT): vol.Any(
-            entity_id,
-            vol.Coerce(int)
+            vol.Coerce(int),
+            entity_id
         ),
         vol.Required(ARG_SERVICE): service,
         vol.Optional(ARG_SERVICE_DATA): dict,
@@ -70,7 +62,7 @@ class EntityTimeout(BaseApp):
     _acknowledged = False
 
     def initialize_app(self):
-        # self._notifiers = self.get_app("notifiers")
+        self._notifiers = self.get_app("notifiers")
 
         arg = self.args[ARG_TIMEOUT]
         if isinstance(arg, int):
@@ -114,13 +106,13 @@ class EntityTimeout(BaseApp):
             self.log("Invalid ack id {}".format(str(acknowledge_id)))
             return
 
-        # if action == NotificationAction.ACTION_TIMEOUT_DELAY_ACKNOWLEDGE:
-        #     self._acknowledged = True
-        # elif action == NotificationAction.ACTION_TIMEOUT_DELAY_SILENCE:
-        #     self.stop_delay()
-        #     minutes = self.args[ARG_DELAY_IF][ARG_DELAY_SILENCE_MINUTES]
-        #     self.silence_handle = self.run_in(self.handle_timed_out,
-        #                                       minutes)
+        if action == NotificationAction.ACTION_TIMEOUT_DELAY_ACKNOWLEDGE:
+            self._acknowledged = True
+        elif action == NotificationAction.ACTION_TIMEOUT_DELAY_SILENCE:
+            self.stop_delay()
+            minutes = self.args[ARG_DELAY_IF][ARG_DELAY_SILENCE_MINUTES]
+            self.silence_handle = self.run_in(self.handle_timed_out,
+                                              minutes)
 
     def handle_duration_change(self, entity, attribute, old, new, kwargs):
         if not new or old == new or self.timeout == int(float(new)):
@@ -173,12 +165,12 @@ class EntityTimeout(BaseApp):
         self.call_service(service=self.args[ARG_SERVICE],
                           **service_data)
 
-        # if self.args.get(ARG_NOTIFY, None):
-        #     self._notify(
-        #         get_category_by_name(self.args[ARG_NOTIFY]),
-        #         self.args[ARG_ENTITY_ID],
-        #         entity_name=self.friendly_name(self.args[ARG_ENTITY_ID])
-        #     )
+        if self.args.get(ARG_NOTIFY, None):
+            self._notify(
+                get_category_by_name(self.args[ARG_NOTIFY]),
+                self.args[ARG_ENTITY_ID],
+                entity_name=self.friendly_name(self.args[ARG_ENTITY_ID])
+            )
 
     def delay(self):
         seconds = self.args[ARG_DELAY_IF].get(ARG_DELAY_SECONDS, DEFAULT_DELAY_SECONDS)
@@ -186,13 +178,13 @@ class EntityTimeout(BaseApp):
                                         seconds)
         self.log("Delaying for {}".format(seconds))
 
-        # if not self._acknowledged and self.args[ARG_DELAY_IF].get(ARG_DELAY_NOTIFY, None):
-        #     self._notify(
-        #         get_category_by_name(self.args[ARG_DELAY_IF][ARG_DELAY_NOTIFY]),
-        #         self.args[ARG_ENTITY_ID],
-        #         entity_name=self.friendly_name(self.args[ARG_ENTITY_ID]),
-        #         acknowledge_id=self.args[ARG_DELAY_IF][ARG_DELAY_ACKNOWLEDGE_ID]
-        #     )
+        if not self._acknowledged and self.args[ARG_DELAY_IF].get(ARG_DELAY_NOTIFY, None):
+            self._notify(
+                get_category_by_name(self.args[ARG_DELAY_IF][ARG_DELAY_NOTIFY]),
+                self.args[ARG_ENTITY_ID],
+                entity_name=self.friendly_name(self.args[ARG_ENTITY_ID]),
+                acknowledge_id=self.args[ARG_DELAY_IF][ARG_DELAY_ACKNOWLEDGE_ID]
+            )
 
     def stop_delay(self):
         if self.delay_handle:

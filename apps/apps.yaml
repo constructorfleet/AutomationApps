@@ -211,3 +211,26 @@ upper_landing_hall_light:
   switches:
     - switch.upper_landing_switch_1
     - switch.upper_landing_switch_2
+
+front_door_lock_timeout:
+ module: entity_timeout
+ class: EntityTimeout
+ global_dependencies:
+   - validation
+ dependencies:
+   - people
+   - notifiers
+   - mqtt_notifier
+   - ios_notifier
+   - fcm_notifier
+ entity_id: lock.front_door
+ state: unlocked
+ service: lock/lock
+ timeout: input_number.front_door_lock_timeout
+ wait: 60
+ delay_if:
+   entity_id: binary_sensor.front_door_sensor
+   state: 'on'
+   notify: SECURITY_LOCK_TIMEOUT_DELAY
+   acknowledge_id: front_door_delay_ack
+ notify: SECURITY_LOCK_TIMEOUT
