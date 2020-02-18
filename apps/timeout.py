@@ -162,8 +162,7 @@ class Timeout(BaseApp):
 
     def _start_timer(self):
         self.log("Starting timer")
-        if self._timeout_handler is not None:
-            self.cancel_timer(self._timeout_handler)
+        self._cancel_timer()
         self._timeout_handler = self.run_in(self._handle_timeout,
                                             self.duration * 60)
 
@@ -176,11 +175,15 @@ class Timeout(BaseApp):
     def _handle_timeout(self, kwargs):
         self._triggers.clear()
         self.log("Handling timeout")
-        if self._timeout_handler is not None:
-            self.log("Killing timer")
-            self.cancel_timer(self._timeout_handler)
+        self._cancel_timer()
 
         self.log("Firing on time out events")
         events = self.args.get(ARG_ON_TIMEOUT, [])
         for event in events:
             self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
+
+    def _cancel_timer(self):
+        if self._timeout_handler is not None:
+            self.log("Killing timer")
+            self.cancel_timer(self._timeout_handler)
+        self._timeout_handler = None
