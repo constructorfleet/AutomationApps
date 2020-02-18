@@ -82,7 +82,7 @@ class BaseApp(hassmqtt.HassMqtt):
         value = condition.get(ARG_VALUE, None)
         if value is None:
             return True
-        if valid_entity_id(value):
+        if isinstance(value, str) and valid_entity_id(value):
             value = self.get_state(value)
 
         comparator = condition[ARG_COMPARATOR]
