@@ -91,14 +91,17 @@ class BaseApp(hassmqtt.HassMqtt):
             return entity_state == value
         elif comparator == NOT_EQUAL:
             return entity_state != value
-        elif comparator == LESS_THAN:
-            return entity_state < value
-        elif comparator == LESS_THAN_EQUAL_TO:
-            return entity_state <= value
-        elif comparator == GREATER_THAN:
-            return entity_state > value
-        elif comparator == GREATER_THAN_EQUAL_TO:
-            return entity_state >= value
         else:
-            self.log('Invalid comparator %s' % comparator)
-            return False
+            entity_state = float(entity_state)
+            value = float(value)
+            if comparator == LESS_THAN:
+                return entity_state < value
+            elif comparator == LESS_THAN_EQUAL_TO:
+                return entity_state <= value
+            elif comparator == GREATER_THAN:
+                return entity_state > value
+            elif comparator == GREATER_THAN_EQUAL_TO:
+                return entity_state >= value
+            else:
+                self.log('Invalid comparator %s' % comparator)
+                return False
