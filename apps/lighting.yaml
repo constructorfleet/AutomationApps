@@ -3,6 +3,44 @@ global_modules:
   - common.utils
   - common.validation
 
+laundry_light:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    - entity_id: binary_sensor.laundry_room_motion
+      state: 'on'
+    - entity_id: binary_sensor.server_rack_motion
+      state: 'on'
+  condition:
+    entity_id: switch.laundry_room_lights
+    value: 'off'
+  call:
+    domain: homeassistant
+    service: turn_on
+    service_data:
+      entity_id: switch.laundry_room_lights
+
+laundry_light_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    - entity_id: switch.laundry_room_lights
+  reset_when:
+    - entity_id: binary_sensor.kitchen_motion
+    - entity_id: binary_sensor.laundry_room_motion
+  duration: 10
+  on_timeout:
+    domain: homeassistant
+    service: turn_off
+    service_data:
+      entity_id: switch.laundry_room_lights
+
 kitchen_light:
   module: call_when
   class: CallWhen

@@ -64,15 +64,6 @@ global_modules:
 #    - ios_notifier
 #    - fcm_notifier
 #
-#kitchen_lights:
-#  module: motion_lights
-#  class: MotionLights
-#  global_dependencies:
-#    - common.validation
-#  light: switch.kitchen_light
-#  motion_sensor:  binary_sensor.kitchen_motion
-#  motion_duration:  40
-#
 #laundry_room_lights:
 #  module: motion_lights
 #  class: LuminanceMotionLights
