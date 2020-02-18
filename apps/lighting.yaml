@@ -31,7 +31,7 @@ kitchen_light_timeout:
     entity_id: switch.kitchen_light
   reset_when:
     - entity_id: binary_sensor.kitchen_motion
-  duration: input_number.kitchen_motion_duration
+  duration: 40
   on_timeout:
     domain: homeassistant
     service: turn_off
