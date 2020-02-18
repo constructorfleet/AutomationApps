@@ -132,3 +132,74 @@ basement_stair_light_timeout:
         - switch.basement_stair_light
         - switch.basement_stair_switch_1
         - switch.basement_stair_switch_2
+night_lights:
+  module: night_lights
+  class: NightLights
+  dawn:
+    offset: 60
+    entities:
+      - entity_id: light.entry_light
+        domain: light
+        service: turn_off
+      - entity_id: light.porch_upper
+        domain: light
+        service: turn_off
+      - entity_id: light.porch_lower
+        domain: light
+        service: turn_off
+      - entity_id: light.garage_upper_1
+        domain: light
+        service: turn_off
+      - entity_id: light.garage_upper_2
+        domain: light
+        service: turn_off
+      - entity_id: light.garage_lower_1
+        domain: light
+        service: turn_off
+      - entity_id: light.garage_lower_2
+        domain: light
+        service: turn_off
+  dusk:
+    offset: 60
+    entities:
+      - entity_id: light.entry_light
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
+      - entity_id: light.porch_upper
+        domain: light
+        service: turn_off
+        service_data:
+          brightness_pct: 100
+      - entity_id: light.porch_lower
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
+      - entity_id: light.garage_upper_1
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
+      - entity_id: light.garage_upper_2
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
+      - entity_id: light.garage_lower_1
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
+      - entity_id: light.garage_lower_2
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
+  night:
+    - entity_id: light.entry_light
+      domain: light
+      service: turn_on
+      service_data:
+        brightness_pct: 30

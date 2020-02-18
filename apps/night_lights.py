@@ -4,6 +4,12 @@ from time import sleep
 
 import voluptuous as vol
 
+from common.const import (
+    ARG_DOMAIN,
+    ARG_ENTITY_ID,
+    ARG_SERVICE,
+    ARG_SERVICE_DATA
+)
 from common.base_app import BaseApp
 from common.utils import minutes_to_seconds
 from common.validation import entity_id, ensure_list, service
@@ -12,14 +18,12 @@ ARG_DUSK = "dusk"
 ARG_DAWN = "dawn"
 ARG_NIGHT = "night"
 ARG_ENTITIES = "entities"
-ARG_ENTITY_ID = "entity_id"
-ARG_SERVICE = "service"
-ARG_SERVICE_DATA = "service_data"
 ARG_OFFSET = "offset"
 
 DEFAULT_OFFSET = 0
-DEFAULT_DUSK_SERVICE = "homeassistant/turn_on"
-DEFAULT_DAWN_SERVICE = "homeassistant/turn_off"
+DEFAULT_DOMAIN = "homeassistant"
+DEFAULT_DUSK_SERVICE = "turn_on"
+DEFAULT_DAWN_SERVICE = "turn_off"
 
 MIDNIGHT = datetime.time(0, 0, 0)
 
@@ -29,15 +33,18 @@ ENTITY_SCHEMA = vol.Schema({
 })
 
 DUSK_ENTITY_SCHEMA = ENTITY_SCHEMA.extend({
-    vol.Optional(ARG_SERVICE, default=DEFAULT_DUSK_SERVICE): service
+    vol.Optional(ARG_DOMAIN, default=DEFAULT_DOMAIN): str,
+    vol.Optional(ARG_SERVICE, default=DEFAULT_DUSK_SERVICE): str
 })
 
 DAWN_ENTITY_SCHEMA = ENTITY_SCHEMA.extend({
-    vol.Optional(ARG_SERVICE, default=DEFAULT_DAWN_SERVICE): service
+    vol.Optional(ARG_DOMAIN, default=DEFAULT_DOMAIN): str,
+    vol.Optional(ARG_SERVICE, default=DEFAULT_DAWN_SERVICE): str
 })
 
 NIGHT_ENTITY_SCHEMA = ENTITY_SCHEMA.extend({
-    vol.Required(ARG_SERVICE): service
+    vol.Required(ARG_SERVICE): str,
+    vol.Required(ARG_DOMAIN): str
 })
 
 
@@ -113,7 +120,8 @@ class NightLights(BaseApp):
             data = entity_service.get(ARG_SERVICE_DATA, {})
             data[ARG_ENTITY_ID] = entity_service[ARG_ENTITY_ID]
 
-            self.invoke_service(
+            self.publish(
+                entity_service[ARG_DOMAIN],
                 entity_service[ARG_SERVICE],
                 **data
             )
