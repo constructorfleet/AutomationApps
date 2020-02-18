@@ -169,7 +169,8 @@ class Timeout(BaseApp):
     def _handle_triggered(self):
         events = self.args.get(ARG_ON_TRIGGER, [])
         for event in events:
-            self.publish(event[ARG_SERVICE], **event[ARG_SERVICE_DATA])
+            self.publish(service=event[ARG_SERVICE],
+                         **event[ARG_SERVICE_DATA])
 
     def _handle_timeout(self, kwargs):
         if self._timeout_handler is not None:
@@ -177,4 +178,5 @@ class Timeout(BaseApp):
 
         events = self.args.get(ARG_ON_TIMEOUT, [])
         for event in events:
-            self.publish(event[ARG_SERVICE], **event[ARG_SERVICE_DATA])
+            self.publish(service=event[ARG_SERVICE],
+                         **event[ARG_SERVICE_DATA])
