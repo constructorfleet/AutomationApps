@@ -103,7 +103,9 @@ class Timeout(BaseApp):
     def _handle_reset_when(self, entity, attribute, old, new, kwargs):
         if old == new:
             return
+        self.log("Might reset timer")
         if self.condition_met(self._reset_when[entity]):
+            self.log("Reset timer")
             self._reset_timer()
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
@@ -112,6 +114,7 @@ class Timeout(BaseApp):
         if entity in self._triggers:
             self._triggers.remove(entity)
         if len(self._triggers) == 0:
+            self.log("EVERYONE IS DEAD")
             self._cancel_timer()
             self._cancel_handlers()
             return
@@ -137,6 +140,7 @@ class Timeout(BaseApp):
             self.cancel_timer(self._timeout_handler)
 
     def _reset_timer(self):
+        self.log("Reseting timer")
         self._cancel_timer()
         self._timeout_handler = self.run_in(self._handle_timeout,
                                             self.duration * 60)
