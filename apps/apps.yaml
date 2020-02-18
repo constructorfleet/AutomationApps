@@ -209,14 +209,16 @@ upper_landing_hall_light:
     value: 'off'
   duration: 1
   on_trigger:
-    service: homeassistant.turn_on
+    domain: homeassistant
+    service: turn_on
     service_data:
       entity_id:
         - switch.upper_landing
         - switch.upper_landing_switch_1
         - switch.upper_landing_switch_2
   on_timeout:
-    service: homeassistant.turn_off
+    domain: homeassistant
+    service: turn_off
     service_data:
       entity_id:
         - switch.upper_landing

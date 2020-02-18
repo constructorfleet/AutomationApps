@@ -1,5 +1,4 @@
 from builtins import int, isinstance
-from datetime import datetime
 
 import voluptuous as vol
 
@@ -8,17 +7,14 @@ from common.const import (
     ARG_ENTITY_ID,
     ARG_STATE,
     ARG_VALUE,
-    ARG_BEFORE,
-    ARG_AFTER,
+    ARG_DOMAIN,
     ARG_SERVICE,
     ARG_SERVICE_DATA
 )
 from common.validation import (
     entity_id,
-    service,
     ensure_list,
-    any_value,
-    time
+    any_value
 )
 
 ARG_TRIGGER = 'trigger'
@@ -52,7 +48,7 @@ SCHEMA_TRIGGER = vol.Schema({
 SCHEMA_CONDITION_STATE = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
     vol.Optional(ARG_CONDITION_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
-    vol.Required(ARG_VALUE):  any_value
+    vol.Required(ARG_VALUE): any_value
 })
 
 # SCHEMA_CONDITION_TIME = vol.Schema({
@@ -60,16 +56,16 @@ SCHEMA_CONDITION_STATE = vol.Schema({
 #     vol.Exclusive(ARG_AFTER, 'time_condition'): time
 # })
 
-SCHEMA_CONDITION = vol.Any(SCHEMA_CONDITION_STATE) # , SCHEMA_CONDITION_TIME)
+SCHEMA_CONDITION = vol.Any(SCHEMA_CONDITION_STATE)  # , SCHEMA_CONDITION_TIME)
 
 SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
-    vol.Required(ARG_SERVICE): service,
+    vol.Required(ARG_DOMAIN): str,
+    vol.Required(ARG_SERVICE): str,
     vol.Optional(ARG_SERVICE_DATA, default={}): dict
 })
 
 
 class Timeout(BaseApp):
-
     config_schema = vol.Schema({
         vol.Required(ARG_TRIGGER): vol.All(
             ensure_list,
@@ -169,7 +165,7 @@ class Timeout(BaseApp):
     def _handle_triggered(self):
         events = self.args.get(ARG_ON_TRIGGER, [])
         for event in events:
-            self.publish(event[ARG_SERVICE], event[ARG_SERVICE_DATA])
+            self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
 
     def _handle_timeout(self, kwargs):
         if self._timeout_handler is not None:
@@ -177,4 +173,4 @@ class Timeout(BaseApp):
 
         events = self.args.get(ARG_ON_TIMEOUT, [])
         for event in events:
-            self.publish(event[ARG_SERVICE], event[ARG_SERVICE_DATA])
+            self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])

@@ -43,33 +43,7 @@ class BaseApp(hassmqtt.HassMqtt):
     def publish_topic(self):
         return DEFAULT_PUBLISH_TOPIC
 
-    def turn_off(self, entity_id, **kwargs):
-        if kwargs == {}:
-            rargs = {"entity_id": entity_id}
-        else:
-            rargs = kwargs
-            rargs["entity_id"] = entity_id
-        return self.publish('homeassistant', 'turn_off', **rargs)
-
-    def turn_on(self, entity_id, **kwargs):
-        if kwargs == {}:
-            rargs = {"entity_id": entity_id}
-        else:
-            rargs = kwargs
-            rargs["entity_id"] = entity_id
-        return self.publish('homeassistant', 'turn_on', **rargs)
-
-    def invoke_service(self, service, **kwargs):
-        self.log("Invoke Service %s" % service)
-        [domain, svc] = _split_service(service)
-        return self.publish(domain, svc, **kwargs)
-
-    def publish(self, service, **kwargs):
-        [domain, svc] = _split_service(service)
-        self.log("Publish Domain %s Service %s" % (domain, svc))
-        return self.publish(domain, svc, **kwargs)
-
-    def publish(self, domain, service, **kwargs):
+    def publish(self, domain, service, kwargs):
         self.log("Publish Domain %s Service %s" % (domain, service))
         return self.mqtt_publish(
             self.publish_topic,
