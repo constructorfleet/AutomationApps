@@ -119,7 +119,7 @@ basement_stair_light_timeout:
     - common.base_app
     - common.validation
   trigger:
-    entity_id: switch.lower_hall_light
+    entity_id: switch.basement_stair_light
   reset_when:
     - entity_id: binary_sensor.basement_stairs_motion
     - entity_id: binary_sensor.bottom_basement_stairs_motion
