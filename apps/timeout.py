@@ -42,10 +42,7 @@ SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
 
 class Timeout(BaseApp):
     config_schema = vol.Schema({
-        vol.Required(ARG_TRIGGER): vol.All(
-            ensure_list,
-            [SCHEMA_TRIGGER]
-        ),
+        vol.Required(ARG_TRIGGER): SCHEMA_TRIGGER,
         vol.Optional(ARG_RESET_WHEN, default=[]): vol.All(
             ensure_list,
             [SCHEMA_RESET_WHEN]
@@ -62,27 +59,26 @@ class Timeout(BaseApp):
 
     _reset_when = {}
     _when_handlers = set()
-    _triggers = set()
     _timeout_handler = None
 
     def initialize_app(self):
         for when in self.args[ARG_RESET_WHEN]:
             self._reset_when[when[ARG_ENTITY_ID]] = when
 
-        for trigger in self.args[ARG_TRIGGER]:
-            if self.get_state(trigger[ARG_ENTITY_ID]) == trigger[ARG_STATE]:
-                self._trigger_met_handler(trigger[ARG_ENTITY_ID],
-                                          None,
-                                          None,
-                                          trigger[ARG_STATE],
-                                          None)
+        trigger = self.args[ARG_TRIGGER]
+        if self.get_state(trigger[ARG_ENTITY_ID]) == trigger[ARG_STATE]:
+            self._trigger_met_handler(trigger[ARG_ENTITY_ID],
+                                      None,
+                                      None,
+                                      trigger[ARG_STATE],
+                                      None)
 
-            self.listen_state(self._trigger_met_handler,
-                              entity=trigger[ARG_ENTITY_ID],
-                              new=trigger[ARG_STATE])
-            self.listen_state(self._trigger_unmet_handler,
-                              entity=trigger[ARG_ENTITY_ID],
-                              old=trigger[ARG_STATE])
+        self.listen_state(self._trigger_met_handler,
+                          entity=trigger[ARG_ENTITY_ID],
+                          new=trigger[ARG_STATE])
+        self.listen_state(self._trigger_unmet_handler,
+                          entity=trigger[ARG_ENTITY_ID],
+                          old=trigger[ARG_STATE])
 
     @property
     def duration(self):
@@ -92,9 +88,8 @@ class Timeout(BaseApp):
             return self.args[ARG_DURATION]
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
-        if new == old:
+        if new == old or self._timeout_handler is not None:
             return
-        self._triggers.add(entity)
         for reset_when in self.args[ARG_RESET_WHEN]:
             self._when_handlers.add(self.listen_state(self._handle_reset_when,
                                                       entity=reset_when[ARG_ENTITY_ID]))
@@ -102,7 +97,7 @@ class Timeout(BaseApp):
         self._reset_timer()
 
     def _handle_reset_when(self, entity, attribute, old, new, kwargs):
-        if old == new:
+        if old == new or self._timeout_handler is None:
             return
         self.log("Might reset timer")
         if self.condition_met(self._reset_when[entity]):
@@ -112,16 +107,10 @@ class Timeout(BaseApp):
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
-        if entity in self._triggers:
-            self._triggers.remove(entity)
-        if len(self._triggers) == 0:
-            self.log("EVERYONE IS DEAD")
-            self._cancel_timer()
-            self._cancel_handlers()
-            return
+        self._cancel_timer()
+        self._cancel_handlers()
 
     def _handle_timeout(self, kwargs):
-        self._triggers.clear()
         self._cancel_timer()
         self._cancel_handlers()
 
