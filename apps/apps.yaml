@@ -197,18 +197,19 @@ global_modules:
 #    - switch.lower_hall_switch_2
 
 upper_landing_hall_light:
-  module: timeout
-  class: Timeout
+  module: call_when
+  class: CallWhen
   global_dependencies:
     - common.base_app
     - common.validation
   trigger:
     entity_id: binary_sensor.upper_landing_motion
   condition:
-    entity_id: light.entry_light
-    value: 'off'
-  duration: 1
-  on_trigger:
+    - entity_id: light.entry_light
+      value: 'off'
+    - entity_id: switch.upper_landing
+      value: 'off'
+  call:
     domain: homeassistant
     service: turn_on
     service_data:
@@ -216,6 +217,19 @@ upper_landing_hall_light:
         - switch.upper_landing
         - switch.upper_landing_switch_1
         - switch.upper_landing_switch_2
+
+upper_landing_hall_light_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    entity_id: switch.upper_landing
+  reset_when:
+    entity_id: binary_sensor.upper_landing_motion
+    value: 'on'
+  duration: 1
   on_timeout:
     domain: homeassistant
     service: turn_off

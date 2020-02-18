@@ -3,6 +3,18 @@ import json
 import voluptuous as vol
 
 import hassmqttapi as hassmqtt
+from common.const import (
+    ARG_ENTITY_ID,
+    ARG_VALUE,
+    ARG_COMPARATOR,
+    EQUALS,
+    NOT_EQUAL,
+    LESS_THAN,
+    LESS_THAN_EQUAL_TO,
+    GREATER_THAN,
+    GREATER_THAN_EQUAL_TO
+)
+from common.validation import valid_entity_id
 
 ATTR_EVENT_TYPE = "event_type"
 ATTR_EVENT_DATA = "event_data"
@@ -60,3 +72,30 @@ class BaseApp(hassmqtt.HassMqtt):
             retain=False,
             namespace='default'
         )
+
+    def condition_met(self, condition):
+        # TODO : Other conditions
+        return self.state_condition_met(condition)
+
+    def _state_condition_met(self, condition):
+        entity_state = self.get_state(condition[ARG_ENTITY_ID])
+        value = condition[ARG_VALUE]
+        if valid_entity_id(value):
+            value = self.get_state(value)
+
+        comparator = condition[ARG_COMPARATOR]
+        if comparator == EQUALS:
+            return entity_state == value
+        elif comparator == NOT_EQUAL:
+            return entity_state != value
+        elif comparator == LESS_THAN:
+            return entity_state < value
+        elif comparator == LESS_THAN_EQUAL_TO:
+            return entity_state <= value
+        elif comparator == GREATER_THAN:
+            return entity_state > value
+        elif comparator == GREATER_THAN_EQUAL_TO:
+            return entity_state >= value
+        else:
+            self.log('Invalid comparator %s' % comparator)
+            return False
