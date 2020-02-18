@@ -147,7 +147,7 @@ class Timeout(BaseApp):
             if not self.conditions_met:
                 self.log("Conditions not met")
                 return
-            self._handle_triggered()
+        self._handle_triggered()
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
