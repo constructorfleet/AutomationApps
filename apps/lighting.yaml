@@ -4,7 +4,7 @@ global_modules:
   - common.validation
 
 kitchen_light:
-module: call_when
+  module: call_when
   class: CallWhen
   global_dependencies:
     - common.base_app
