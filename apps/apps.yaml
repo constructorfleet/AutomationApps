@@ -64,16 +64,6 @@ global_modules:
 #    - ios_notifier
 #    - fcm_notifier
 #
-#laundry_room_lights:
-#  module: motion_lights
-#  class: LuminanceMotionLights
-#  global_dependencies:
-#    - common.validation
-#  light: switch.laundry_room_lights
-#  motion_sensor: binary_sensor.laundry_motion
-#  motion_duration: 10
-#  light_sensor: sensor.server_rack_luminance
-#  light_level: 5.0
 #
 #dining_lights:
 #  module: motion_lights
@@ -85,22 +75,6 @@ global_modules:
 #  motion_duration: input_number.dining_room_motion_duration
 #  light_sensor: sensor.dining_room_luminance
 #  light_level: 10
-#
-#
-#garage_light:
-#  module: motion_lights
-#  class: MotionLights
-#  global_dependencies:
-#    - common.validation
-#  light: switch.garage_light
-#  motion_sensor:  binary_sensor.garage_motion
-#  motion_duration: 30
-#  max_duration: 180
-#  light_sensor: sensor.garage_sensor_1_luminance
-#  light_level: 1
-#  switches:
-#    - switch.garage_light_2
-
 
 
 #

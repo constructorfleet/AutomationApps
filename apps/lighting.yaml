@@ -2,6 +2,54 @@ global_modules:
   - common.base_app
   - common.utils
   - common.validation
+#dining_lights:
+#  module: motion_lights
+#  class: LuminanceMotionLights
+#  global_dependencies:
+#    - common.validation
+#  light: switch.dining_room_ceiling_light
+#  motion_sensor: binary_sensor.dining_room_motion
+#  motion_duration: input_number.dining_room_motion_duration
+#  light_sensor: sensor.dining_room_luminance
+#  light_level: 10
+
+dining_room_light:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    - entity_id: binary_sensor.dining_room_motion
+      state: 'on'
+  condition:
+    - entity_id: switch.dining_room_ceiling_light
+      value: 'off'
+    - entity_id: sensor.dining_room_luminance
+      comparator: '<'
+      value: 5
+  call:
+    domain: homeassistant
+    service: turn_on
+    service_data:
+      entity_id: switch.dining_room_ceiling_light
+
+dining_room_light_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    - entity_id: switch.dining_room_ceiling_light
+  reset_when:
+    - entity_id: binary_sensor.dining_room_motion
+  duration: 40
+  on_timeout:
+    domain: homeassistant
+    service: turn_off
+    service_data:
+      entity_id: switch.dining_room_ceiling_light
 
 garage_light:
   module: call_when
