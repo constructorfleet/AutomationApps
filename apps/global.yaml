@@ -1,0 +1,7 @@
+global_modules:
+  - common.base_app
+  - common.utils
+  - common.validation
+  - notifiers.notification_action
+  - notifiers.notification_category
+  - notifiers.notification_channels

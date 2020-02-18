@@ -1,18 +1,3 @@
-global_modules:
-  - common.base_app
-  - common.utils
-  - common.validation
-#dining_lights:
-#  module: motion_lights
-#  class: LuminanceMotionLights
-#  global_dependencies:
-#    - common.validation
-#  light: switch.dining_room_ceiling_light
-#  motion_sensor: binary_sensor.dining_room_motion
-#  motion_duration: input_number.dining_room_motion_duration
-#  light_sensor: sensor.dining_room_luminance
-#  light_level: 10
-
 dining_room_light:
   module: call_when
   class: CallWhen
@@ -27,7 +12,7 @@ dining_room_light:
       value: 'off'
     - entity_id: sensor.dining_room_luminance
       comparator: '<'
-      value: 5
+      value: 10
   call:
     domain: homeassistant
     service: turn_on
@@ -188,6 +173,9 @@ lower_hall_light:
       value: 'off'
     - entity_id: switch.lower_hall_light
       value: 'off'
+    - entity_id: sensor.lower_stairs_luminance
+      comparator: '<'
+      value: 10
   call:
     domain: homeassistant
     service: turn_on
