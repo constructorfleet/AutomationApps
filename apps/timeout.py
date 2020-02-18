@@ -149,17 +149,16 @@ class Timeout(BaseApp):
                 return
             self._handle_triggered()
 
-        self.log("Starting timer")
-        self._start_timer()
-
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
+            return
+        if len(self._triggers) == 0:
             return
         self.log("Removing %s from triggers" % entity)
         if entity in self._triggers:
             self._triggers.remove(entity)
-        if len(self._triggers) == 0 and self._timeout_handler is not None:
-            self.cancel_timer(self._timeout_handler)
+        if len(self._triggers) == 0:
+            self._start_timer()
 
     def _start_timer(self):
         self.log("Starting timer")
