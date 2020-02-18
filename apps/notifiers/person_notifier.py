@@ -7,7 +7,6 @@ from common.base_app import BaseApp
 from common.validation import ensure_list, service
 from notifiers.notification_channel import NotificationChannel
 
-NOTIFIER_MQTT = "mqtt"
 NOTIFIER_IOS = "ios"
 NOTIFIER_FCM = "fcm"
 
@@ -19,7 +18,6 @@ ARG_SERVICE = "service"
 ARG_VALID_CHANNELS = [member.name for name, member in NotificationChannel.__members__.items()]
 ARG_NOTIFIER = "notifier"
 ARG_VALID_NOTIFIERS = [
-    NOTIFIER_MQTT,
     NOTIFIER_IOS,
     NOTIFIER_FCM
 ]

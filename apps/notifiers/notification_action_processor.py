@@ -15,10 +15,6 @@ class NotificationActionProcessor(BaseApp):
     def initialize_app(self):
         self.log("Initializing")
 
-        self.log("Starting listener for MQTT")
-        self.listen_event(self.handle_event,
-                          event="mqtt.notification_action_fired")
-
         self.log("Starting listener for iOS")
         self.listen_event(self.handle_event,
                           event="ios.notification_action_fired")
