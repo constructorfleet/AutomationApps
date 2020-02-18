@@ -1,14 +1,14 @@
 import os.path
 
-import appdaemon.plugins.hass.hassapi as hass
-
+from common.base_app import BaseApp
+from common.const import DOMAIN_NOTIFY
 from common.utils import KWArgFormatter
 from notifiers.person_notifier import ATTR_IMAGE_URL, ATTR_EXTENSION
 
 ARG_SERVICE = "service"
 
 
-class iOSNotifier(hass.Hass):
+class iOSNotifier(BaseApp):
     def initialize(self):
         self.log("Initialized")
 
@@ -56,7 +56,8 @@ class iOSNotifier(hass.Hass):
                     service_data['data']['action_data'][key] = value
 
             self.log("Invoking service {} with {}".format(service, service_data))
-            self.call_service(
+            self.publish(
+                DOMAIN_NOTIFY,
                 service,
                 **service_data
             )

@@ -1,5 +1,4 @@
-import appdaemon.plugins.hass.hassapi as hass
-
+from common.base_app import BaseApp
 from notifiers.notification_action import NotificationAction
 
 ACTION = "action"
@@ -10,10 +9,10 @@ ENTITY_ID = "entity_id"
 ACKNOWLEDGE_ID = "acknowledge_id"
 
 
-class NotificationActionProcessor(hass.Hass):
+class NotificationActionProcessor(BaseApp):
     acknowledge_listeners = []
 
-    def initialize(self):
+    def initialize_app(self):
         self.log("Initializing")
 
         self.log("Starting listener for MQTT")
@@ -62,7 +61,10 @@ class NotificationActionProcessor(hass.Hass):
             self.log("Not enough data")
             return
 
-        self.call_service(
-            action.service,
-            entity_id=entity_id
+        self.publish(
+            action.service.split('/')[0],
+            action.service.split('/')[1],
+            {
+                ENTITY_ID: entity_id
+            }
         )

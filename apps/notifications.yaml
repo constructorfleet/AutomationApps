@@ -1,57 +1,55 @@
-#fcm_notifier:
-#  module: fcm_notifier
-#  class: FcmNotifier
-#  global_dependencies:
-#    - common.validation
-#    - notifiers.notification_action
-#    - notifiers.notification_category
-#    - notifiers.notification_channels
-#
-#ios_notifier:
-#  module: ios_notifier
-#  class: iOSNotifier
-#  global_dependencies:
-#    - common.validation
-#    - notifiers.notification_action
-#    - notifiers.notification_category
-#    - notifiers.notification_channels
-#
-#notifiers:
-#  module: person_notifier
-#  class: PersonNotifier
-#  global_dependencies:
-#    - common.validation
-#    - notifiers.notification_action
-#    - notification.notification_category
-#    - notification.notification_channels
-#  dependencies:
-#    - mqtt_notifier
-#    - ios_notifier
-#    - fcm_notifier
-#  people:
-#    - name: Teagan
-#      notifier:
-#        - name: ios
-#          service: notify/mobile_app_agrajag
-#    - name: Alan
-#      notifier:
-#        - name: ios
-#          service: notify/mobile_app_deviphone
-#    - name: Grace
-#      notifier:
-#        - name: ios
-#          service: notify/mobile_app_graces_iphone
-#
-#notification_action_processor:
-#  module: notification_action_processor
-#  class: NotificationActionProcessor
-#  global_dependencies:
-#    - common.validation
-#    - notifiers.notification_action
-#    - notification.notification_category
-#    - notification.notification_channels
-#  dependencies:
-#    - notifiers
-#    - mqtt_notifier
-#    - ios_notifier
-#    - fcm_notifier
+fcm_notifier:
+  module: fcm_notifier
+  class: FcmNotifier
+  global_dependencies:
+    - common.validation
+    - notifiers.notification_action
+    - notifiers.notification_category
+    - notifiers.notification_channels
+
+ios_notifier:
+  module: ios_notifier
+  class: iOSNotifier
+  global_dependencies:
+    - common.validation
+    - notifiers.notification_action
+    - notifiers.notification_category
+    - notifiers.notification_channels
+
+notifiers:
+  module: person_notifier
+  class: PersonNotifier
+  global_dependencies:
+    - common.validation
+    - notifiers.notification_action
+    - notification.notification_category
+    - notification.notification_channels
+  dependencies:
+    - ios_notifier
+    - fcm_notifier
+  people:
+    - name: Teagan
+      notifier:
+        - name: ios
+          service: mobile_app_agrajag
+    - name: Alan
+      notifier:
+        - name: ios
+          service: mobile_app_deviphone
+    - name: Grace
+      notifier:
+        - name: ios
+          service: mobile_app_graces_iphone
+
+notification_action_processor:
+  module: notification_action_processor
+  class: NotificationActionProcessor
+  global_dependencies:
+    - common.validation
+    - notifiers.notification_action
+    - notification.notification_category
+    - notification.notification_channels
+  dependencies:
+    - notifiers
+    - ios_notifier
+    - fcm_notifier

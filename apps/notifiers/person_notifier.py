@@ -1,9 +1,9 @@
 import sys
 import traceback
 
-import appdaemon.plugins.hass.hassapi as hass
 import voluptuous as vol
 
+from common.base_app import BaseApp
 from common.validation import ensure_list, service
 from notifiers.notification_channel import NotificationChannel
 
@@ -49,7 +49,7 @@ def get_arg_schema(args):
     }, extra=vol.ALLOW_EXTRA)(args)
 
 
-class PersonNotifier(hass.Hass):
+class PersonNotifier(BaseApp):
     _notifier = None
     _service = None
 

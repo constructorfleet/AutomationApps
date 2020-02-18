@@ -8,6 +8,8 @@ ARG_SERVICE  = 'service'
 ARG_SERVICE_DATA = 'service_data'
 ARG_COMPARATOR = 'comparator'
 
+DOMAIN_NOTIFY = 'notify'
+
 EQUALS = '='
 LESS_THAN = '<'
 LESS_THAN_EQUAL_TO = '<='

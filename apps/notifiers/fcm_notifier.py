@@ -1,9 +1,9 @@
 import json
 
-import appdaemon.plugins.hass.hassapi as hass
-
 from notifiers.notification_channel import NotificationChannel
 from notifiers.person_notifier import ATTR_IMAGE_URL
+from common.base_app import BaseApp
+from common.const import DOMAIN_NOTIFY
 from common.utils import KWArgFormatter
 
 TOPIC_FORMAT = "/notify/{}"
@@ -77,9 +77,10 @@ def _build_payload(
     return payload
 
 
-class FcmNotifier(hass.Hass):
+class FcmNotifier(BaseApp):
 
-    def initialize(self):
+
+    def initialize_app(self):
         self.log("Initialized")
 
     def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
@@ -102,7 +103,8 @@ class FcmNotifier(hass.Hass):
                 service,
                 json.dumps(payload)
             ))
-            self.call_service(
+            self.publish(
+                DOMAIN_NOTIFY,
                 service,
                 **payload
             )
