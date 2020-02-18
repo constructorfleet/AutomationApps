@@ -143,7 +143,7 @@ class HassMqtt(adbase.ADBase, adapi.ADAPI):
                     wildcard)
                 return
 
-        return super(Mqtt, self).listen_event(callback, event, **kwargs)
+        return super(HassMqtt, self).listen_event(callback, event, **kwargs)
 
     #
     # service calls
