@@ -132,6 +132,7 @@ basement_stair_light_timeout:
         - switch.basement_stair_light
         - switch.basement_stair_switch_1
         - switch.basement_stair_switch_2
+
 night_lights:
   module: night_lights
   class: NightLights
@@ -169,7 +170,7 @@ night_lights:
           brightness_pct: 100
       - entity_id: light.porch_upper
         domain: light
-        service: turn_off
+        service: turn_on
         service_data:
           brightness_pct: 100
       - entity_id: light.porch_lower
