@@ -197,20 +197,32 @@ global_modules:
 #    - switch.lower_hall_switch_2
 
 upper_landing_hall_light:
-  module: motion_lights
-  class: ExternalStateControlledMotionLights
+  module: timeout
+  class: Timeout
   global_dependencies:
+    - common.base_app
     - common.validation
-  light: switch.upper_landing
-  motion_sensor: binary_sensor.upper_landing_motion
-  max_duration: 1
-  light_sensor: sensor.upper_landing_luminance
-  light_level: 1
-  entity_id: light.entry_light
-  blocking_state: on
-  switches:
-    - switch.upper_landing_switch_1
-    - switch.upper_landing_switch_2
+  trigger:
+    entity_id: binary_sensor.upper_landing_motion
+  condition:
+    entity_id: light.entry_light
+    value: 'off'
+  duration: 1
+  on_trigger:
+    service: homeassistant/turn_on
+    service_data:
+      entity_id:
+        - switch.upper_landing
+        - switch.upper_landing_switch_1
+        - switch.upper_landing_switch_2
+  on_timeout:
+    service: homeassistant/turn_off
+    service_data:
+      entity_id:
+        - switch.upper_landing
+        - switch.upper_landing_switch_1
+        - switch.upper_landing_switch_2
+
 #
 #front_door_lock_timeout:
 # module: timeout

@@ -24,7 +24,7 @@ from common.validation import (
 ARG_TRIGGER = 'trigger'
 ARG_CONDITION = 'condition'
 ARG_CONDITION_COMPARATOR = 'comparator'
-ARG_TRIGGER_DURATION = 'trigger_duration'
+ARG_DURATION = 'duration'
 ARG_ON_TRIGGER = 'on_trigger'
 ARG_ON_TIMEOUT = 'on_timeout'
 
@@ -79,7 +79,7 @@ class Timeout(BaseApp):
             ensure_list,
             [SCHEMA_CONDITION]
         ),
-        vol.Required(ARG_TRIGGER_DURATION): vol.Any(
+        vol.Required(ARG_DURATION): vol.Any(
             entity_id,
             vol.Coerce(int)
         ),
@@ -108,9 +108,9 @@ class Timeout(BaseApp):
 
     @property
     def duration(self):
-        return self.args[ARG_TRIGGER_DURATION] \
-            if isinstance(self.args[ARG_TRIGGER_DURATION], int) \
-            else self.get_state(self.args[ARG_TRIGGER_DURATION])
+        return self.args[ARG_DURATION] \
+            if isinstance(self.args[ARG_DURATION], int) \
+            else self.get_state(self.args[ARG_DURATION])
 
     @property
     def conditions_met(self):
