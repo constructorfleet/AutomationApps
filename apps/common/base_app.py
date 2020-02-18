@@ -75,7 +75,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def condition_met(self, condition):
         # TODO : Other conditions
-        return self.state_condition_met(condition)
+        return self._state_condition_met(condition)
 
     def _state_condition_met(self, condition):
         entity_state = self.get_state(condition[ARG_ENTITY_ID])
