@@ -27,7 +27,7 @@ ATTR_TOPIC = "topic"
 
 EVENT_CALL_SERVICE = "call_service"
 
-DEFAULT_PUBLISH_TOPIC = "events/master"
+DEFAULT_PUBLISH_TOPIC = "events/rules"
 
 
 def _split_service(service):
