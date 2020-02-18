@@ -82,6 +82,7 @@ class CallWhen(BaseApp):
 
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if not self.conditions_met:
+            self.log("Conditions no met")
             return
 
         events = self.args[ARG_CALL]

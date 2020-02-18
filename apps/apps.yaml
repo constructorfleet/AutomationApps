@@ -204,6 +204,7 @@ upper_landing_hall_light:
     - common.validation
   trigger:
     entity_id: binary_sensor.upper_landing_motion
+    state: 'on'
   condition:
     - entity_id: light.entry_light
       value: 'off'

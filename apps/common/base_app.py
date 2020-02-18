@@ -84,6 +84,7 @@ class BaseApp(hassmqtt.HassMqtt):
             value = self.get_state(value)
 
         comparator = condition[ARG_COMPARATOR]
+        self.log("{} {} {}".format(entity_state, comparator, value))
         if comparator == EQUALS:
             return entity_state == value
         elif comparator == NOT_EQUAL:
