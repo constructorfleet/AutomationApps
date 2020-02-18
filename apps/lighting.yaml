@@ -3,6 +3,41 @@ global_modules:
   - common.utils
   - common.validation
 
+kitchen_light:
+module: call_when
+  class: CallWhen
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    entity_id: binary_sensor.kitchen_motion
+    state: 'on'
+  condition:
+    entity_id: switch.kitchen_light
+    value: 'off'
+  call:
+    domain: homeassistant
+    service: turn_on
+    service_data:
+      entity_id: switch.kitchen_light
+
+kitchen_light_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    entity_id: switch.kitchen_light
+  reset_when:
+    - entity_id: binary_sensor.kitchen_motion
+  duration: input_number.kitchen_motion_duration
+  on_timeout:
+    domain: homeassistant
+    service: turn_off
+    service_data:
+      entity_id: switch.kitchen_light
+
 lower_hall_light:
   module: call_when
   class: CallWhen
