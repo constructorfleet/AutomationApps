@@ -79,7 +79,9 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def _state_condition_met(self, condition):
         entity_state = self.get_state(condition[ARG_ENTITY_ID])
-        value = condition[ARG_VALUE]
+        value = condition.get(ARG_VALUE, None)
+        if value is None:
+            return True
         if valid_entity_id(value):
             value = self.get_state(value)
 

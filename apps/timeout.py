@@ -30,7 +30,7 @@ SCHEMA_TRIGGER = vol.Schema({
 SCHEMA_RESET_WHEN = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
     vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
-    vol.Required(ARG_VALUE): any_value
+    vol.Optional(ARG_VALUE, None): any_value
 })
 
 SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
