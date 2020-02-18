@@ -52,7 +52,7 @@ class Timeout(BaseApp):
         ),
         vol.Required(ARG_DURATION): vol.Any(
             entity_id,
-            vol.Coerce(int)
+            int
         ),
         vol.Required(ARG_ON_TIMEOUT): vol.All(
             ensure_list,
@@ -86,9 +86,10 @@ class Timeout(BaseApp):
 
     @property
     def duration(self):
-        return self.args[ARG_DURATION] \
-            if isinstance(self.args[ARG_DURATION], int) \
-            else self.get_state(self.args[ARG_DURATION])
+        if isinstance(self.args[ARG_DURATION], str):
+            return self.get_state(self.args[ARG_DURATION])
+        else:
+            return self.args[ARG_DURATION]
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
