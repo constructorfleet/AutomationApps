@@ -94,7 +94,7 @@ class Timeout(BaseApp):
         if new == old:
             return
         self._triggers.add(entity)
-        for reset_when in self[ARG_RESET_WHEN]:
+        for reset_when in self.args[ARG_RESET_WHEN]:
             self._timeout_handler[reset_when[ARG_ENTITY_ID]] = \
                 self.listen_state(self._handle_reset_when,
                                   entity=reset_when[ARG_ENTITY_ID])
