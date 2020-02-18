@@ -140,37 +140,47 @@ class Timeout(BaseApp):
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
+        self.log("Adding %s from triggers" % entity)
         self._triggers.add(entity)
         if self._timeout_handler is None:
+            self.log("New run")
             if not self.conditions_met:
+                self.log("Conditions not met")
                 return
             self._handle_triggered()
 
+        self.log("Starting timer")
         self._start_timer()
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
+        self.log("Removing %s from triggers" % entity)
         if entity in self._triggers:
             self._triggers.remove(entity)
         if len(self._triggers) == 0 and self._timeout_handler is not None:
             self.cancel_timer(self._timeout_handler)
 
     def _start_timer(self):
+        self.log("Starting timer")
         if self._timeout_handler is not None:
             self.cancel_timer(self._timeout_handler)
         self._timeout_handler = self.run_in(self._handle_timeout,
                                             self.duration * 60)
 
     def _handle_triggered(self):
+        self.log("Handling triggered")
         events = self.args.get(ARG_ON_TRIGGER, [])
         for event in events:
             self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
 
     def _handle_timeout(self, kwargs):
+        self.log("Handling timeout")
         if self._timeout_handler is not None:
+            self.log("Killing timer")
             self.cancel_timer(self._timeout_handler)
 
+        self.log("Firing on time out events")
         events = self.args.get(ARG_ON_TIMEOUT, [])
         for event in events:
             self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
