@@ -95,9 +95,8 @@ class Timeout(BaseApp):
             return
         self._triggers.add(entity)
         for reset_when in self.args[ARG_RESET_WHEN]:
-            self._when_handlers[reset_when[ARG_ENTITY_ID]] = \
-                self.listen_state(self._handle_reset_when,
-                                  entity=reset_when[ARG_ENTITY_ID])
+            self._when_handlers.add(self.listen_state(self._handle_reset_when,
+                                                      entity=reset_when[ARG_ENTITY_ID]))
 
         self._reset_timer()
 
