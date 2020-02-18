@@ -175,6 +175,7 @@ class Timeout(BaseApp):
             self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
 
     def _handle_timeout(self, kwargs):
+        self._triggers.clear()
         self.log("Handling timeout")
         if self._timeout_handler is not None:
             self.log("Killing timer")
