@@ -3,6 +3,56 @@ global_modules:
   - common.utils
   - common.validation
 
+garage_light:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    - entity_id: binary_sensor.garage_motion_sensor_1
+      state: 'on'
+    - entity_id: binary_sensor.garage_motion_sensor_2
+      state: 'on'
+  condition:
+    - entity_id: switch.garage_light
+      value: 'off'
+    - entity_id: sensor.garage_sensor_1_luminance
+      comparator: '<'
+      value: 10
+    - entity_id: sensor.garage_sensor_2_luminance
+      comparator: '<'
+      value: 10
+  call:
+    domain: homeassistant
+    service: turn_on
+    service_data:
+      entity_id:
+        - switch.garage_light
+        - switch.garage_light_2
+        - switch.garage_light_switch
+
+garage_light_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    - entity_id: switch.garage_light
+  reset_when:
+    - entity_id: binary_sensor.garage_motion_sensor_1
+    - entity_id: binary_sensor.garage_motion_sensor_2
+  duration: 15
+  on_timeout:
+    domain: homeassistant
+    service: turn_off
+    service_data:
+      entity_id:
+        - switch.garage_light
+        - switch.garage_light_2
+        - switch.garage_light_switch
+
 laundry_light:
   module: call_when
   class: CallWhen
