@@ -158,7 +158,7 @@ def valid_service(value):
     """Test if a service is a valid format.
     Format: <domain>/<service> where both are slugs.
     """
-    return ('/' in value and
+    return ('.' in value and
             value == value.replace(' ', '_'))
 
 
