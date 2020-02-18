@@ -47,7 +47,6 @@ SCHEMA_CALL = vol.Schema({
 })
 
 
-
 class CallWhen(BaseApp):
     config_schema = vol.Schema({
         vol.Required(ARG_TRIGGER): vol.All(
@@ -88,5 +87,3 @@ class CallWhen(BaseApp):
         events = self.args[ARG_CALL]
         for event in events:
             self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
-
-
