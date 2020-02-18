@@ -26,7 +26,7 @@ dining_room_light_timeout:
     - common.base_app
     - common.validation
   trigger:
-    - entity_id: switch.dining_room_ceiling_light
+    entity_id: switch.dining_room_ceiling_light
   reset_when:
     - entity_id: binary_sensor.dining_room_motion
   duration: 40
@@ -72,7 +72,7 @@ garage_light_timeout:
     - common.base_app
     - common.validation
   trigger:
-    - entity_id: switch.garage_light
+    entity_id: switch.garage_light
   reset_when:
     - entity_id: binary_sensor.garage_motion_sensor_1
     - entity_id: binary_sensor.garage_motion_sensor_2
@@ -113,7 +113,7 @@ laundry_light_timeout:
     - common.base_app
     - common.validation
   trigger:
-    - entity_id: switch.laundry_room_lights
+    entity_id: switch.laundry_room_lights
   reset_when:
     - entity_id: binary_sensor.kitchen_motion
     - entity_id: binary_sensor.laundry_room_motion
