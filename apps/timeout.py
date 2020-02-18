@@ -1,227 +1,180 @@
-from builtins import int, float, isinstance, str
+from builtins import int, isinstance
+from datetime import datetime
 
 import voluptuous as vol
 
 from common.base_app import BaseApp
-from common.validation import entity_id, service
-from notifiers.notification_action import NotificationAction
-from notifiers.notification_category import get_category_by_name
+from common.const import (
+    ARG_ENTITY_ID,
+    ARG_STATE,
+    ARG_VALUE,
+    ARG_BEFORE,
+    ARG_AFTER,
+    ARG_SERVICE,
+    ARG_SERVICE_DATA
+)
+from common.validation import (
+    entity_id,
+    service,
+    ensure_list,
+    any_value,
+    time
+)
 
-ARG_ENTITY_ID = "entity_id"
-ARG_NOTIFY = "notify"
-ARG_STATE = "state"
-ARG_TIMEOUT = "timeout"
-ARG_TIMEOUT_WAIT = "wait"
-ARG_SERVICE = "service"
-ARG_SERVICE_DATA = "service_data"
-ARG_DELAY_IF = "delay_if"
-ARG_DELAY_SECONDS = "seconds"
-ARG_DELAY_ENTITY = "entity_id"
-ARG_DELAY_STATE = "state"
-ARG_DELAY_ATTRIBUTE = "attribute"
-ARG_DELAY_NOTIFY = "notify"
-ARG_DELAY_ACKNOWLEDGE_ID = "acknowledge_id"
-ARG_DELAY_SILENCE_MINUTES = "silence_minutes"
+ARG_TRIGGER = 'trigger'
+ARG_CONDITION = 'condition'
+ARG_CONDITION_COMPARATOR = 'comparator'
+ARG_TRIGGER_DURATION = 'trigger_duration'
+ARG_ON_TRIGGER = 'on_trigger'
+ARG_ON_TIMEOUT = 'on_timeout'
 
-DEFAULT_DELAY_SECONDS = 30
-DEFAULT_SILENCE_MINUTES = 30
+EQUALS = '='
+LESS_THAN = '<'
+LESS_THAN_EQUAL_TO = '<='
+GREATER_THAN = '>'
+GREATER_THAN_EQUAL_TO = '>='
+NOT_EQUAL = '!='
 
-DELAY_SCHEMA = vol.Schema({
-    vol.Required(ARG_DELAY_ENTITY): entity_id,
-    vol.Required(ARG_DELAY_STATE): str,
-    vol.Inclusive(ARG_DELAY_NOTIFY, 'notify_delay'): str,
-    vol.Inclusive(ARG_DELAY_ACKNOWLEDGE_ID, 'notify_delay'): str,
-    vol.Optional(
-        ARG_DELAY_SILENCE_MINUTES, default=DEFAULT_SILENCE_MINUTES): int,
-    vol.Optional(ARG_DELAY_ATTRIBUTE): str,
-    vol.Optional(ARG_DELAY_SECONDS, default=DEFAULT_DELAY_SECONDS): int
-}, extra=vol.ALLOW_EXTRA)
+VALID_COMPARATORS = [
+    EQUALS,
+    LESS_THAN,
+    LESS_THAN_EQUAL_TO,
+    GREATER_THAN,
+    GREATER_THAN_EQUAL_TO,
+    NOT_EQUAL
+]
+
+SCHEMA_TRIGGER = vol.Schema({
+    vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Optional(ARG_STATE, default='on'): any_value
+})
+
+SCHEMA_CONDITION_STATE = vol.Schema({
+    vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Optional(ARG_CONDITION_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
+    vol.Required(ARG_VALUE):  any_value
+})
+
+# SCHEMA_CONDITION_TIME = vol.Schema({
+#     vol.Exclusive(ARG_BEFORE, 'time_condition'): time,
+#     vol.Exclusive(ARG_AFTER, 'time_condition'): time
+# })
+
+SCHEMA_CONDITION = vol.Any(SCHEMA_CONDITION_STATE) # , SCHEMA_CONDITION_TIME)
+
+SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
+    vol.Required(ARG_SERVICE): service,
+    vol.Optional(ARG_SERVICE_DATA, default={}): dict
+})
 
 
-class EntityTimeout(BaseApp):
+class Timeout(BaseApp):
+
     config_schema = vol.Schema({
-        vol.Required(ARG_ENTITY_ID): entity_id,
-        vol.Required(ARG_STATE): str,
-        vol.Optional(ARG_TIMEOUT_WAIT, default=1): vol.Coerce(int),
-        vol.Required(ARG_TIMEOUT): vol.Any(
-            vol.Coerce(int),
-            entity_id
+        vol.Required(ARG_TRIGGER): vol.All(
+            ensure_list,
+            [SCHEMA_TRIGGER]
         ),
-        vol.Required(ARG_SERVICE): service,
-        vol.Optional(ARG_SERVICE_DATA): dict,
-        vol.Optional(ARG_DELAY_IF): DELAY_SCHEMA,
-        vol.Optional(ARG_NOTIFY): str
+        vol.Optional(ARG_CONDITION, default=[]): vol.All(
+            ensure_list,
+            [SCHEMA_CONDITION]
+        ),
+        vol.Required(ARG_TRIGGER_DURATION): vol.Any(
+            entity_id,
+            vol.Coerce(int)
+        ),
+        vol.Required(ARG_ON_TIMEOUT): vol.All(
+            ensure_list,
+            [SCHEMA_ON_TIMEOUT]
+        ),
+        vol.Optional(ARG_ON_TRIGGER): vol.All(
+            ensure_list,
+            [SCHEMA_ON_TRIGGER]
+        )
     }, extra=vol.ALLOW_EXTRA)
 
-    timer_handle = None
-    state_handle = None
-    delay_handle = None
-    silence_handle = None
-    timeout = 0
-    _notifiers = None
-    _acknowledged = False
+    _triggers = set()
+    _timeout_handler = None
 
     def initialize_app(self):
-        self._notifiers = self.get_app("notifiers")
+        for trigger in self.args[ARG_TRIGGER]:
+            self.listen_state(self._trigger_met_handler,
+                              entity=trigger[ARG_ENTITY_ID],
+                              new=trigger[ARG_STATE])
+            self.listen_state(self._trigger_unmet_handler,
+                              entity=trigger[ARG_ENTITY_ID],
+                              old=trigger[ARG_STATE])
+        pass
 
-        arg = self.args[ARG_TIMEOUT]
-        if isinstance(arg, int):
-            self.timeout = arg
-        elif isinstance(arg, str):
-            self.timeout = int(float(self.get_state(arg)))
-            self.listen_state(self.handle_duration_change,
-                              entity=arg)
+    @property
+    def duration(self):
+        return self.args[ARG_TRIGGER_DURATION] \
+            if isinstance(self.args[ARG_TRIGGER_DURATION], int) \
+            else self.get_state(self.args[ARG_TRIGGER_DURATION])
 
-        if self.get_state(self.args[ARG_ENTITY_ID]) == self.args[ARG_STATE]:
-            self.handle_start_timeout(
-                entity=self.args[ARG_ENTITY_ID],
-                new=self.get_state(self.args[ARG_ENTITY_ID])
-            )
+    @property
+    def conditions_met(self):
+        for condition in self.args[ARG_CONDITION]:
+            # TODO: Other conditions
+            if not self._state_condition_met(condition):
+                return False
 
-        self.state_handle = self.listen_state(
-            self.handle_start_timeout,
-            entity=self.args[ARG_ENTITY_ID],
-            new=self.args[ARG_STATE],
-            duration=self.args[ARG_TIMEOUT_WAIT]
-        )
-        self.listen_state(
-            self.handle_stop_timeout,
-            entity=self.args[ARG_ENTITY_ID],
-            old=self.args[ARG_STATE],
-            duration=self.args[ARG_TIMEOUT_WAIT]
-        )
+        return True
 
-        if self.args.get(ARG_DELAY_IF, {}).get(ARG_DELAY_ACKNOWLEDGE_ID, None):
-            self.get_app('notification_action_processor').add_acknowledge_listener(
-                self.handle_delay_acknowledge)
-
-        self.log("Initialized")
-
-    def handle_delay_acknowledge(self, acknowledge_id, action):
-        if not action:
-            self.log("Wrong action {}".format(str(action)))
-            return
-
-        if acknowledge_id != self.args[ARG_DELAY_IF][ARG_DELAY_ACKNOWLEDGE_ID]:
-            self.log("Invalid ack id {}".format(str(acknowledge_id)))
-            return
-
-        if action == NotificationAction.ACTION_TIMEOUT_DELAY_ACKNOWLEDGE:
-            self._acknowledged = True
-        elif action == NotificationAction.ACTION_TIMEOUT_DELAY_SILENCE:
-            self.stop_delay()
-            minutes = self.args[ARG_DELAY_IF][ARG_DELAY_SILENCE_MINUTES]
-            self.silence_handle = self.run_in(self.handle_timed_out,
-                                              minutes)
-
-    def handle_duration_change(self, entity, attribute, old, new, kwargs):
-        if not new or old == new or self.timeout == int(float(new)):
-            return
-
-        self.timeout = int(float(new))
-        if self.timer_handle:
-            self.log("Restarting for new duration")
-            self.start_timer()
-
-    def handle_start_timeout(self, entity=None, attribute=None, old=None, new=None, kwargs={}):
-        self.log("{} went from {} to {}".format(entity, old, new))
-        if old == new:
-            return
-        elif new == self.args[ARG_STATE]:
-            self.start_timer()
+    def _state_condition_met(self, condition):
+        entity_state = self.get_state(condition[ARG_ENTITY_ID])
+        value = condition[ARG_VALUE]
+        comparator = condition[ARG_CONDITION_COMPARATOR]
+        if comparator == EQUALS:
+            return entity_state == value
+        elif comparator == NOT_EQUAL:
+            return entity_state != value
+        elif comparator == LESS_THAN:
+            return entity_state < value
+        elif comparator == LESS_THAN_EQUAL_TO:
+            return entity_state <= value
+        elif comparator == GREATER_THAN:
+            return entity_state > value
+        elif comparator == GREATER_THAN_EQUAL_TO:
+            return entity_state >= value
         else:
-            self.log("Not starting timer")
-
-    def handle_stop_timeout(self, entity=None, attribute=None, old=None, new=None, kwargs={}):
-        self.log("{} went from {} to {}".format(entity, old, new))
-        if old == new:
-            return
-        elif new != self.args[ARG_STATE]:
-            self.log("Canceling timer")
-            self.stop_delay()
-            self.stop_timer()
-        else:
-            self.log("Not correct state {} {}".format(new, old))
-
-    def handle_timed_out(self, kwargs):
-        self.log("Entity timed out")
-
-        self.stop_timer()
-
-        if self.should_delay():
-            self.log("Delaying")
-            self.delay()
-            return
-
-        self._acknowledged = False
-        self.stop_delay()
-        self.stop_timer()
-
-        service_data = self.args.get(ARG_SERVICE_DATA, None)
-        if not service_data:
-            service_data = {
-                'entity_id': self.args[ARG_ENTITY_ID]
-            }
-        self.publish(service=self.args[ARG_SERVICE],
-                     **service_data)
-
-        if self.args.get(ARG_NOTIFY, None):
-            self._notify(
-                get_category_by_name(self.args[ARG_NOTIFY]),
-                self.args[ARG_ENTITY_ID],
-                entity_name=self.friendly_name(self.args[ARG_ENTITY_ID])
-            )
-
-    def delay(self):
-        seconds = self.args[ARG_DELAY_IF].get(ARG_DELAY_SECONDS, DEFAULT_DELAY_SECONDS)
-        self.delay_handle = self.run_in(self.handle_timed_out,
-                                        seconds)
-        self.log("Delaying for {}".format(seconds))
-
-        if not self._acknowledged and self.args[ARG_DELAY_IF].get(ARG_DELAY_NOTIFY, None):
-            self._notify(
-                get_category_by_name(self.args[ARG_DELAY_IF][ARG_DELAY_NOTIFY]),
-                self.args[ARG_ENTITY_ID],
-                entity_name=self.friendly_name(self.args[ARG_ENTITY_ID]),
-                acknowledge_id=self.args[ARG_DELAY_IF][ARG_DELAY_ACKNOWLEDGE_ID]
-            )
-
-    def stop_delay(self):
-        if self.delay_handle:
-            self.cancel_timer(self.delay_handle)
-
-    def stop_timer(self):
-        if self.timer_handle:
-            self.cancel_timer(self.timer_handle)
-
-    def stop_silence(self):
-        if self.silence_handle:
-            self.cancel_timer(self.silence_handle)
-
-    def start_timer(self):
-        self.log("Starting timer")
-        self.stop_delay()
-        self.stop_timer()
-        self.timer_handle = self.run_in(self.handle_timed_out,
-                                        self.timeout * 60,
-                                        immediate=True)
-
-    def should_delay(self):
-        if self.args.get(ARG_DELAY_IF, None) is None:
+            self.log('Invalid comparator %s' % comparator)
             return False
 
-        condition = self.args[ARG_DELAY_IF]
-        if condition.get(ARG_DELAY_ATTRIBUTE, None) is None:
-            value = self.get_state(condition[ARG_DELAY_ENTITY])
-        else:
-            value = self.get_state(condition[ARG_DELAY_ENTITY],
-                                   attribute=condition[ARG_DELAY_ATTRIBUTE])
+    def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
+        if new == old:
+            return
+        self._triggers.add(entity)
+        if self._timeout_handler is None:
+            if not self.conditions_met:
+                return
+            self._handle_triggered()
 
-        return value == condition[ARG_DELAY_STATE]
+        self._start_timer()
 
-    def _notify(self, category, response_entity_id, **kwargs):
-        self._notifiers.notify_people(
-            category,
-            response_entity_id,
-            **kwargs
-        )
+    def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
+        if new == old:
+            return
+        if entity in self._triggers:
+            self._triggers.remove(entity)
+        if len(self._triggers) == 0 and self._timeout_handler is not None:
+            self.cancel_timer(self._timeout_handler)
+
+    def _start_timer(self):
+        if self._timeout_handler is not None:
+            self.cancel_timer(self._timeout_handler)
+        self._timeout_handler = self.run_in(self._handle_timeout,
+                                            self.duration * 60)
+
+    def _handle_triggered(self):
+        events = self.args.get(ARG_ON_TRIGGER, [])
+        for event in events:
+            self.publish(event[ARG_SERVICE], **event[ARG_SERVICE_DATA])
+
+    def _handle_timeout(self, kwargs):
+        if self._timeout_handler is not None:
+            self.cancel_timer(self._timeout_handler)
+
+        events = self.args.get(ARG_ON_TIMEOUT, [])
+        for event in events:
+            self.publish(event[ARG_SERVICE], **event[ARG_SERVICE_DATA])

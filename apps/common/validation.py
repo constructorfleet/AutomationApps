@@ -1,10 +1,14 @@
-import os
-from datetime import (timedelta)
-import voluptuous as vol
-import string
 import logging
-
+import os
 import re
+import string
+from datetime import (
+    timedelta,
+    time as time_sys
+)
+from typing import cast, Dict
+
+import voluptuous as vol
 
 ENTITY_MATCH_ALL = "all"
 
@@ -26,7 +30,6 @@ OLD_ENTITY_ID_VALIDATION = r"^(\w+)\.(\w+)$"
 INVALID_SLUGS_FOUND = {}
 INVALID_ENTITY_IDS_FOUND = {}
 
-
 # Home Assistant types
 byte = vol.All(vol.Coerce(int), vol.Range(min=0, max=255))
 small_float = vol.All(vol.Coerce(float), vol.Range(min=0, max=1))
@@ -44,6 +47,7 @@ port = vol.All(vol.Coerce(int), vol.Range(min=1, max=65535))
 # https://github.com/alecthomas/voluptuous/issues/115#issuecomment-144464666
 def has_at_least_one_key(*keys):
     """Validate that at least one key exists."""
+
     def validate(obj):
         """Test keys exist in dict."""
         if not isinstance(obj, dict):
@@ -92,6 +96,7 @@ def matches_regex(regex):
                               .format(value, regex.pattern))
 
         return value
+
     return validator
 
 
@@ -194,10 +199,12 @@ comp_entity_ids = vol.Any(
 
 def entity_domain(domain):
     """Validate that entity belong to domain."""
+
     def validate(value):
         """Test if entity domain is domain."""
         ent_domain = entities_domain(domain)
         return ent_domain(value)[0]
+
     return validate
 
 
@@ -208,6 +215,7 @@ def split_entity_id(entity_id):
 
 def entities_domain(domain):
     """Validate that entities belong to domain."""
+
     def validate(values):
         """Test if entity domain is domain."""
         values = entity_ids(values)
@@ -215,8 +223,9 @@ def entities_domain(domain):
             if split_entity_id(ent_id)[0] != domain:
                 raise vol.Invalid(
                     "Entity ID '{}' does not belong to domain '{}'"
-                    .format(ent_id, domain))
+                        .format(ent_id, domain))
         return values
+
     return validate
 
 
@@ -330,6 +339,13 @@ def temperature_unit(value) -> str:
 unit_system = vol.All(vol.Lower, vol.Any(CONF_UNIT_SYSTEM_METRIC,
                                          CONF_UNIT_SYSTEM_IMPERIAL))
 
+any_value = vol.Any(
+    entity_id,
+    vol.Coerce(float),
+    vol.Coerce(int),
+    vol.Coerce(str)
+)
+
 
 # def template(value):
 #     """Validate a jinja2 template."""
@@ -377,13 +393,22 @@ unit_system = vol.All(vol.Lower, vol.Any(CONF_UNIT_SYSTEM_METRIC,
 #     return date_val
 #
 #
-# def time_zone(value):
-#     """Validate timezone."""
-#     if dt_util.get_time_zone(value) is not None:
-#         return value
-#     raise vol.Invalid(
-#         'Invalid time zone passed in. Valid options can be found here: '
-#         'http://en.wikipedia.org/wiki/List_of_tz_database_time_zones')
+def time(value):
+    """Validate and transform a time."""
+    if isinstance(value, time_sys):
+        return value
+
+    try:
+        time_val = _parse_time(value)
+    except TypeError:
+        raise vol.Invalid("Not a parseable type")
+
+    if time_val is None:
+        raise vol.Invalid(f"Invalid time specified: {value}")
+
+    return time_val
+
+
 #
 #
 # weekdays = vol.All(ensure_list, [vol.In(WEEKDAYS)])
@@ -430,8 +455,10 @@ def ensure_list_csv(value):
         return [member.strip() for member in value.split(',')]
     return ensure_list(value)
 
+
 def ensure_obj_key(key, default=None):
     """Ensure that input is an object with key."""
+
     def _convert(value):
         if isinstance(value, dict):
             if key not in value:
@@ -440,5 +467,22 @@ def ensure_obj_key(key, default=None):
         return {
             key: value
         }
+
     return _convert
 
+
+def _parse_time(time_str):
+    """Parse a time string (00:20:00) into Time object.
+    Return None if invalid.
+    """
+    parts = str(time_str).split(":")
+    if len(parts) < 2:
+        return None
+    try:
+        hour = int(parts[0])
+        minute = int(parts[1])
+        second = int(parts[2]) if len(parts) > 2 else 0
+        return dt.time(hour, minute, second)
+    except ValueError:
+        # ValueError if value cannot be converted to an int or not in range
+        return None

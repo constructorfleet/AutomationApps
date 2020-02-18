@@ -1,0 +1,7 @@
+ARG_ENTITY_ID = 'entity_id'
+ARG_STATE = 'state'
+ARG_VALUE = 'value'
+ARG_BEFORE = 'before'
+ARG_AFTER = 'after'
+ARG_SERVICE  = 'service'
+ARG_SERVICE_DATA = 'service_data'
