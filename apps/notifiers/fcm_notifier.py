@@ -79,7 +79,6 @@ def _build_payload(
 
 class FcmNotifier(BaseApp):
 
-
     def initialize_app(self):
         self.log("Initialized")
 

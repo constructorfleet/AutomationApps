@@ -39,7 +39,7 @@ def get_arg_schema(args):
                 ensure_list,
                 [vol.Schema({
                     vol.Required(ARG_NAME): vol.In(ARG_VALID_NOTIFIERS),
-                    vol.Required(ARG_SERVICE): service
+                    vol.Required(ARG_SERVICE): str
                 })]
             ),
             vol.Optional(ARG_CHANNELS, default=DEFAULT_CHANNELS): vol.All(ensure_list,
