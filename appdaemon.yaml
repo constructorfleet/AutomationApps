@@ -23,5 +23,5 @@ appdaemon:
       client_id: rules
       verbose: false
       client_topics:
-        - events/slaves/#
+        - events/#
         - states/#
