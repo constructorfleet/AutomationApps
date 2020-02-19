@@ -30,4 +30,5 @@ test_app:
   class: TestApp
   condition:
     entity_id: binary_sensor.kitchen_motion
+    comparator: '='
     value: 'on'
