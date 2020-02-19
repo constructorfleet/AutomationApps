@@ -50,7 +50,7 @@ class BaseApp(hassmqtt.HassMqtt):
     def initialize(self):
         """Initialization of Base App class."""
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
-            self._notifier = self.get_app(APP_NOTIFIERS)
+            self.notifier = self.get_app(APP_NOTIFIERS)
         self.args = self.config_schema(self.args)
         self.initialize_app()
 
