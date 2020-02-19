@@ -9,20 +9,20 @@ doorbell:
   doorbell:
     entity_id: switch.doorbell
 
-unlock:
-  module: security
-  class: UnlockDoor
-  global_dependencies:
-    - common.base_app
-    - common.validation
-  dependencies:
-    - notifiers
-  people:
-    - person.teagan
-    - person.alan
-    - person.grace
-    - device_tracker.care
-  lock: lock.front_door
+#unlock:
+#  module: security
+#  class: UnlockDoor
+#  global_dependencies:
+#    - common.base_app
+#    - common.validation
+#  dependencies:
+#    - notifiers
+#  people:
+#    - person.teagan
+#    - person.alan
+#    - person.grace
+#    - device_tracker.care
+#  lock: lock.front_door
 
 garage_door_timeout:
   module: timeout
