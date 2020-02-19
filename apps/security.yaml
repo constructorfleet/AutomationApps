@@ -1,6 +1,13 @@
 doorbell:
   module: doorbell
   class: Doorbell
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  dependencies:
+    - notifiers
+  doorbell:
+    entity_id: switch.doorbell
 
 garage_door_timeout:
   module: timeout

@@ -16,6 +16,9 @@ from common.const import (
 )
 from common.validation import valid_entity_id
 
+ARG_DEPENDENCIES = "dependencies"
+APP_NOTIFIERS = "notifiers"
+
 ATTR_EVENT_TYPE = "event_type"
 ATTR_EVENT_DATA = "event_data"
 ATTR_DOMAIN = "domain"
@@ -40,11 +43,14 @@ def _split_service(service):
 
 
 class BaseApp(hassmqtt.HassMqtt):
+
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
+    notifier = None
 
     def initialize(self):
         """Initialization of Base App class."""
-        # self.set_namespace('mqtt')
+        if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
+            self._notifier = self.get_app(APP_NOTIFIERS)
         self.args = self.config_schema(self.args)
         self.initialize_app()
 

@@ -295,6 +295,10 @@ basement_stair_light_timeout:
 night_lights:
   module: night_lights
   class: NightLights
+  global_dependencies:
+    - common.base_app
+    - common.validation
+    - common.utils
   dawn:
     offset: 60
     entities:
