@@ -35,11 +35,11 @@ class iOSNotifier(BaseApp):
                         "presentation_options": [
                             'alert'
                             'sound'
-                        ],
-                        "action_data": {
-                            "entity_id": response_entity_id or "",
-                            "category": str(notification_category)
-                        }
+                        ]
+                    },
+                    "action_data": {
+                        "entity_id": response_entity_id or "",
+                        "category": str(notification_category)
                     }
                 }
             }
