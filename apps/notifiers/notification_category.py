@@ -85,5 +85,5 @@ class NotificationCategory(Enum):
         return self.name.lower()
 
 
-VALID_NOTIFICATION_CATEGORIES = [name.lower() for name, member in
+VALID_NOTIFICATION_CATEGORIES = [name for name, member in
                                  NotificationCategory.__members__.items()]
