@@ -11,7 +11,7 @@ doorbell:
 
 unlock:
   module: security
-  class: Unlock
+  class: UnlockDoor
   global_dependencies:
     - common.base_app
     - common.validation
