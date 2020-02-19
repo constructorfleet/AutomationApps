@@ -16,6 +16,7 @@ class MqttTestApp(Mqtt):
     _condition = None
 
     def initialize(self):
+        self.set_namespace('mqtt')
         self.args = self.config_schema(self.args)
         self._condition = StateCondition(
             self.get_state(self.args[ARG_CONDITION][ARG_ENTITY_ID]),
