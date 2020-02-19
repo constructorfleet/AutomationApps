@@ -26,4 +26,4 @@ class TestApp(BaseApp):
                           entity=self.args[ARG_CONDITION][ARG_ENTITY_ID])
 
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
-        self.log("TRIGGERED")
+        self.log("TRIGGERED {}".format(str(kwargs)))
