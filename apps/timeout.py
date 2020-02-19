@@ -120,7 +120,7 @@ class Timeout(BaseApp):
             self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
 
     def _cancel_handlers(self):
-        for handler in self._when_handlers:
+        for handler in self._when_handlers.copy():
             if handler is not None:
                 self.cancel_listen_state(handler)
         self._when_handlers.clear()
