@@ -1,3 +1,7 @@
+doorbell:
+  module: doorbell
+  class: Doorbell
+
 garage_door_timeout:
   module: timeout
   class: Timeout
