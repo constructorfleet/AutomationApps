@@ -22,6 +22,23 @@ from common.validation import (
 
 _LOGGER = logging.getLogger(__name__)
 
+SCHEMA_STATE_CONDITION = vol.Schema({
+    vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
+    vol.Optional(ARG_VALUE, None): any_value
+})
+
+SCHEMA_TIME_CONDITION = vol.Schema({
+    vol.Optional(ARG_BEFORE, default=None): time,
+    vol.Optional(ARG_AFTER, default=None): time,
+    vol.Optional(ARG_AT, default=None): time
+})
+
+SCHEMA_CONDITION = vol.Any(
+    SCHEMA_STATE_CONDITION,
+    SCHEMA_TIME_CONDITION
+)
+
 
 class Condition:
     @property
@@ -34,15 +51,6 @@ class StateCondition(Condition):
     _comparator = EQUALS
     _value = None
     _callback = None
-
-    @classmethod
-    @property
-    def schema(cls):
-        return vol.Schema({
-            vol.Required(ARG_ENTITY_ID): entity_id,
-            vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
-            vol.Optional(ARG_VALUE, None): any_value
-        })
 
     def __init__(self, initial_state, value, comparator=EQUALS, callback=None):
         self._state = initial_state
@@ -90,15 +98,6 @@ class TimeCondition(Condition):
     _before = None
     _after = None
     _at = None
-
-    @classmethod
-    @property
-    def schema(cls):
-        return vol.Schema({
-            vol.Optional(ARG_BEFORE, default=None): time,
-            vol.Optional(ARG_AFTER, default=None): time,
-            vol.Optional(ARG_AT, default=None): time
-        })
 
     def __init__(self, before=None, after=None, at=None):
         self._before = before

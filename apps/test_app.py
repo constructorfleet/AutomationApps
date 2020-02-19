@@ -1,7 +1,7 @@
 import voluptuous as vol
 
 from common.base_app import BaseApp
-from common.conditions import StateCondition
+from common.conditions import StateCondition, SCHEMA_STATE_CONDITION
 from common.const import ARG_ENTITY_ID, ARG_COMPARATOR, ARG_VALUE
 
 ARG_CONDITION = 'condition'
@@ -9,7 +9,7 @@ ARG_CONDITION = 'condition'
 
 class TestApp(BaseApp):
     config_schema = vol.Schema({
-        vol.Required(ARG_CONDITION): StateCondition
+        vol.Required(ARG_CONDITION): SCHEMA_STATE_CONDITION
     }, extra=vol.ALLOW_EXTRA)
 
     _condition = None
