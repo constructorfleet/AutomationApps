@@ -28,10 +28,11 @@ class MqttTestApp(Mqtt):
         self.listen_event(
             self._condition.handle_event,
             "MQTT_MESSAGE",
-            wildcard="states/#/{}".format(self.args[ARG_CONDITION][ARG_ENTITY_ID])
+            wildcard="states/#"
         )
 
     def _handle_trigger(self, event_name, data, kwargs):
+        self.logger("{} {} {}".format(event_name, data, str(kwargs)))
         self.log("TRIGGERED {}".format(str(kwargs)))
 
 
