@@ -10,12 +10,19 @@ from common.const import (
     ARG_DOMAIN,
     ARG_SERVICE,
     ARG_SERVICE_DATA,
-    ARG_COMPARATOR, EQUALS, VALID_COMPARATORS)
+    ARG_COMPARATOR,
+    EQUALS,
+    VALID_COMPARATORS,
+    ARG_NOTIFY,
+    ARG_NOTIFY_CATEGORY,
+    ARG_NOTIFY_REPLACERS,
+    ARG_NOTIFY_ENTITY_ID)
 from common.validation import (
     entity_id,
     ensure_list,
-    any_value
+    any_value,
 )
+from notifiers.notification_category import VALID_NOTIFICATION_CATEGORIES
 
 ARG_TRIGGER = 'trigger'
 ARG_RESET_WHEN = 'reset_when'
@@ -54,7 +61,11 @@ class Timeout(BaseApp):
         vol.Required(ARG_ON_TIMEOUT): vol.All(
             ensure_list,
             [SCHEMA_ON_TIMEOUT]
-        )
+        ),
+        vol.Optional(ARG_NOTIFY): vol.Schema({
+            vol.Required(ARG_NOTIFY_CATEGORY): vol.In(VALID_NOTIFICATION_CATEGORIES),
+            vol.Optional(ARG_NOTIFY_REPLACERS, default={}): dict
+        }, extra=vol.ALLOW_EXTRA)
     }, extra=vol.ALLOW_EXTRA)
 
     _reset_when = {}
@@ -113,6 +124,13 @@ class Timeout(BaseApp):
     def _handle_timeout(self, kwargs):
         self._cancel_timer()
         self._cancel_handlers()
+
+        if ARG_NOTIFY in self.args:
+            self.notifier.notify_people(
+                self.args[ARG_NOTIFY][ARG_NOTIFY_CATEGORY],
+                response_entity_id=self.args[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
+                **self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
+            )
 
         self.log("Firing on time out events")
         events = self.args.get(ARG_ON_TIMEOUT, [])
