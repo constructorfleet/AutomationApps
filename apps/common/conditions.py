@@ -51,12 +51,14 @@ class StateCondition(Condition):
     _comparator = EQUALS
     _value = None
     _callback = None
+    _logger = None
 
-    def __init__(self, initial_state, value, comparator=EQUALS, callback=None):
+    def __init__(self, initial_state, value, comparator=EQUALS, callback=None, logger=None):
         self._state = initial_state
         self._value = value
         self._comparator = comparator
         self._callback = callback
+        self._logger = logger
 
     def handle_state_change(self, entity, attribute, old, new, kwargs):
         self._state = new
@@ -73,7 +75,7 @@ class StateCondition(Condition):
     def is_met(self):
         if self._value is None:
             return True
-        _LOGGER.debug("{} {} {}".format(self._state, self._comparator, self._value))
+        self._logger("{} {} {}".format(self._state, self._comparator, self._value))
         if self._comparator == EQUALS:
             return self._state == self._value
         elif self._comparator == NOT_EQUAL:

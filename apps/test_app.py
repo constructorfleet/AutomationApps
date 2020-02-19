@@ -19,7 +19,8 @@ class TestApp(BaseApp):
             self.get_state(self.args[ARG_CONDITION][ARG_ENTITY_ID]),
             self.args[ARG_CONDITION][ARG_COMPARATOR],
             self.args[ARG_CONDITION][ARG_VALUE],
-            callback=self._handle_trigger
+            callback=self._handle_trigger,
+            logger=self.log
         )
         self.listen_state(self._condition.handle_state_change,
                           entity=self.args[ARG_CONDITION][ARG_ENTITY_ID])
