@@ -1,10 +1,38 @@
 import voluptuous as vol
+from appdaemon.plugins.mqtt.mqttapi import Mqtt
 
 from common.base_app import BaseApp
 from common.conditions import StateCondition, SCHEMA_STATE_CONDITION
 from common.const import ARG_ENTITY_ID, ARG_COMPARATOR, ARG_VALUE
 
 ARG_CONDITION = 'condition'
+
+
+class MqttTestApp(Mqtt):
+    config_schema = vol.Schema({
+        vol.Required(ARG_CONDITION): SCHEMA_STATE_CONDITION
+    }, extra=vol.ALLOW_EXTRA)
+
+    _condition = None
+
+    def initialize(self):
+        self.args = self.config_schema(self.args)
+        self._condition = StateCondition(
+            self.get_state(self.args[ARG_CONDITION][ARG_ENTITY_ID]),
+            self.args[ARG_CONDITION][ARG_VALUE],
+            self.args[ARG_CONDITION][ARG_COMPARATOR],
+            callback=self._handle_trigger,
+            logger=self.log
+        )
+
+        self.listen_event(
+            self._condition.handle_event,
+            "MQTT_MESSAGE",
+            wildcard="states/#/{}".format(self.args[ARG_CONDITION][ARG_ENTITY_ID])
+        )
+
+    def _handle_trigger(self, event_name, data, kwargs):
+        self.log("TRIGGERED {}".format(str(kwargs)))
 
 
 class TestApp(BaseApp):

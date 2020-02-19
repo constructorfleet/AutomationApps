@@ -32,3 +32,11 @@ test_app:
     entity_id: binary_sensor.kitchen_motion
     comparator: '='
     value: 'on'
+
+test_mqtt_app:
+  module: test_app
+  class: MqttTestApp
+  condition:
+    entity_id: binary_sensor.kitchen_motion
+    comparator: '='
+    value: 'on'

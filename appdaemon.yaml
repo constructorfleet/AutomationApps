@@ -17,6 +17,14 @@ appdaemon:
   time_zone: !secret home_timezone
   threads: 20
   plugins:
+    MQTT:
+      type: mqtt
+      client_host: mqtt
+      client_id: rules-mqtt
+      verbose: false
+      client_topics:
+        - events/#
+        - states/#
     MQTT_States:
       type: hassmqtt
       client_host: mqtt
