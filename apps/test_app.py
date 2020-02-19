@@ -23,7 +23,8 @@ class TestApp(BaseApp):
             logger=self.log
         )
         self.listen_state(self._condition.handle_state_change,
-                          entity=self.args[ARG_CONDITION][ARG_ENTITY_ID])
+                          entity=self.args[ARG_CONDITION][ARG_ENTITY_ID],
+                          wildcard='states/#')
 
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
         self.log("TRIGGERED {}".format(str(kwargs)))
