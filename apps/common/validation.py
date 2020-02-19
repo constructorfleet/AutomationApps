@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import re
@@ -482,7 +483,7 @@ def _parse_time(time_str):
         hour = int(parts[0])
         minute = int(parts[1])
         second = int(parts[2]) if len(parts) > 2 else 0
-        return dt.time(hour, minute, second)
+        return datetime.time(hour, minute, second)
     except ValueError:
         # ValueError if value cannot be converted to an int or not in range
         return None
