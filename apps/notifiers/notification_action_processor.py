@@ -19,6 +19,9 @@ class NotificationActionProcessor(BaseApp):
         self.listen_event(self.handle_event,
                           event="ios.notification_action_fired")
 
+        self.listen_event(self.handle_event,
+                          event="mobile_app_notification_action")
+
         self.log("Starting listener for FCM")
         self.listen_event(self.handle_event,
                           event="html5_notification.clicked")
