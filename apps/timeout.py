@@ -147,6 +147,7 @@ class Timeout(BaseApp):
     def _cancel_timer(self):
         if self._timeout_handler is not None:
             self.cancel_timer(self._timeout_handler)
+        self._timeout_handler = None
 
     def _reset_timer(self):
         self.log("Reseting timer")
