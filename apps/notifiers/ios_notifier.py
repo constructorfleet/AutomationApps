@@ -60,5 +60,5 @@ class iOSNotifier(BaseApp):
             self.publish(
                 DOMAIN_NOTIFY,
                 service,
-                **service_data
+                service_data
             )

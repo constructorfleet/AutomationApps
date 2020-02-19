@@ -105,5 +105,5 @@ class FcmNotifier(BaseApp):
             self.publish(
                 DOMAIN_NOTIFY,
                 service,
-                **payload
+                payload
             )
