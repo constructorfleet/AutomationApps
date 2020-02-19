@@ -24,3 +24,4 @@ appdaemon:
       verbose: false
       client_topics:
         - events/slaves/#
+        - states/#
