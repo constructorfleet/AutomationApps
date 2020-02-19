@@ -120,9 +120,3 @@ class TimeCondition(Condition):
             is_after = now > self._after
 
         return is_after and is_before
-
-
-SCHEMA_CONDITION = vol.Any(
-    StateCondition.schema,
-    TimeCondition.schema
-)
