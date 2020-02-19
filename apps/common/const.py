@@ -7,6 +7,7 @@ ARG_DOMAIN = 'domain'
 ARG_SERVICE  = 'service'
 ARG_SERVICE_DATA = 'service_data'
 ARG_COMPARATOR = 'comparator'
+ARG_NOTIFY_CATEGORY = 'notify_category'
 
 DOMAIN_NOTIFY = 'notify'
 

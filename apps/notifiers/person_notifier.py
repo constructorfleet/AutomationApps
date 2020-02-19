@@ -2,8 +2,8 @@ import sys
 import traceback
 
 import voluptuous as vol
+from appdaemon import adbase, adapi
 
-from common.base_app import BaseApp
 from common.validation import ensure_list, service
 from notifiers.notification_channel import NotificationChannel
 
@@ -47,7 +47,7 @@ def get_arg_schema(args):
     }, extra=vol.ALLOW_EXTRA)(args)
 
 
-class PersonNotifier(BaseApp):
+class PersonNotifier(adbase.ADBase, adapi.ADAPI):
     _notifier = None
     _service = None
 
