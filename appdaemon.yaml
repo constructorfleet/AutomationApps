@@ -19,6 +19,7 @@ appdaemon:
   plugins:
     MQTT:
       type: mqtt
+      namespace: mqtt
       client_host: mqtt
       client_id: rules-mqtt
       verbose: false
