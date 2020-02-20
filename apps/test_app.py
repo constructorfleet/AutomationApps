@@ -21,8 +21,7 @@ class MqttTestApp(Mqtt):
             self.get_state(self.args[ARG_CONDITION][ARG_ENTITY_ID]),
             self.args[ARG_CONDITION][ARG_VALUE],
             self.args[ARG_CONDITION][ARG_COMPARATOR],
-            callback=self._handle_trigger,
-            logger=self.log
+            callback=self._handle_trigger
         )
 
         self.listen_event(
