@@ -26,10 +26,9 @@ class MqttTestApp(Mqtt):
             logger=self.log
         )
 
-        self.listen_event(
-            self._condition.handle_event,
-            "MQTT_MESSAGE",
-            wildcard="states/#"
+        self.listen_state(
+            self._condition.handle_state_change,
+            entity="binary_sensor.kitchen_motion"
         )
 
     def _handle_trigger(self, event_name, data, kwargs):
