@@ -27,7 +27,6 @@ class MqttTestApp(Mqtt):
 
         self.listen_event(
             self._condition.handle_event,
-            "MQTT_MESSAGE",
             wildcard="states/#"
         )
 
@@ -58,4 +57,4 @@ class TestApp(BaseApp):
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
-        self.log("TRIGGERED {}".format(str(kwargs)))
+        self.log("TRIGGERED {} {} {} {} {}".format(entity, attribute, old, new, str(kwargs)))
