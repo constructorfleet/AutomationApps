@@ -61,8 +61,11 @@ class StateCondition(Condition):
         self._logger = logger
 
     def handle_event(self, event_name, data, kwargs):
-        self._logger(str(data))
-        self._logger(str(kwargs))
+        if self._logger:
+            self._logger(str(data))
+            self._logger(str(kwargs))
+        if self._callback and self.is_met:
+            self._callback(event_name, data, kwargs)
 
     def handle_state_change(self, entity, attribute, old, new, kwargs):
         self._state = new
