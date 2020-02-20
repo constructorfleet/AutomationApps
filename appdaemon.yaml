@@ -19,17 +19,8 @@ appdaemon:
   plugins:
     MQTT:
       type: mqtt
-      namespace: mqtt
       client_host: mqtt
       client_id: rules-mqtt
-      verbose: false
-      client_topics:
-        - events/#
-        - states/#
-    MQTT_States:
-      type: hassmqtt
-      client_host: mqtt
-      client_id: rules
       verbose: false
       client_topics:
         - events/#
