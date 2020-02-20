@@ -252,18 +252,11 @@ class HassmqttPlugin(PluginBase):
                     event_data = payload_dict.get("event_data", {})
                     new_state = event_data.get("new_state", {}) or {}
                     entity_id = new_state.get("entity_id", None)
-                    if entity_id is not None \
-                            and not await self.AD.state.entity_exists(self.namespace, entity_id):
+                    if entity_id is not None:
                         state = new_state.get("state", None)
                         attributes = new_state.get("attributes", None)
                         if state is not None:
                             self.state[entity_id] = new_state
-                            self.AD.state.add_entity(
-                                namespace=self.namespace,
-                                entity=entity_id,
-                                state=state,
-                                attributes=attributes
-                            )
                 except Exception as err:
                     self.logger.warning(str(err))
 
