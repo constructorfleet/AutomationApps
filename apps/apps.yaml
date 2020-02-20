@@ -25,13 +25,13 @@
 #   acknowledge_id: front_door_delay_ack
 # notify: SECURITY_LOCK_TIMEOUT
 
-test_app:
-  module: test_app
-  class: TestApp
-  condition:
-    entity_id: binary_sensor.kitchen_motion
-    comparator: '='
-    value: 'on'
+#test_app:
+#  module: test_app
+#  class: TestApp
+#  condition:
+#    entity_id: binary_sensor.kitchen_motion
+#    comparator: '='
+#    value: 'on'
 
 test_mqtt_app:
   module: test_app

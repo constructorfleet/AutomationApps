@@ -27,6 +27,7 @@ class MqttTestApp(Mqtt):
 
         self.listen_event(
             self._condition.handle_event,
+            entity_id=self.args[ARG_CONDITION][ARG_ENTITY_ID],
             wildcard="states/#"
         )
 
@@ -51,6 +52,7 @@ class TestApp(BaseApp):
             logger=self.log
         )
         self.listen_event(self._condition.handle_event,
+                          event='state_changed',
                           entity=self.args[ARG_CONDITION][ARG_ENTITY_ID],
                           wildcard='states/#')
 
