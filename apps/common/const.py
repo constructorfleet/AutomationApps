@@ -13,6 +13,8 @@ ARG_NOTIFY_CATEGORY = 'notify_category'
 ARG_NOTIFY_REPLACERS = 'replacers'
 ARG_NOTIFY_ENTITY_ID = 'response_entity_id'
 
+EVENT_STATE_CHANGED = 'state_changed'
+
 DOMAIN_NOTIFY = 'notify'
 
 EQUALS = '='

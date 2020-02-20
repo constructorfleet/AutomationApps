@@ -9,8 +9,10 @@ import paho.mqtt.client as mqtt
 from appdaemon.appdaemon import AppDaemon
 from appdaemon.plugin_management import PluginBase
 
+from common.const import EVENT_STATE_CHANGED
 
-class HassmqttPlugin(PluginBase):
+
+class HassMqttPlugin(PluginBase):
 
     def __init__(self, ad: AppDaemon, name, args):
         super().__init__(ad, name, args)
@@ -245,6 +247,21 @@ class HassmqttPlugin(PluginBase):
             self.logger.debug("GOT  %s" % msg.payload.decode())
 
             event_type = payload_dict.get("event_type", None)
+            if event_type == EVENT_STATE_CHANGED:
+                event_data = payload_dict.get("event_data", {})
+                new_state = event_data.get("new_state", {})
+                entity_id = new_state.get("entity_id", None)
+                if entity_id is not None \
+                        and not self.AD.state.entity_exists(self.namespace, entity_id):
+                    state = new_state.get("state", None)
+                    attributes = new_state.get("attributes", None)
+                    if state is not None:
+                        self.AD.state.add_entity(
+                            namespace=self.namespace,
+                            entity=entity_id,
+                            state=state,
+                            attributes=attributes
+                        )
 
             if self.mqtt_wildcards != [] and list(filter(lambda x: x in topic,
                                                          self.mqtt_wildcards)) != []:  # check if any of the wildcards belong
