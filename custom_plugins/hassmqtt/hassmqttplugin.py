@@ -248,12 +248,17 @@ class HassmqttPlugin(PluginBase):
 
             event_type = payload_dict.get("event_type", None)
             if event_type == "state_changed":
+                self.logger.warning('Getting event data')
                 event_data = payload_dict.get("event_data", {})
+                self.logger.warning('Getting new state')
                 new_state = event_data.get("new_state", {})
+                self.logger.warning('Getting entity id')
                 entity_id = new_state.get("entity_id", None)
                 if entity_id is not None \
                         and not self.AD.state.entity_exists(self.namespace, entity_id):
+                    self.logger.warning('Getting state')
                     state = new_state.get("state", None)
+                    self.logger.warning('Getting attributes')
                     attributes = new_state.get("attributes", None)
                     if state is not None:
                         self.AD.state.add_entity(
