@@ -30,6 +30,8 @@ class HassMqttPlugin(PluginBase):
 
         self.name = name
 
+        self.delay = self.config.get('delay')
+
         if 'namespace' in self.config:
             self.namespace = self.config['namespace']
         else:
@@ -459,6 +461,9 @@ class HassMqttPlugin(PluginBase):
 
                 # meaning the client has connected to the broker
                 if self.mqtt_connected:
+                    if self.delay:
+                        await asyncio.sleep(int(self.delay))
+                        state = await self.get_complete_state()
                     await self.AD.plugins.notify_plugin_started(self.name, self.namespace, meta,
                                                                 state, first_time)
                     already_notified = False
