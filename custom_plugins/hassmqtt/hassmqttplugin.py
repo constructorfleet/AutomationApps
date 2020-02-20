@@ -234,8 +234,7 @@ class HassmqttPlugin(PluginBase):
 
     def mqtt_on_message(self, client, userdata, msg):
         try:
-            self.logger.warning("Message Received: Topic = %s, Payload = %s, dup = %s, mid = %s",
-                                msg.topic, msg.payload, str(msg.dup), str(msg.mid))
+            self.logger.debug("Message Received: Topic = %s, Payload = %s", msg.topic, msg.payload)
             topic = msg.topic
             payload_dict = {}
             try:
