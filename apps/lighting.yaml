@@ -299,6 +299,8 @@ night_lights:
     - common.base_app
     - common.validation
     - common.utils
+  dependencies:
+    - holidays
   dawn:
     offset: 60
     entities:

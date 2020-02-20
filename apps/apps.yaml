@@ -1,3 +1,11 @@
+holidays:
+  module: holidays
+  class: HolidayColors
+  global_dependencies:
+    - common.base_app
+    - common.validation
+    - common.utils
+  api_key: !secret holiday_api_key
 
 
 
@@ -24,19 +32,3 @@
 #   notify: SECURITY_LOCK_TIMEOUT_DELAY
 #   acknowledge_id: front_door_delay_ack
 # notify: SECURITY_LOCK_TIMEOUT
-
-#test_app:
-#  module: test_app
-#  class: TestApp
-#  condition:
-#    entity_id: binary_sensor.kitchen_motion
-#    comparator: '='
-#    value: 'on'
-
-test_mqtt_app:
-  module: test_app
-  class: MqttTestApp
-  condition:
-    entity_id: binary_sensor.kitchen_motion
-    comparator: '='
-    value: 'on'

@@ -12,12 +12,12 @@ from common.const import (
     LESS_THAN,
     LESS_THAN_EQUAL_TO,
     GREATER_THAN,
-    GREATER_THAN_EQUAL_TO
-)
+    GREATER_THAN_EQUAL_TO,
+    ARG_DEPENDENCIES)
 from common.validation import valid_entity_id
 
-ARG_DEPENDENCIES = "dependencies"
 APP_NOTIFIERS = "notifiers"
+APP_HOLIDAYS = "holidays"
 
 ATTR_EVENT_TYPE = "event_type"
 ATTR_EVENT_DATA = "event_data"
@@ -46,11 +46,14 @@ class BaseApp(hassmqtt.HassMqtt):
 
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
+    holidays = None
 
     def initialize(self):
         """Initialization of Base App class."""
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
+        if APP_HOLIDAYS in self.args.get(ARG_DEPENDENCIES, []):
+            self.holidays = self.get_app(APP_HOLIDAYS)
         self.args = self.config_schema(self.args)
         self.initialize_app()
 

@@ -8,8 +8,8 @@ from common.const import (
     ARG_DOMAIN,
     ARG_ENTITY_ID,
     ARG_SERVICE,
-    ARG_SERVICE_DATA
-)
+    ARG_SERVICE_DATA,
+    ARG_DEPENDENCIES)
 from common.base_app import BaseApp
 from common.utils import minutes_to_seconds
 from common.validation import entity_id, ensure_list, service
@@ -19,6 +19,8 @@ ARG_DAWN = "dawn"
 ARG_NIGHT = "night"
 ARG_ENTITIES = "entities"
 ARG_OFFSET = "offset"
+
+ATTR_RGB_COLOR = "rgb_color"
 
 DEFAULT_OFFSET = 0
 DEFAULT_DOMAIN = "homeassistant"
@@ -77,7 +79,7 @@ class NightLights(BaseApp):
     night_entities = []
 
     def initialize_app(self):
-        """Iniitalize the application."""
+        """Initalize the application."""
         conf_dawn = self.args.get(ARG_DAWN)
         conf_dusk = self.args.get(ARG_DUSK)
         self.night_entities = self.args.get(ARG_NIGHT)
@@ -116,9 +118,15 @@ class NightLights(BaseApp):
         self._handle_entity_services(self.night_entities)
 
     def _handle_entity_services(self, entity_services):
-        for entity_service in entity_services:
+        holiday_colors = [(255, 255, 255)]
+        if self.holidays:
+            holiday_colors = self.holidays.get_closest_holiday_colors()
+
+        for i, entity_service in enumerate(entity_services):
             data = entity_service.get(ARG_SERVICE_DATA, {})
             data[ARG_ENTITY_ID] = entity_service[ARG_ENTITY_ID]
+            if holiday_colors and '_on' in entity_service[ARG_SERVICE]:
+                data[ATTR_RGB_COLOR] = holiday_colors[i % len(holiday_colors)]
 
             self.publish(
                 entity_service[ARG_DOMAIN],
