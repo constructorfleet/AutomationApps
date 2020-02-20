@@ -50,11 +50,11 @@ class TestApp(BaseApp):
             callback=self._handle_trigger,
             logger=self.log
         )
-        self.listen_state(self._condition.handle_state_change,
+        self.listen_event(self._condition.handle_event,
                           entity=self.args[ARG_CONDITION][ARG_ENTITY_ID],
                           wildcard='states/#')
 
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
-        self.log("TRIGGERED {} {} {} {} {}".format(entity, attribute, old, new, str(kwargs)))
+        self.log("TRIGGERED {} {} {} {}".format(entity, attribute,old, new, str(kwargs)))
