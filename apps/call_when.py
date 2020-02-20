@@ -67,6 +67,15 @@ class CallWhen(BaseApp):
 
     def initialize_app(self):
         for trigger in self.args[ARG_TRIGGER]:
+            new_state = self.get_state(entity_id=trigger[ARG_ENTITY_ID])
+            if new_state == trigger[ARG_STATE]:
+                self._handle_trigger(
+                    trigger[ARG_ENTITY_ID],
+                    None,
+                    None,
+                    new_state,
+                    {}
+                )
             self.listen_state(self._handle_trigger,
                               entity=trigger[ARG_ENTITY_ID],
                               new=trigger[ARG_STATE])
