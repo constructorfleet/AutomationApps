@@ -253,7 +253,7 @@ class HassmqttPlugin(PluginBase):
                     new_state = event_data.get("new_state", {}) or {}
                     entity_id = new_state.get("entity_id", None)
                     if entity_id is not None \
-                            and not self.AD.state.entity_exists(self.namespace, entity_id):
+                            and not await self.AD.state.entity_exists(self.namespace, entity_id):
                         state = new_state.get("state", None)
                         attributes = new_state.get("attributes", None)
                         if state is not None:
