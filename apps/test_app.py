@@ -16,7 +16,6 @@ class MqttTestApp(Mqtt):
     _condition = None
 
     def initialize(self):
-        self.set_namespace('mqtt')
         self.args = self.config_schema(self.args)
         self._condition = StateCondition(
             self.get_state(self.args[ARG_CONDITION][ARG_ENTITY_ID]),
@@ -26,9 +25,10 @@ class MqttTestApp(Mqtt):
             logger=self.log
         )
 
-        self.listen_state(
-            self._condition.handle_state_change,
-            entity="binary_sensor.kitchen_motion"
+        self.listen_event(
+            self._condition.handle_event,
+            "MQTT_MESSAGE",
+            wildcard="states/#"
         )
 
     def _handle_trigger(self, event_name, data, kwargs):
@@ -56,4 +56,6 @@ class TestApp(BaseApp):
                           wildcard='states/#')
 
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
+        if new == old:
+            return
         self.log("TRIGGERED {}".format(str(kwargs)))
