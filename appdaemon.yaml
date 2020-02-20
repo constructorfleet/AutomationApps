@@ -22,7 +22,7 @@ appdaemon:
       client_host: mqtt
       client_id: rules
       verbose: false
-      delay: 360
+      delay: 60
       client_topics:
         - events/#
         - states/#
