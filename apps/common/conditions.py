@@ -79,7 +79,7 @@ class StateCondition(Condition):
     def is_met(self):
         if self._value is None:
             return True
-        self._logger("{} {} {}".format(self._state, self._comparator, self._value))
+        # self._logger("{} {} {}".format(self._state, self._comparator, self._value))
         if self._comparator == EQUALS:
             return self._state == self._value
         elif self._comparator == NOT_EQUAL:
