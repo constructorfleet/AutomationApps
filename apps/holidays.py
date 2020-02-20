@@ -147,8 +147,9 @@ class HolidayColors(BaseApp):
         closest = min(
             self._holidays.values(),
             key=lambda x: abs(x - now))
-        return [self._holidays.get(name, None) for name, date in self._holidays.items() if
-                closest == date][0]
+        return [
+            HOLIDAY_COLORS.get(self._holidays.get(name, None), [(255, 255, 255)])
+            for name, date in self._holidays.items() if closest == date][0]
 
     def _retrieve_holidays(self):
         response = requests.get(self.api_url)
