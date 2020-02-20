@@ -32,8 +32,8 @@ class MqttTestApp(Mqtt):
         )
 
     def _handle_trigger(self, event_name, data, kwargs):
-        self.logger("ARGS {} {} {}".format(event_name, data, str(kwargs)))
-        self.logger("TRIGGERED {} {}".format(str(data), str(kwargs)))
+        self.log("ARGS {} {} {}".format(event_name, data, str(kwargs)))
+        self.log("TRIGGERED {} {}".format(str(data), str(kwargs)))
 
 
 class TestApp(BaseApp):
