@@ -128,7 +128,9 @@ class HolidayColors(BaseApp):
     _for_year = None
 
     def initialize_app(self):
-        self._retrieve_holidays()
+        if self._for_year != datetime.now().year:
+            self.log('Retrieving holidays')
+            self._retrieve_holidays()
 
     @property
     def api_url(self):
@@ -160,7 +162,9 @@ class HolidayColors(BaseApp):
 
             for holiday in holidays:
                 name = holiday.get('name', '')
+                self.log('Got holiday %s', name)
                 if name not in HOLIDAY_COLORS.keys():
+                    self.log('%s not in colors', name)
                     return
                 day = holiday.get('day')
                 month = holiday.get('month')
@@ -172,6 +176,8 @@ class HolidayColors(BaseApp):
                             month=month,
                             year=year
                         )
+                else:
+                    self.log('Missing a date piece')
 
             self._for_year = datetime.now().year
         except requests.HTTPError as err:
