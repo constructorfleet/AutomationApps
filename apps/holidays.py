@@ -128,8 +128,7 @@ class HolidayColors(BaseApp):
     _for_year = None
 
     def initialize_app(self):
-        if self._for_year != datetime.now().year:
-            self._retrieve_holidays()
+        self._retrieve_holidays()
 
     @property
     def api_url(self):
