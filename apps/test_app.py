@@ -24,12 +24,10 @@ class MqttTestApp(Mqtt):
             callback=self._handle_trigger
         )
 
-        self.listen_event(
+        self.listen_state(
             self._condition.handle_event,
-            event='state_changed',
-            entity_id=self.args[ARG_CONDITION][ARG_ENTITY_ID],
-            new_state={'state': 'on'},
-            wildcard="states/#"
+            entity=self.args[ARG_CONDITION][ARG_ENTITY_ID],
+            new='on'
         )
 
     def _handle_trigger(self, event_name, data, kwargs):
