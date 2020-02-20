@@ -3,8 +3,7 @@ import json
 import voluptuous as vol
 from appdaemon import utils
 
-from appdaemon.plugins.mqtt.mqttapi import Mqtt
-
+import hassmqttapi as hassmqtt
 from common.const import (
     ARG_ENTITY_ID,
     ARG_VALUE,
@@ -44,7 +43,7 @@ def _split_service(service):
         raise ValueError("Invalid service %s" % service)
 
 
-class BaseApp(Mqtt):
+class BaseApp(hassmqtt.HassMqtt):
 
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
