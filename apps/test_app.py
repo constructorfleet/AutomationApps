@@ -28,6 +28,7 @@ class MqttTestApp(Mqtt):
         self.listen_event(
             self._condition.handle_event,
             entity_id=self.args[ARG_CONDITION][ARG_ENTITY_ID],
+            new_state={'state': 'on'},
             wildcard="states/#"
         )
 
