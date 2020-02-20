@@ -254,7 +254,6 @@ class HassmqttPlugin(PluginBase):
                     entity_id = new_state.get("entity_id", None)
                     if entity_id is not None:
                         state = new_state.get("state", None)
-                        attributes = new_state.get("attributes", None)
                         if state is not None:
                             self.state[entity_id] = new_state
                 except Exception as err:
