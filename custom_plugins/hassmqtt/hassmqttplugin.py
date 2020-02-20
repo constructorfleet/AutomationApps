@@ -9,8 +9,6 @@ import paho.mqtt.client as mqtt
 from appdaemon.appdaemon import AppDaemon
 from appdaemon.plugin_management import PluginBase
 
-from common.const import EVENT_STATE_CHANGED
-
 
 class HassMqttPlugin(PluginBase):
 
@@ -249,7 +247,7 @@ class HassMqttPlugin(PluginBase):
             self.logger.debug("GOT  %s" % msg.payload.decode())
 
             event_type = payload_dict.get("event_type", None)
-            if event_type == EVENT_STATE_CHANGED:
+            if event_type == "state_changed":
                 event_data = payload_dict.get("event_data", {})
                 new_state = event_data.get("new_state", {})
                 entity_id = new_state.get("entity_id", None)
