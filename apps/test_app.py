@@ -25,14 +25,13 @@ class MqttTestApp(Mqtt):
         )
 
         self.listen_state(
-            self._condition.handle_event,
+            self._condition.handle_state_change,
             entity=self.args[ARG_CONDITION][ARG_ENTITY_ID],
             new='on'
         )
 
-    def _handle_trigger(self, event_name, data, kwargs):
-        self.log("ARGS {} {} {}".format(event_name, data, str(kwargs)))
-        self.log("TRIGGERED {} {}".format(str(data), str(kwargs)))
+    def _handle_trigger(self, entity, attribute, old, new, kwargs):
+        self.log("TRIGGERED {} {} {} {} {}".format(entity, attribute, old, new, str(kwargs)))
 
 
 class TestApp(BaseApp):
