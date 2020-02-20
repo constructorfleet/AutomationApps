@@ -165,7 +165,7 @@ class HolidayColors(BaseApp):
                 self.log('Got holiday %s', name)
                 if name not in HOLIDAY_COLORS.keys():
                     self.log('%s not in colors', name)
-                    return
+                    continue
                 day = holiday.get('day')
                 month = holiday.get('month')
                 year = holiday.get('year')
