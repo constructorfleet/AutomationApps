@@ -166,9 +166,10 @@ class HolidayColors(BaseApp):
                 if name not in HOLIDAY_COLORS.keys():
                     self.log('%s not in colors', name)
                     continue
-                day = holiday.get('day')
-                month = holiday.get('month')
-                year = holiday.get('year')
+                holiday_date = holiday.get('date', {}).get('datetime', {})
+                day = holiday_date.get('day')
+                month = holiday_date.get('month')
+                year = holiday_date.get('year')
                 if day and month and year:
                     self._holidays[name] = \
                         datetime(
@@ -177,7 +178,7 @@ class HolidayColors(BaseApp):
                             year=year
                         )
                 else:
-                    self.log('Missing a date piece')
+                    self.log('Missing a date piece %s', str(holiday_date))
 
             self._for_year = datetime.now().year
         except requests.HTTPError as err:
