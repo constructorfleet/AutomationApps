@@ -147,7 +147,7 @@ class HolidayColors(BaseApp):
         closest = min(
             self._holidays.values(),
             key=lambda x: abs(x - now))
-        holiday = [self._holidays.get(name, None) for name, date in self._holidays.items() if
+        holiday = [name for name, date in self._holidays.items() if
                    closest.month == date.month and closest.day == date.day][0]
         self.log('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
