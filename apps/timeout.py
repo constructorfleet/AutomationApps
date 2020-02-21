@@ -25,7 +25,7 @@ from common.validation import (
 from notifiers.notification_category import VALID_NOTIFICATION_CATEGORIES
 
 ARG_TRIGGER = 'trigger'
-ARG_PAUSE_WHEN = 'reset_when'
+ARG_PAUSE_WHEN = 'pause_when'
 ARG_DURATION = 'duration'
 ARG_EXCEPT_IF = 'except_if'
 ARG_ON_TIMEOUT = 'on_timeout'

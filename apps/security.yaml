@@ -37,7 +37,9 @@ garage_door_timeout:
     state: 'open'
   reset_when:
     - entity_id: binary_sensor.garage_motion_sensor_1
+      value: 'on'
     - entity_id: binary_sensor.garage_motion_sensor_2
+      value: 'on'
   duration: 30
   on_timeout:
     domain: cover
@@ -49,6 +51,32 @@ garage_door_timeout:
     response_entity_id: cover.garage_door
     replacers:
       entity_name: garage door
+
+frront_door_lock_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  dependencies:
+    - notifiers
+  trigger:
+    entity_id: lock.front_door
+    state: 'unlocked'
+  pause_when:
+    - entity_id: binary_sensor.front_door_sensor
+      value: 'on'
+  duration: 15
+  on_timeout:
+    domain: lock
+    service: lock
+    service_data:
+      entity_id: lock.front_doorr
+  notify:
+    notify_category: SECURITY_LOCK_TIMEOUT
+    response_entity_id: lock.front_door
+    replacers:
+      entity_name: front door
 
 
 
