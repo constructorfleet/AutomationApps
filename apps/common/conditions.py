@@ -165,9 +165,9 @@ class StateCondition(Condition):
         self._logger = logger
 
     def handle_event(self, event_name, data, kwargs):
-        if self._logger:
-            self._logger(str(data))
-            self._logger(str(kwargs))
+        # if self._logger:
+        #     self._logger(str(data))
+        #     self._logger(str(kwargs))
         if self._callback and self.is_met:
             self._callback(event_name, data, kwargs)
 
