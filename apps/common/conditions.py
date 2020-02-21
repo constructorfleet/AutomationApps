@@ -123,8 +123,8 @@ def time_schema(app, callback=None, logger=None):
 def condition(app, callback=None, logger=None):
     def _validate(value):
         return vol.Any(
-            state_schema(app, callback, logger)(value),
-            time_schema(app, callback, logger)(value)
+            state_schema(app, callback, logger),
+            time_schema(app, callback, logger)
         )
 
     return _validate
