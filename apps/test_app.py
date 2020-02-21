@@ -1,7 +1,7 @@
 import voluptuous as vol
 
 from common.base_app import BaseApp
-from common.conditions import condition
+from common.conditions import condition, state_schema
 from common.const import ARG_ENTITY_ID, ARG_COMPARATOR, ARG_VALUE
 
 ARG_CONDITION = 'condition'
@@ -13,7 +13,7 @@ class TestApp(BaseApp):
     def __init__(self, ad, name, logging, args, config, app_config, global_vars):
         super().__init__(ad, name, logging, args, config, app_config, global_vars)
         self.config_schema = vol.Schema({
-            vol.Required(ARG_CONDITION): condition(self, self._handle_trigger, self.log)
+            vol.Required(ARG_CONDITION): state_schema(self, self._handle_trigger, self.log)
         }, extra=vol.ALLOW_EXTRA)
 
     def initialize_app(self):
