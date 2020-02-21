@@ -25,8 +25,9 @@ from common.validation import (
 from notifiers.notification_category import VALID_NOTIFICATION_CATEGORIES
 
 ARG_TRIGGER = 'trigger'
-ARG_RESET_WHEN = 'reset_when'
+ARG_PAUSE_WHEN = 'reset_when'
 ARG_DURATION = 'duration'
+ARG_EXCEPT_IF = 'except_if'
 ARG_ON_TIMEOUT = 'on_timeout'
 
 SCHEMA_TRIGGER = vol.Schema({
@@ -34,10 +35,15 @@ SCHEMA_TRIGGER = vol.Schema({
     vol.Optional(ARG_STATE, default='on'): any_value
 })
 
-SCHEMA_RESET_WHEN = vol.Schema({
+SCHEMA_EXCEPT_IF = vol.Schema({
+    vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Required(ARG_STATE): any_value
+})
+
+SCHEMA_PAUSE_WHEN = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
     vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
-    vol.Optional(ARG_VALUE, None): any_value
+    vol.Required(ARG_VALUE): any_value
 })
 
 SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
@@ -50,9 +56,9 @@ SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
 class Timeout(BaseApp):
     config_schema = vol.Schema({
         vol.Required(ARG_TRIGGER): SCHEMA_TRIGGER,
-        vol.Optional(ARG_RESET_WHEN, default=[]): vol.All(
+        vol.Optional(ARG_PAUSE_WHEN, default=[]): vol.All(
             ensure_list,
-            [SCHEMA_RESET_WHEN]
+            [SCHEMA_PAUSE_WHEN]
         ),
         vol.Required(ARG_DURATION): vol.Any(
             entity_id,
@@ -62,19 +68,20 @@ class Timeout(BaseApp):
             ensure_list,
             [SCHEMA_ON_TIMEOUT]
         ),
+        vol.Optional(ARG_EXCEPT_IF): SCHEMA_EXCEPT_IF,
         vol.Optional(ARG_NOTIFY): vol.Schema({
             vol.Required(ARG_NOTIFY_CATEGORY): vol.In(VALID_NOTIFICATION_CATEGORIES),
             vol.Optional(ARG_NOTIFY_REPLACERS, default={}): dict
         }, extra=vol.ALLOW_EXTRA)
     }, extra=vol.ALLOW_EXTRA)
 
-    _reset_when = {}
+    _pause_when = {}
     _when_handlers = set()
     _timeout_handler = None
 
     def initialize_app(self):
-        for when in self.args[ARG_RESET_WHEN]:
-            self._reset_when[when[ARG_ENTITY_ID]] = when
+        for when in self.args[ARG_PAUSE_WHEN]:
+            self._pause_when[when[ARG_ENTITY_ID]] = when
 
         trigger = self.args[ARG_TRIGGER]
         if self.get_state(trigger[ARG_ENTITY_ID]) == trigger[ARG_STATE]:
@@ -101,18 +108,25 @@ class Timeout(BaseApp):
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old or self._timeout_handler is not None:
             return
-        for reset_when in self.args[ARG_RESET_WHEN]:
-            self._when_handlers.add(self.listen_state(self._handle_reset_when,
-                                                      entity=reset_when[ARG_ENTITY_ID]))
+        for pause_when in self.args[ARG_PAUSE_WHEN]:
+            self._when_handlers.add(self.listen_state(self._handle_pause_when,
+                                                      entity=pause_when[ARG_ENTITY_ID]))
 
         self._reset_timer()
 
-    def _handle_reset_when(self, entity, attribute, old, new, kwargs):
-        if old == new or self._timeout_handler is None:
+    def _handle_pause_when(self, entity, attribute, old, new, kwargs):
+        if old == new:
             return
+
         self.log("Might reset timer")
-        if self.condition_met(self._reset_when[entity]):
-            self.log("Reset timer")
+        if self.condition_met(self._pause_when[entity]):
+            self.log("Pause timer")
+            self._cancel_timer()
+        elif self._timeout_handler is None:
+            for entity, condition in self._pause_when.items():
+                if not self.condition_met(condition):
+                    return
+            self.log("Starting timer")
             self._reset_timer()
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
