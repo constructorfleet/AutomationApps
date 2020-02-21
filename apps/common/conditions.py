@@ -18,7 +18,7 @@ from common.const import (
 from common.validation import (
     entity_id,
     any_value,
-    time)
+    time, valid_entity_id)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,10 +34,100 @@ SCHEMA_TIME_CONDITION = vol.Schema({
     vol.Optional(ARG_AT, default=None): time
 })
 
-SCHEMA_CONDITION = vol.Any(
-    SCHEMA_STATE_CONDITION,
-    SCHEMA_TIME_CONDITION
-)
+
+def _convert_to_state_condition(
+        app,
+        condition_args,
+        callback=None,
+        logger=None):
+    value = condition_args[ARG_VALUE]
+    if isinstance(value, str) and valid_entity_id(value):
+        value_is_entity = True
+        value = app.get_state(value)
+    return StateCondition(
+        initial_state=app.get_state(condition_args[ARG_ENTITY_ID]),
+        value=value,
+        comparator=condition_args.get(ARG_COMPARATOR, EQUALS),
+        callback=callback,
+        logger=logger
+    )
+
+
+def _convert_to_time_condition(
+        app,
+        condition_args,
+        callback=None,
+        logger=None):
+    return TimeCondition(
+        before=condition_args.get(ARG_BEFORE, None),
+        after=condition_args.get(ARG_AFTER, None),
+        at=condition_args.get(ARG_AT, None),
+        callback=callback,
+        logger=logger
+    )
+
+
+def convert_to_condition(
+        app,
+        condition_args,
+        callback=None,
+        logger=None):
+    if ARG_ENTITY_ID in condition_args:
+        return _convert_to_state_condition(
+            app,
+            condition_args,
+            callback,
+            logger
+        )
+    elif ARG_BEFORE in condition_args or ARG_AFTER in condition_args or ARG_AT in condition_args:
+        return _convert_to_time_condition(
+            app,
+            condition_args,
+            callback,
+            logger
+        )
+
+
+def state_schema(app, callback=None, logger=None):
+    def _validate(value):
+        try:
+            validated = SCHEMA_STATE_CONDITION(value)
+            return _convert_to_state_condition(
+                app,
+                validated,
+                callback,
+                logger
+            )
+        except vol.Invalid as err:
+            raise err
+
+    return _validate
+
+
+def time_schema(app, callback=None, logger=None):
+    def _validate(value):
+        try:
+            validated = SCHEMA_TIME_CONDITION(value)
+            return _convert_to_time_condition(
+                app,
+                validated,
+                callback,
+                logger
+            )
+        except vol.Invalid as err:
+            raise err
+
+    return _validate
+
+
+def condition(app, callback=None, logger=None):
+    def _validate(value):
+        return vol.Any(
+            state_schema(app, callback, logger)(value),
+            time_schema(app, callback, logger)(value)
+        )
+
+    return _validate
 
 
 class Condition:
@@ -107,11 +197,19 @@ class TimeCondition(Condition):
     _before = None
     _after = None
     _at = None
+    _callback = None
+    _logger = None
 
-    def __init__(self, before=None, after=None, at=None):
+    def __init__(self, before=None, after=None, at=None, callback=None, logger=None):
         self._before = before
         self._after = after
         self._at = at
+        self._callback = callback
+        self._logger = logger
+
+    def handle_time_change(self, kwargs):
+        if self._callback is not None and self.is_met:
+            self._callback(kwargs)
 
     @property
     def is_met(self):

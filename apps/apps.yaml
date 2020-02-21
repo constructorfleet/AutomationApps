@@ -8,6 +8,13 @@ holidays:
   api_key: !secret holiday_api_key
 
 
+test:
+  module: test_app
+  class: TestApp
+  condition:
+    entity_id: binary_sensor.kitchen_motion
+    value: 'on'
+
 
 #
 #front_door_lock_timeout:

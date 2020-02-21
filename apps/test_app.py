@@ -1,55 +1,23 @@
 import voluptuous as vol
-from appdaemon.plugins.mqtt.mqttapi import Mqtt
 
 from common.base_app import BaseApp
-from common.conditions import StateCondition, SCHEMA_STATE_CONDITION
+from common.conditions import condition
 from common.const import ARG_ENTITY_ID, ARG_COMPARATOR, ARG_VALUE
 
 ARG_CONDITION = 'condition'
 
 
-class MqttTestApp(Mqtt):
-    config_schema = vol.Schema({
-        vol.Required(ARG_CONDITION): SCHEMA_STATE_CONDITION
-    }, extra=vol.ALLOW_EXTRA)
-
-    _condition = None
-
-    def initialize(self):
-        self.args = self.config_schema(self.args)
-        self._condition = StateCondition(
-            self.get_state(self.args[ARG_CONDITION][ARG_ENTITY_ID]),
-            self.args[ARG_CONDITION][ARG_VALUE],
-            self.args[ARG_CONDITION][ARG_COMPARATOR],
-            callback=self._handle_trigger
-        )
-
-        self.listen_state(
-            self._condition.handle_state_change,
-            entity=self.args[ARG_CONDITION][ARG_ENTITY_ID],
-            new='on'
-        )
-
-    def _handle_trigger(self, entity, attribute, old, new, kwargs):
-        self.log("TRIGGERED {} {} {} {} {}".format(entity, attribute, old, new, str(kwargs)))
-
-
 class TestApp(BaseApp):
-    config_schema = vol.Schema({
-        vol.Required(ARG_CONDITION): SCHEMA_STATE_CONDITION
-    }, extra=vol.ALLOW_EXTRA)
+    config_schema = None
 
-    _condition = None
+    def __init__(self, ad, name, logging, args, config, app_config, global_vars):
+        super().__init__(ad, name, logging, args, config, app_config, global_vars)
+        self.config_schema = vol.Schema({
+            vol.Required(ARG_CONDITION): condition(self, self._handle_trigger, self.log)
+        }, extra=vol.ALLOW_EXTRA)
 
     def initialize_app(self):
-        self._condition = StateCondition(
-            self.get_state(self.args[ARG_CONDITION][ARG_ENTITY_ID]),
-            self.args[ARG_CONDITION][ARG_VALUE],
-            self.args[ARG_CONDITION][ARG_COMPARATOR],
-            callback=self._handle_trigger,
-            logger=self.log
-        )
-        self.listen_event(self._condition.handle_event,
+        self.listen_event(self.args[ARG_CONDITION].handle_event,
                           event='state_changed',
                           entity=self.args[ARG_CONDITION][ARG_ENTITY_ID],
                           wildcard='states/#')
@@ -57,4 +25,4 @@ class TestApp(BaseApp):
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
-        self.log("TRIGGERED {} {} {} {}".format(entity, attribute,old, new, str(kwargs)))
+        self.log("TRIGGERED {} {} {} {}".format(entity, attribute, old, new, str(kwargs)))
