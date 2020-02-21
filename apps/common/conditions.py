@@ -42,9 +42,9 @@ def _convert_to_state_condition(
         logger=None):
     value = condition_args[ARG_VALUE]
     if isinstance(value, str) and valid_entity_id(value):
-        value_is_entity = True
         value = app.get_state(value)
     return StateCondition(
+        args=condition_args,
         initial_state=app.get_state(condition_args[ARG_ENTITY_ID]),
         value=value,
         comparator=condition_args.get(ARG_COMPARATOR, EQUALS),
@@ -59,6 +59,7 @@ def _convert_to_time_condition(
         callback=None,
         logger=None):
     return TimeCondition(
+        condition_args,
         before=condition_args.get(ARG_BEFORE, None),
         after=condition_args.get(ARG_AFTER, None),
         at=condition_args.get(ARG_AT, None),
@@ -125,15 +126,27 @@ def condition(app, callback=None, logger=None):
         return vol.Any(
             state_schema(app, callback, logger),
             time_schema(app, callback, logger)
-        )
+        )(value)
 
     return _validate
 
 
-class Condition:
+class Condition(dict):
+    _args = {}
+
+    def __init__(self, args):
+        super().__init__()
+        self._args = args
+
     @property
     def is_met(self):
         return True
+
+    def __getitem__(self, k):
+        return self._args.get(k)
+
+    def __setitem__(self, k, v):
+        return
 
 
 class StateCondition(Condition):
@@ -143,7 +156,8 @@ class StateCondition(Condition):
     _callback = None
     _logger = None
 
-    def __init__(self, initial_state, value, comparator=EQUALS, callback=None, logger=None):
+    def __init__(self, args, initial_state, value, comparator=EQUALS, callback=None, logger=None):
+        super().__init__(args)
         self._state = initial_state
         self._value = value
         self._comparator = comparator
@@ -200,7 +214,8 @@ class TimeCondition(Condition):
     _callback = None
     _logger = None
 
-    def __init__(self, before=None, after=None, at=None, callback=None, logger=None):
+    def __init__(self, args, before=None, after=None, at=None, callback=None, logger=None):
+        super().__init__(args)
         self._before = before
         self._after = after
         self._at = at
