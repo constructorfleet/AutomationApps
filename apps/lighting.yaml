@@ -342,7 +342,7 @@ night_lights:
         domain: light
         service: turn_on
         service_data:
-          brightness_pct: 100
+          brightness_pct: 60
       - entity_id: light.porch_upper
         domain: light
         service: turn_on
@@ -378,4 +378,4 @@ night_lights:
       domain: light
       service: turn_on
       service_data:
-        brightness_pct: 30
+        brightness_pct: 20
