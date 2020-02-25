@@ -106,11 +106,12 @@ class Timeout(BaseApp):
             return self.args[ARG_DURATION]
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
-        if new == old or self._timeout_handler is not None:
+        if new == old:
             return
-        for pause_when in self.args[ARG_PAUSE_WHEN]:
-            self._when_handlers.add(self.listen_state(self._handle_pause_when,
-                                                      entity=pause_when[ARG_ENTITY_ID]))
+        if self._timeout_handler is None:
+            for pause_when in self.args[ARG_PAUSE_WHEN]:
+                self._when_handlers.add(self.listen_state(self._handle_pause_when,
+                                                          entity=pause_when[ARG_ENTITY_ID]))
 
         self._reset_timer()
 
@@ -138,6 +139,11 @@ class Timeout(BaseApp):
     def _handle_timeout(self, kwargs):
         self._cancel_timer()
         self._cancel_handlers()
+        
+        self.log("Firing on time out events")
+        events = self.args.get(ARG_ON_TIMEOUT, [])
+        for event in events:
+            self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
 
         if ARG_NOTIFY in self.args:
             self.notifier.notify_people(
@@ -145,11 +151,6 @@ class Timeout(BaseApp):
                 response_entity_id=self.args[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
                 **self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
             )
-
-        self.log("Firing on time out events")
-        events = self.args.get(ARG_ON_TIMEOUT, [])
-        for event in events:
-            self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
 
     def _cancel_handlers(self):
         handlers = self._when_handlers.copy()
