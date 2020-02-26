@@ -189,11 +189,11 @@ lower_hall_light:
         entity_id:
           - switch.lower_hall_light
     - domain: homeassistant
-        service: turn_on
-        service_data:
-          entity_id:
-            - switch.lower_hall_switch_1
-            - switch.lower_hall_switch_2
+      service: turn_on
+      service_data:
+        entity_id:
+          - switch.lower_hall_switch_1
+          - switch.lower_hall_switch_2
 
 lower_hall_light_timeout:
   module: timeout
@@ -237,11 +237,11 @@ upper_landing_hall_light:
         entity_id:
           - switch.upper_landing
     - domain: homeassistant
-        service: turn_on
-        service_data:
-          entity_id:
-            - switch.upper_landing_switch_1
-            - switch.upper_landing_switch_2
+      service: turn_on
+      service_data:
+        entity_id:
+          - switch.upper_landing_switch_1
+          - switch.upper_landing_switch_2
 
 upper_landing_hall_light_timeout:
   module: timeout
@@ -285,11 +285,11 @@ basement_stair_light:
         entity_id:
           - switch.basement_stair_light
     - domain: homeassistant
-        service: turn_on
-        service_data:
-          entity_id:
-            - switch.basement_stair_switch_1
-            - switch.basement_stair_switch_2
+      service: turn_on
+      service_data:
+        entity_id:
+          - switch.basement_stair_switch_1
+          - switch.basement_stair_switch_2
 
 basement_stair_light_timeout:
   module: timeout
