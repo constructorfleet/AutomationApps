@@ -230,6 +230,9 @@ upper_landing_hall_light:
       value: 'off'
     - entity_id: switch.upper_landing
       value: 'off'
+    - entity_id: sensor.upper_landing_luminance
+      comparator: '<'
+      value: 1
   call:
     - domain: homeassistant
       service: turn_on
