@@ -124,7 +124,7 @@ class Timeout(BaseApp):
             self._cancel_timer()
         elif self._timeout_handler is None:
             for entity, condition in self._pause_when.items():
-                if not self.condition_met(condition):
+                if self.condition_met(condition):
                     return
             self.log("Starting timer")
             self._reset_timer()
