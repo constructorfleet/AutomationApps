@@ -74,12 +74,15 @@ class UnlockDoor(BaseApp):
                   }
             )
             return
-        lock_name = self.get_state(self.args[ARG_LOCK], attribute='friendly_name')
         self.publish(
             'lock',
             'unlock',
-            {}
+            {
+                ARG_ENTITY_ID: self.args[ARG_LOCK]
+            }
         )
+
+        lock_name = self.get_state(self.args[ARG_LOCK], attribute='friendly_name')
         self.notifier.notify_people(
             NotificationCategory.SECURITY_UNLOCKED,
             response_entity_id=self.args[ARG_LOCK],
