@@ -71,7 +71,7 @@ front_door_lock_timeout:
     domain: lock
     service: lock
     service_data:
-      entity_id: lock.front_doorr
+      entity_id: lock.front_door
   notify:
     notify_category: SECURITY_LOCK_TIMEOUT
     response_entity_id: lock.front_door
