@@ -10,6 +10,12 @@ from appdaemon.appdaemon import AppDaemon
 from appdaemon.plugin_management import PluginBase
 
 
+def deep_equals(current_state, new_state):
+    current = json.dumps(current_state, sort_keys=True, indent=2)
+    new = json.dumps(new_state, sort_keys=True, indent=2)
+    return current == new
+
+
 class HassmqttPlugin(PluginBase):
 
     def __init__(self, ad: AppDaemon, name, args):
@@ -254,7 +260,9 @@ class HassmqttPlugin(PluginBase):
                     entity_id = new_state.get("entity_id", None)
                     if entity_id is not None:
                         state = new_state.get("state", None)
-                        if state is not None:
+                        if state is not None and deep_equals(state, self.state.get(entity_id, {})):
+                            return
+                        elif state is not None:
                             self.state[entity_id] = new_state
                 except Exception as err:
                     self.logger.warning(str(err))
