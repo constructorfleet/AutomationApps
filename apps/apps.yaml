@@ -26,12 +26,12 @@ bhg_call_in:
     account_sid: !secret twilio_account_sid
     token: !secret twilio_auth_token
 
-test:
-  module: test_app
-  class: TestApp
-  condition:
-    entity_id: binary_sensor.kitchen_motion
-    value: 'on'
+#test:
+#  module: test_app
+#  class: TestApp
+#  condition:
+#    entity_id: binary_sensor.kitchen_motion
+#    value: 'on'
 
 
 #
