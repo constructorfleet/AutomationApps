@@ -81,13 +81,15 @@ class DoorLock(BaseApp):
                           oneshot=True)
 
     def _handle_person_arrive(self, person_name):
+        self.log("$s arrived" % person_name)
         if not self.is_locked:
+            self.log("Notify presence")
             self._notify(
                 NotificationCategory.PRESENCE_PERSON_ARRIVED,
                 response_entity_id=None,
                 person_name=person_name)
             return
-
+        self.log('Unlock')
         self.publish(
             'lock',
             'unlock',
@@ -95,20 +97,22 @@ class DoorLock(BaseApp):
                 ARG_ENTITY_ID: self.args[ARG_LOCK]
             }
         )
-
+        self.log('Notify unlock')
         self._notify(
             NotificationCategory.SECURITY_UNLOCKED,
             response_entity_id=self.args[ARG_LOCK],
             person_name=person_name)
 
     def _handle_person_left(self, person_name):
+        self.log("$s left" % person_name)
         if self.is_locked:
+            self.log('Notify deparated')
             self._notify(
                 NotificationCategory.PRESENCE_PERSON_DEPARTED,
                 response_entity_id=None,
                 person_name=person_name)
             return
-
+        self.log('Lock')
         self.publish(
             'lock',
             'lock',
@@ -117,6 +121,7 @@ class DoorLock(BaseApp):
             }
         )
 
+        self.log('Notify lock')
         self._notify(
             NotificationCategory.SECURITY_LOCKED,
             response_entity_id=self.args[ARG_LOCK],
