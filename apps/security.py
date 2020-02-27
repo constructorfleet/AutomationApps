@@ -65,6 +65,9 @@ class DoorLock(BaseApp):
 
     def _handle_person_change(self, entity, attribute, old, new, kwargs):
         if old == new:
+            self.listen_state(self._handle_person_change,
+                              entity=entity,
+                              oneshot=True)
             return
 
         person_name = self.get_state(entity, attribute='friendly_name')
