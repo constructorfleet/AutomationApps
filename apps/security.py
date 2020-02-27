@@ -40,7 +40,7 @@ class Doorbell(BaseApp):
         )
 
 
-class UnlockDoor(BaseApp):
+class DoorLock(BaseApp):
 
     config_schema = vol.Schema({
         vol.Required(ARG_PEOPLE): vol.All(
@@ -50,31 +50,41 @@ class UnlockDoor(BaseApp):
         vol.Required(ARG_LOCK): entity_id
     }, extra=vol.ALLOW_EXTRA)
 
+    _lock_name = None
+
     def initialize_app(self):
+        self._lock_name = self.get_state(self.args[ARG_LOCK], attribute='friendly_name')
         for person in self.args[ARG_PEOPLE]:
-            self.listen_state(self._handle_person_arrive,
+            self.listen_state(self._handle_person_change,
                               entity=person,
-                              new='home',
                               oneshot=True)
 
     @property
     def is_locked(self):
         return self.get_state(self.args[ARG_LOCK]) == 'locked'
 
-    def _handle_person_arrive(self, entity, attribute, old, new, kwargs):
+    def _handle_person_change(self, entity, attribute, old, new, kwargs):
         if old == new:
             return
 
         person_name = self.get_state(entity, attribute='friendly_name')
+        if new == 'home':
+            self._handle_person_arrive(person_name)
+        else:
+            self._handle_person_left(person_name)
+
+        self.listen_state(self._handle_person_change,
+                          entity=entity,
+                          oneshot=True)
+
+    def _handle_person_arrive(self, person_name):
         if not self.is_locked:
-            self.notifier.notify_people(
+            self._notify(
                 NotificationCategory.PRESENCE_PERSON_ARRIVED,
                 response_entity_id=None,
-                **{
-                    'person_name': person_name
-                  }
-            )
+                person_name=person_name)
             return
+
         self.publish(
             'lock',
             'unlock',
@@ -83,14 +93,35 @@ class UnlockDoor(BaseApp):
             }
         )
 
-        lock_name = self.get_state(self.args[ARG_LOCK], attribute='friendly_name')
-        self.notifier.notify_people(
+        self._notify(
             NotificationCategory.SECURITY_UNLOCKED,
             response_entity_id=self.args[ARG_LOCK],
-            person_name=person_name,
-            entity_name=lock_name)
+            person_name=person_name)
 
-        self.listen_state(self._handle_person_arrive,
-                          entity=entity,
-                          new='home',
-                          oneshot=True)
+    def _handle_person_left(self, person_name):
+        if self.is_locked:
+            self._notify(
+                NotificationCategory.PRESENCE_PERSON_DEPARTED,
+                response_entity_id=None,
+                person_name=person_name)
+            return
+
+        self.publish(
+            'lock',
+            'lock',
+            {
+                ARG_ENTITY_ID: self.args[ARG_LOCK]
+            }
+        )
+
+        self._notify(
+            NotificationCategory.SECURITY_LOCKED,
+            response_entity_id=self.args[ARG_LOCK],
+            person_name=person_name)
+
+    def _notify(self, category, response_entity_id, person_name):
+        self.notifier.notify_people(
+            category,
+            response_entity_id=response_entity_id,
+            person_name=person_name,
+            entity_name=self._lock_name)
