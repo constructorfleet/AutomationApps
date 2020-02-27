@@ -78,7 +78,7 @@ class CallBHG(BaseApp):
 
         self.log("Initialized")
 
-    def _call_bhg(self, kwargs):
+    def _call_bhg(self, event, data, kwargs):
         self.log("Calling BHG")
         self._call_retries_today += 1
         if self._call_retries_today > self.args[ARG_MAX_RETRIES]:
