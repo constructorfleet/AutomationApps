@@ -70,7 +70,7 @@ class DoorLock(BaseApp):
         person_name = self.get_state(entity, attribute='friendly_name')
         if new == 'home':
             self._handle_person_arrive(person_name)
-        else:
+        elif old == 'home':
             self._handle_person_left(person_name)
 
         self.listen_state(self._handle_person_change,
