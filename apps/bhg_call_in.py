@@ -66,6 +66,7 @@ class CallBHG(BaseApp):
     _twiML = None
     _call_instance = None
     _call_retries_today = 0
+    _handle = None
 
     def initialize_app(self):
         self.log("Initializing")
@@ -75,12 +76,14 @@ class CallBHG(BaseApp):
             self.args[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
         )
 
-        self.listen_event(self._call_bhg,
-                          event="call_bhg")
+        self._handle = self.listen_event(self._call_bhg,
+                                         event="call_bhg",
+                                         topic="events/slaves/communication")
 
         self.log("Initialized")
 
     def _call_bhg(self, event, data, kwargs):
+        self.cancel_listen_event(self._handle)
         self.log("Calling BHG")
         self._call_retries_today += 1
         if self._call_retries_today > self.args[ARG_MAX_RETRIES]:
