@@ -66,7 +66,7 @@ class CallBHG(BaseApp):
     _twiML = None
     _call_instance = None
     _call_retries_today = 0
-    _handle = None
+    _calling = False
 
     def initialize_app(self):
         self.log("Initializing")
@@ -76,14 +76,16 @@ class CallBHG(BaseApp):
             self.args[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
         )
 
-        self._handle = self.listen_event(self._call_bhg,
-                                         event="call_bhg",
-                                         topic="events/slaves/communication")
+        self.listen_event(self._call_bhg,
+                          event="call_bhg")
 
         self.log("Initialized")
 
     def _call_bhg(self, event, data, kwargs):
-        self.cancel_listen_event(self._handle)
+        if self._calling:
+            return
+        self._calling = True
+
         self.log("Calling BHG")
         self._call_retries_today += 1
         if self._call_retries_today > self.args[ARG_MAX_RETRIES]:
@@ -95,6 +97,9 @@ class CallBHG(BaseApp):
         else:
             twimlet_url = "http://twimlets.com/message?Message="
             twimlet_url += urllib.parse.quote(self.args[ARG_MESSAGE], safe="")
+
+        if self._calling:
+            return
 
         self._call_instance = self._client.calls.create(
             to=self.args[ARG_CALL_TO],
@@ -130,6 +135,7 @@ class CallBHG(BaseApp):
     def _handle_call_failed(self, status):
         _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
         self.run_in(self._call_bhg, 60 * 10)
+        self._calling = False
         self._call_instance = None
 
     def _handle_call_complete(self, status):
@@ -155,6 +161,7 @@ class CallBHG(BaseApp):
                                and transcription.recording_sid in recording_sids]
         self._process_transcriptions(transcription_texts)
         self._call_instance = None
+        self._calling = False
 
     def _notify(self, category, **kwargs):
         self.notifier.notify_people(
