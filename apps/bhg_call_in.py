@@ -85,6 +85,7 @@ class CallBHG(BaseApp):
         if self._calling:
             return
         self._calling = True
+        self._call_instance = None
 
         self.log("Calling BHG")
         self._call_retries_today += 1
@@ -98,7 +99,7 @@ class CallBHG(BaseApp):
             twimlet_url = "http://twimlets.com/message?Message="
             twimlet_url += urllib.parse.quote(self.args[ARG_MESSAGE], safe="")
 
-        if self._calling:
+        if self._call_instance is not None:
             return
 
         self._call_instance = self._client.calls.create(
