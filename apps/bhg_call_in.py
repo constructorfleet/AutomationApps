@@ -157,11 +157,14 @@ class CallBHG(BaseApp):
         self._hangup()
 
     def _hangup(self):
-        if self._call_instance is not None:
-            _LOGGER.error(
-                "Call failed to complete in %d minutes, hanging up" % (self._call_duration * 60))
-            self._call_instance.update(status=CallInstance.Status.FAILED)
-        self._call_instance = None
+        try:
+            if self._call_instance is not None:
+                _LOGGER.error(
+                    "Call failed to complete in %d minutes, hanging up" % (self._call_duration * 60))
+                self._call_instance.update(status=CallInstance.Status.FAILED)
+            self._call_instance = None
+        except Exception as err:
+            self.log(str(err))
 
     def _get_transcripts(self, kwargs):
         recording_sids = [recording.sid for recording in
