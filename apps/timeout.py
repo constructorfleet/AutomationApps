@@ -22,7 +22,10 @@ from common.validation import (
     ensure_list,
     any_value,
 )
-from notifiers.notification_category import VALID_NOTIFICATION_CATEGORIES
+from notifiers.notification_category import (
+    VALID_NOTIFICATION_CATEGORIES,
+    get_category_by_name
+)
 
 ARG_TRIGGER = 'trigger'
 ARG_PAUSE_WHEN = 'pause_when'
@@ -78,8 +81,13 @@ class Timeout(BaseApp):
     _pause_when = {}
     _when_handlers = set()
     _timeout_handler = None
+    _notification_category = None
 
     def initialize_app(self):
+        if ARG_NOTIFY in self.args:
+            self._notification_category = \
+                get_category_by_name(self.args[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
+
         for when in self.args[ARG_PAUSE_WHEN]:
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
@@ -145,9 +153,9 @@ class Timeout(BaseApp):
         for event in events:
             self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
 
-        if ARG_NOTIFY in self.args:
+        if self._notification_category is not None:
             self.notifier.notify_people(
-                self.args[ARG_NOTIFY][ARG_NOTIFY_CATEGORY],
+                self._notification_category,
                 response_entity_id=self.args[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
                 **self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
             )
