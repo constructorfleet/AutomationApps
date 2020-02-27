@@ -63,10 +63,6 @@ class UnlockDoor(BaseApp):
 
     def _handle_person_arrive(self, entity, attribute, old, new, kwargs):
         if old == new:
-            self.listen_state(self._handle_person_arrive,
-                              entity=entity,
-                              new='home',
-                              oneshot=True)
             return
 
         person_name = self.get_state(entity, attribute='friendly_name')
@@ -93,3 +89,8 @@ class UnlockDoor(BaseApp):
             response_entity_id=self.args[ARG_LOCK],
             person_name=person_name,
             entity_name=lock_name)
+
+        self.listen_state(self._handle_person_arrive,
+                          entity=entity,
+                          new='home',
+                          oneshot=True)
