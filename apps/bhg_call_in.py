@@ -66,7 +66,6 @@ class CallBHG(BaseApp):
     _twiML = None
     _call_instance = None
     _call_retries_today = 0
-    _call_duration = 0
 
     def initialize_app(self):
         self.log("Initializing")
@@ -81,20 +80,7 @@ class CallBHG(BaseApp):
 
         self.log("Initialized")
 
-    def stop_app(self, app, **kwargs):
-        if app == self:
-            self._hangup()
-        super().stop_app(app, **kwargs)
-
-    def restart_app(self, app, **kwargs):
-        if app == self:
-            self._hangup()
-        super().restart_app(app, **kwargs)
-
     def _call_bhg(self, event, data, kwargs):
-        if self._call_instance is not None:
-            self._hangup()
-
         self.log("Calling BHG")
         self._call_retries_today += 1
         if self._call_retries_today > self.args[ARG_MAX_RETRIES]:
@@ -114,12 +100,8 @@ class CallBHG(BaseApp):
         )
 
         self.run_in(self._process_status, 5)
-        self._call_duration = 5
 
     def _process_status(self, kwargs):
-        if self._call_duration > self.args[ARG_TIMEOUT] * 60:
-            self._hangup()
-            return
 
         call_status = self._call_instance.fetch().status
         status_map = {
@@ -140,7 +122,6 @@ class CallBHG(BaseApp):
 
     def _handle_call_in_process(self, status):
         _LOGGER.error("Call in process %s, retrying in %d sec" % (status, 10))
-        self._call_duration += 10
         self.run_in(self._process_status, 10)
 
     def _handle_call_failed(self, status):
@@ -154,17 +135,7 @@ class CallBHG(BaseApp):
 
     def _handle_unknown_call_status(self, status):
         _LOGGER.warning("Unknown status %s" % status)
-        self._hangup()
-
-    def _hangup(self):
-        try:
-            if self._call_instance is not None:
-                _LOGGER.error(
-                    "Call failed to complete in %d minutes, hanging up" % (self._call_duration * 60))
-                self._call_instance.update(status=CallInstance.Status.FAILED)
-            self._call_instance = None
-        except Exception as err:
-            self.log(str(err))
+        self.run_in(self._process_status, 10)
 
     def _get_transcripts(self, kwargs):
         recording_sids = [recording.sid for recording in
