@@ -24,25 +24,5 @@ appdaemon:
       verbose: false
       delay: 60
       client_topics:
-        - events/master
-        - events/slaves/appliances
-        - events/slaves/communicatiton
-        - events/slaves/environment
-        - events/slaves/hubs
-        - events/slaves/media
-        - events/slaves/planning
-        - events/slaves/security
-        - events/slaves/settings
-        - events/slaves/trackers
-        - events/slaves/zwave
-        - states/master/#
-        - states/slaves/appliances/#
-        - states/slaves/communication/#
-        - states/slaves/environment/#
-        - states/slaves/hubs/#
-        - states/slaves/media/#
-        - states/slaves/planning/#
-        - states/slaves/security/#
-        - states/slaves/settings/#
-        - states/slaves/trackers/#
-        - states/slaves/zwave/#
+        - events/#
+        - states/#
