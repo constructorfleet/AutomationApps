@@ -7,6 +7,24 @@ holidays:
     - common.utils
   api_key: !secret holiday_api_key
 
+bhg_call_in:
+  module: bhg_call_in
+  class: CallBHG
+  global_dependencies:
+    - common.base_app
+    - common.validation
+    - common.utils
+  dependencies:
+    - notifiers
+  call_from: !secret twilio_voice_from_number
+  call_to: "+13036195293"
+  message: https://handler.twilio.com/EH1bb4e79fb6d9e855c75616f7a1940f3
+  daily_at:
+    hour: 0
+    minute: 5
+  twilio_credential:
+    account_sid: !secret twilio_account_sid
+    token: !secret twilio_auth_token
 
 test:
   module: test_app

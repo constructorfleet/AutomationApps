@@ -65,7 +65,7 @@ class CallBHG(BaseApp):
     _call_instance = None
     _call_retries_today = 0
 
-    def initialize(self):
+    def initialize_app(self):
         self.log("Initializing")
 
         self._client = Client(
