@@ -32,10 +32,11 @@ ARG_NOTIFY_GROUP = "people"
 ARG_NOTIFY_IGNORER = "ignored"
 ARG_MAX_RETRIES = "max_retries"
 ARG_SCHEDULE_TOGGLE = "schedule_toggle"
+ARG_TIMEOUT = "timeout"
 
-DOMAIN_FLAG_SERVICE = 'homeassistant'
-TURN_OFF_SERVICE = 'turn_off'
-TURN_ON_SERVICE = 'turn_on'
+DOMAIN_FLAG_SERVICE = "homeassistant"
+TURN_OFF_SERVICE = "turn_off"
+TURN_ON_SERVICE = "turn_on"
 
 SCHEMA_DAILY_AT = vol.Schema({
     vol.Any(ARG_FREQUENCY_HOUR, ARG_FREQUENCY_MINUTE): int
@@ -56,6 +57,7 @@ class CallBHG(BaseApp):
         vol.Required(ARG_MESSAGE): str,
         vol.Required(ARG_FREQUENCY): SCHEMA_DAILY_AT,
         vol.Required(ARG_CREDENTIALS): SCHEMA_CREDENTIALS_CONFIG,
+        vol.Optional(ARG_TIMEOUT, default=3): vol.Range(1, 5),
         vol.Optional(ARG_MAX_RETRIES, default=5): vol.Range(1, 10),
         vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id
     }, extra=vol.ALLOW_EXTRA)
@@ -64,6 +66,7 @@ class CallBHG(BaseApp):
     _twiML = None
     _call_instance = None
     _call_retries_today = 0
+    _call_duration = 0
 
     def initialize_app(self):
         self.log("Initializing")
@@ -78,7 +81,20 @@ class CallBHG(BaseApp):
 
         self.log("Initialized")
 
+    def stop_app(self, app, **kwargs):
+        if app == self:
+            self._hangup()
+        super().stop_app(app, **kwargs)
+
+    def restart_app(self, app, **kwargs):
+        if app == self:
+            self._hangup()
+        super().restart_app(app, **kwargs)
+
     def _call_bhg(self, event, data, kwargs):
+        if self._call_instance is not None:
+            self._hangup()
+
         self.log("Calling BHG")
         self._call_retries_today += 1
         if self._call_retries_today > self.args[ARG_MAX_RETRIES]:
@@ -98,35 +114,54 @@ class CallBHG(BaseApp):
         )
 
         self.run_in(self._process_status, 5)
+        self._call_duration = 5
 
     def _process_status(self, kwargs):
+        if self._call_duration > self.args[ARG_TIMEOUT] * 60:
+            self._hangup()
+            return
+
         call_status = self._call_instance.fetch().status
         status_map = {
             CallInstance.Status.BUSY: self._handle_call_failed,
             CallInstance.Status.CANCELED: self._handle_call_failed,
-            CallInstance.Status.COMPLETED: self._handle_call_complete,
             CallInstance.Status.FAILED: self._handle_call_failed,
-            CallInstance.Status.IN_PROGRESS: self._handle_call_in_process,
             CallInstance.Status.NO_ANSWER: self._handle_call_failed,
+
+            CallInstance.Status.IN_PROGRESS: self._handle_call_in_process,
+
             CallInstance.Status.QUEUED: self._handle_call_in_process,
-            CallInstance.Status.RINGING: self._handle_call_in_process
+            CallInstance.Status.RINGING: self._handle_call_in_process,
+
+            CallInstance.Status.COMPLETED: self._handle_call_complete
         }
         status_map.get(call_status,
-                       lambda status: _LOGGER.warning(
-                           "Unknown status %s" % call_status
-                       ))(call_status)
+                       self._handle_unknown_call_status)(call_status)
 
     def _handle_call_in_process(self, status):
         _LOGGER.error("Call in process %s, retrying in %d sec" % (status, 10))
-        self.run_in(self._process_status, 5)
+        self._call_duration += 10
+        self.run_in(self._process_status, 10)
 
     def _handle_call_failed(self, status):
         _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
         self.run_in(self._call_bhg, 60 * 10)
+        self._call_instance = None
 
     def _handle_call_complete(self, status):
         _LOGGER.warning("Call complete, waiting for transcript")
         self.run_in(self._get_transcripts, 45)
+
+    def _handle_unknown_call_status(self, status):
+        _LOGGER.warning("Unknown status %s" % status)
+        self._hangup()
+
+    def _hangup(self):
+        if self._call_instance is not None:
+            _LOGGER.error(
+                "Call failed to complete in %d minutes, hanging up" % (self._call_duration * 60))
+            self._call_instance.update(status=CallInstance.Status.FAILED)
+        self._call_instance = None
 
     def _get_transcripts(self, kwargs):
         recording_sids = [recording.sid for recording in
@@ -142,6 +177,7 @@ class CallBHG(BaseApp):
                                if transcription and transcription.transcription_text
                                and transcription.recording_sid in recording_sids]
         self._process_transcriptions(transcription_texts)
+        self._call_instance = None
 
     def _notify(self, category, **kwargs):
         self.notifier.notify_people(
