@@ -151,8 +151,8 @@ def valid_entity_id(entity_id):
     """Test if an entity ID is a valid format.
     Format: <domain>.<entity> where both are slugs.
     """
-    return ('.' in entity_id and
-            entity_id == entity_id.replace(' ', '_'))
+    return isinstance(entity_id, str) and '.' in entity_id and entity_id == entity_id.replace(' ',
+                                                                                              '_')
 
 
 def valid_service(value):
