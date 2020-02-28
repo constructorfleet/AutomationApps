@@ -12,6 +12,8 @@ from typing import cast, Dict
 import voluptuous as vol
 
 ENTITY_MATCH_ALL = "all"
+ENTITY_ID_PATTERN = re.compile(r'(?:[a-z0-9_]*)\.(?:[a-z0-9_]*)')
+FLOAT_PATTERN = re.compile(r'[+-]?([0-9]*[.])?[0-9]+')
 
 SUN_EVENT_SUNSET = 'sunset'
 SUN_EVENT_SUNRISE = 'sunrise'
@@ -151,8 +153,12 @@ def valid_entity_id(entity_id):
     """Test if an entity ID is a valid format.
     Format: <domain>.<entity> where both are slugs.
     """
-    return isinstance(entity_id, str) and '.' in entity_id and entity_id == entity_id.replace(' ',
-                                                                                              '_')
+    if FLOAT_PATTERN.match(entity_id):
+        return False
+
+    return isinstance(entity_id, str) and \
+           '.' in entity_id and \
+           entity_id == entity_id.replace(' ', '_')
 
 
 def valid_service(value):
@@ -341,10 +347,10 @@ unit_system = vol.All(vol.Lower, vol.Any(CONF_UNIT_SYSTEM_METRIC,
                                          CONF_UNIT_SYSTEM_IMPERIAL))
 
 any_value = vol.Any(
-    entity_id,
     vol.Coerce(float),
     vol.Coerce(int),
-    vol.Coerce(str)
+    vol.Coerce(str),
+    entity_id
 )
 
 
