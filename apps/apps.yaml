@@ -22,7 +22,7 @@ bhg_call_in:
   message: https://handler.twilio.com/twiml/EH2034e8b04e2aef59b90767d68f67df1c
   daily_at:
     hour: 0
-    minute: 5
+    minute: 30
   twilio_credential:
     account_sid: !secret twilio_account_sid
     token: !secret twilio_auth_token
