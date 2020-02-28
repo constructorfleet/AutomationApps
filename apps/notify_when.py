@@ -63,7 +63,7 @@ class NotifyWhen(BaseApp):
         return condition_to
 
     def _handle_state_change(self, entity, attribute, old, new, kwargs):
-        if old == new:
+        if old == new or old is None or new is None:
             return
 
         if self.condition_met(self._condition_from(old)) and \
