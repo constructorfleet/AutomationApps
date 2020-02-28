@@ -20,6 +20,11 @@ def converge_types(v1, v2):
         return bool(v1),  bool(v2)
 
     try:
+        return float(v1), float(v2)
+    except Exception as err:
+        _LOGGER.warning('Not floats')
+
+    try:
         return v1, type(v1)(v2)
     except Exception as err:
         _LOGGER.warning('Cannot convert {} to  type of {} ({})'.format(v2, v1, type(v1)))
