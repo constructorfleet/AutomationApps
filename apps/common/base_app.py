@@ -14,6 +14,7 @@ from common.const import (
     GREATER_THAN,
     GREATER_THAN_EQUAL_TO,
     ARG_DEPENDENCIES)
+from common.utils import converge_types
 from common.validation import valid_entity_id
 
 APP_NOTIFIERS = "notifiers"
@@ -94,10 +95,11 @@ class BaseApp(hassmqtt.HassMqtt):
             entity_state = condition[ARG_ENTITY_ID]
 
         value = condition.get(ARG_VALUE, None)
-        if value is None:
-            return True
-        if isinstance(value, str) and valid_entity_id(value):
+        if value is not None and valid_entity_id(value):
             value = self.get_state(value)
+        if value is None or entity_state is None:
+            return True
+        entity_state, value = converge_types(entity_state, value)
 
         comparator = condition[ARG_COMPARATOR]
         self.log("{} {} {}".format(entity_state, comparator, value))
@@ -106,8 +108,6 @@ class BaseApp(hassmqtt.HassMqtt):
         elif comparator == NOT_EQUAL:
             return entity_state != value
         else:
-            entity_state = float(entity_state)
-            value = float(value)
             if comparator == LESS_THAN:
                 return entity_state < value
             elif comparator == LESS_THAN_EQUAL_TO:

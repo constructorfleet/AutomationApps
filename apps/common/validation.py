@@ -7,7 +7,6 @@ from datetime import (
     timedelta,
     time as time_sys
 )
-from typing import cast, Dict
 
 import voluptuous as vol
 
