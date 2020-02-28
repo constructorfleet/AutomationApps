@@ -1,6 +1,7 @@
 import logging
 import re
-import urllib
+from datetime import time
+from urllib import parse
 
 import voluptuous as vol
 from twilio.rest import Client
@@ -30,7 +31,6 @@ ARG_FREQUENCY_MINUTE = "minute"
 ARG_NOTIFY = "notify"
 ARG_NOTIFY_GROUP = "people"
 ARG_NOTIFY_IGNORER = "ignored"
-ARG_MAX_RETRIES = "max_retries"
 ARG_SCHEDULE_TOGGLE = "schedule_toggle"
 ARG_TIMEOUT = "timeout"
 
@@ -39,7 +39,14 @@ TURN_OFF_SERVICE = "turn_off"
 TURN_ON_SERVICE = "turn_on"
 
 SCHEMA_DAILY_AT = vol.Schema({
-    vol.Any(ARG_FREQUENCY_HOUR, ARG_FREQUENCY_MINUTE): int
+    vol.Required(ARG_FREQUENCY_HOUR): vol.All(
+        vol.Coerce(int),
+        vol.Range(1, 6)
+    ),
+    vol.Optional(ARG_FREQUENCY_MINUTE, default=0): vol.All(
+        vol.Coerce(int),
+        vol.Range(0, 59)
+    )
 })
 
 SCHEMA_CREDENTIALS_CONFIG = vol.Schema({
@@ -58,14 +65,13 @@ class CallBHG(BaseApp):
         vol.Required(ARG_FREQUENCY): SCHEMA_DAILY_AT,
         vol.Required(ARG_CREDENTIALS): SCHEMA_CREDENTIALS_CONFIG,
         vol.Optional(ARG_TIMEOUT, default=3): vol.Range(1, 5),
-        vol.Optional(ARG_MAX_RETRIES, default=5): vol.Range(1, 10),
         vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id
     }, extra=vol.ALLOW_EXTRA)
 
     _client = None
     _twiML = None
     _call_instance = None
-    _call_retries_today = 0
+    _called_today = False
     _calling = False
 
     def initialize_app(self):
@@ -76,10 +82,23 @@ class CallBHG(BaseApp):
             self.args[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
         )
 
+        self.run_daily(self._new_day,
+                       time(0, 0, 0))
         self.listen_event(self._call_bhg,
                           event="call_bhg")
+        self.run_daily(self._daily_call,
+                       time(self.args[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
+                            self.args[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
 
         self.log("Initialized")
+
+    def _new_day(self, kwargs):
+        self._called_today = False
+
+    def _daily_call(self, kwargs):
+        if self._called_today:
+            return
+        self._call_bhg('call_bhg', {}, {})
 
     def _call_bhg(self, event, data, kwargs):
         if self._calling:
@@ -88,16 +107,12 @@ class CallBHG(BaseApp):
         self._call_instance = None
 
         self.log("Calling BHG")
-        self._call_retries_today += 1
-        if self._call_retries_today > self.args[ARG_MAX_RETRIES]:
-            # TODO Notify failure
-            return
 
         if self.args[ARG_MESSAGE].startswith("http"):
             twimlet_url = self.args[ARG_MESSAGE]
         else:
             twimlet_url = "http://twimlets.com/message?Message="
-            twimlet_url += urllib.parse.quote(self.args[ARG_MESSAGE], safe="")
+            twimlet_url += parse.quote(self.args[ARG_MESSAGE], safe="")
 
         if self._call_instance is not None:
             return
@@ -135,8 +150,9 @@ class CallBHG(BaseApp):
 
     def _handle_call_failed(self, status):
         _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
-        self.run_in(self._call_bhg, 60 * 10)
+        self._notify(NotificationCategory.WARNING_BHG_CALL_FAILED)
         self._calling = False
+        self._called_today = False
         self._call_instance = None
 
     def _handle_call_complete(self, status):
@@ -153,7 +169,8 @@ class CallBHG(BaseApp):
                           recording is not None and recording.sid]
 
         if not recording_sids or len(recording_sids) == 0:
-            # TODO
+            self._notify(NotificationCategory.WARNING_BHG_TRANSCRIBE_FAILED)
+            self._called_today = False
             return
 
         transcription_texts = [transcription.transcription_text
