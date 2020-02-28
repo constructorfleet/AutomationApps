@@ -59,6 +59,20 @@ class NotificationCategory(Enum):
     WARNING_BHG_ALL_CLEAR = (
         NotificationChannel.WARNING, "{transcript}"
     )
+    WARNING_BHG_CALL_FAILED = (
+        NotificationChannel.WARNING,
+        "Automated call to BHG failed, please try manually",
+        None,
+        "priority",
+        True
+    )
+    WARNING_BHG_TRANSCRIBE_FAILED = (
+        NotificationChannel.WARNING,
+        "Unable to receive transcription from BHG, please try manually",
+        None,
+        "priority",
+        True
+    )
     WARNING_BHG_SCHEDULED = (
         NotificationChannel.WARNING,
         "{transcript}",
