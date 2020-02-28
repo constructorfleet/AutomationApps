@@ -31,7 +31,7 @@ SCHEMA_CONDITION = vol.Schema({
 
 SCHEMA_NOTIFY = vol.Schema({
     vol.Required(ARG_NOTIFY_CATEGORY): vol.In(VALID_NOTIFICATION_CATEGORIES),
-    vol.Optional(ARG_NOTIFY_ENTITY_ID, default=None): entity_id,
+    vol.Optional(ARG_NOTIFY_ENTITY_ID): entity_id,
     vol.Optional(ARG_NOTIFY_REPLACERS, default={}): dict
 })
 
@@ -73,5 +73,5 @@ class NotifyWhen(BaseApp):
     def _notify(self):
         self.notifier.notify_people(
             self._notification_category,
-            response_entity_id=self.args[ARG_NOTIFY][ARG_NOTIFY_ENTITY_ID],
+            response_entity_id=self.args[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
             **self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS])
