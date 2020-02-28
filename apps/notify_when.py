@@ -30,7 +30,7 @@ SCHEMA_CONDITION = vol.Schema({
 })
 
 SCHEMA_NOTIFY = vol.Schema({
-    vol.Required(ARG_NOTIFY_CATEGORY): VALID_NOTIFICATION_CATEGORIES,
+    vol.Required(ARG_NOTIFY_CATEGORY): vol.In(VALID_NOTIFICATION_CATEGORIES),
     vol.Optional(ARG_NOTIFY_ENTITY_ID, default=None): entity_id,
     vol.Optional(ARG_NOTIFY_REPLACERS, default={}): dict
 })
