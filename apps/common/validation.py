@@ -152,6 +152,8 @@ def valid_entity_id(entity_id):
     """Test if an entity ID is a valid format.
     Format: <domain>.<entity> where both are slugs.
     """
+    if not isinstance(entity_id, str):
+        return False
     if FLOAT_PATTERN.match(entity_id):
         return False
 
