@@ -1,0 +1,37 @@
+washer_done:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.washer_current_draw
+  from:
+    comparator: '>'
+    value: 3
+  to:
+    value: 0
+  notify:
+    notify_category: INFO_LAUNDRY_DONE
+    replacers:
+      laundry_machine: Washer
+
+dryer_done:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.dryer_current_draw
+  from:
+    comparator: '>'
+    value: 3
+  to:
+    value: 0
+  notify:
+    notify_category: INFO_LAUNDRY_DONE
+    replacers:
+      laundry_machine: Dryer
