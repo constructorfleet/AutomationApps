@@ -88,7 +88,11 @@ class BaseApp(hassmqtt.HassMqtt):
 
     # noinspection PyTypeChecker
     def _state_condition_met(self, condition):
-        entity_state = self.get_state(condition[ARG_ENTITY_ID])
+        if valid_entity_id(condition[ARG_ENTITY_ID]):
+            entity_state = self.get_state(condition[ARG_ENTITY_ID])
+        else:
+            entity_state = condition[ARG_ENTITY_ID]
+
         value = condition.get(ARG_VALUE, None)
         if value is None:
             return True
