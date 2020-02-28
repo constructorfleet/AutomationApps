@@ -28,9 +28,9 @@ dryer_done:
   entity_id: sensor.dryer_current_draw
   from:
     comparator: '>'
-    value: 3
+    value: 1.0
   to:
-    value: 0
+    value: 0.0
   notify:
     notify_category: INFO_LAUNDRY_DONE
     replacers:
