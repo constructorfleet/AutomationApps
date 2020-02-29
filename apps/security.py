@@ -75,7 +75,7 @@ class DoorLock(BaseApp):
                               oneshot=True)
             return
 
-        accuracy = self.get_state(entity, attribute='gps accuracy', default=10000)
+        accuracy = self.get_state(entity, attribute='gps accuracy', default=1)
         if accuracy > self.args[ARG_GPS_MAX_ACCURACY]:
             self.log('{} accuracy too high {}'.format(entity, accuracy))
             self.listen_state(self._handle_person_change,
