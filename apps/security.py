@@ -6,12 +6,16 @@ from common.const import (
     ARG_NOTIFY_CATEGORY,
     ARG_STATE
 )
-from common.validation import entity_id, ensure_list
+
+from common.validation import entity_id, ensure_list, split_entity_id
 from notifiers.notification_category import NotificationCategory, VALID_NOTIFICATION_CATEGORIES
 
 ARG_DOORBELL = 'doorbell'
 ARG_PEOPLE = 'people'
 ARG_LOCK = 'lock'
+ARG_GPS_MAX_ACCURACY = 'gps_max_accuracy'
+
+DEFAULT_ACCURACY = 30
 
 
 class Doorbell(BaseApp):
@@ -47,6 +51,7 @@ class DoorLock(BaseApp):
             ensure_list,
             [entity_id]
         ),
+        vol.Optional(ARG_GPS_MAX_ACCURACY, default=DEFAULT_ACCURACY): vol.Range(1, 100),
         vol.Required(ARG_LOCK): entity_id
     }, extra=vol.ALLOW_EXTRA)
 
@@ -65,6 +70,14 @@ class DoorLock(BaseApp):
 
     def _handle_person_change(self, entity, attribute, old, new, kwargs):
         if old == new:
+            self.listen_state(self._handle_person_change,
+                              entity=entity,
+                              oneshot=True)
+            return
+
+        accuracy = self.get_state(entity, attribute='gps accuracy', default=10000)
+        if accuracy > self.args[ARG_GPS_MAX_ACCURACY]:
+            self.log('{} accuracy too high {}'.format(entity, accuracy))
             self.listen_state(self._handle_person_change,
                               entity=entity,
                               oneshot=True)
