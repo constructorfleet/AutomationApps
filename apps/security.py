@@ -81,7 +81,7 @@ class DoorLock(BaseApp):
                           oneshot=True)
 
     def _handle_person_arrive(self, person_name):
-        self.log("$s arrived" % person_name)
+        self.log("{} arrived".format(person_name))
         if not self.is_locked:
             self.log("Notify presence")
             self._notify(
@@ -104,9 +104,9 @@ class DoorLock(BaseApp):
             person_name=person_name)
 
     def _handle_person_left(self, person_name):
-        self.log("$s left" % person_name)
+        self.log("{} left".format(person_name))
         if self.is_locked:
-            self.log('Notify deparated')
+            self.log('Notify departed')
             self._notify(
                 NotificationCategory.PRESENCE_PERSON_DEPARTED,
                 response_entity_id=None,
