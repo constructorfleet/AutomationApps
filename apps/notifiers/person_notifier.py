@@ -5,6 +5,7 @@ import voluptuous as vol
 from appdaemon import adbase, adapi
 
 from common.validation import ensure_list, service
+from common.const import ARG_DOMAIN
 from notifiers.notification_channel import NotificationChannel
 
 NOTIFIER_IOS = "ios"
