@@ -27,7 +27,7 @@ DEFAULT_DOMAIN = "homeassistant"
 DEFAULT_DUSK_SERVICE = "turn_on"
 DEFAULT_DAWN_SERVICE = "turn_off"
 
-MIDNIGHT = datetime.time(0, 0, 0)
+MIDNIGHT = "00:01:00"
 
 ENTITY_SCHEMA = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,

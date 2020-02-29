@@ -1,6 +1,5 @@
 import logging
 import re
-from datetime import time
 from urllib import parse
 
 import voluptuous as vol
@@ -83,12 +82,12 @@ class CallBHG(BaseApp):
         )
 
         self.run_daily(self._new_day,
-                       time(0, 0, 0))
+                       "00:01:00")
         self.listen_event(self._call_bhg,
                           event="call_bhg")
         self.run_daily(self._daily_call,
-                       time(self.args[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
-                            self.args[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
+                       "%02d:%02d:00" % (self.args[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
+                                         self.args[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
 
         self.log("Initialized")
 

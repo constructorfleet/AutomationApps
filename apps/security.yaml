@@ -8,7 +8,7 @@ doorbell:
     - notifiers
   doorbell:
     entity_id: switch.doorbell
-#
+
 #unlock:
 #  module: security
 #  class: DoorLock
@@ -19,9 +19,19 @@ doorbell:
 #    - notifiers
 #  people:
 #    - person.teagan
-#    - person.alan
 #    - person.grace
-#    - device_tracker.care
+#    - device_tracker.keith
+#    - device_tracker.becky
+#    - person.alan
+#    - person.persia
+#    - person.gina
+#    - device_tracker.taylor
+#    - device_tracker.patrick
+#    - device_tracker.james
+#    - device_tracker.valerie
+#    - device_tracker.rhema
+#    - device_tracker.heather
+#    - device_tracker.seb
 #  lock: lock.front_door
 
 garage_door_timeout:
