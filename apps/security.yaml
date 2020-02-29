@@ -9,30 +9,30 @@ doorbell:
   doorbell:
     entity_id: switch.doorbell
 
-#unlock:
-#  module: security
-#  class: DoorLock
-#  global_dependencies:
-#    - common.base_app
-#    - common.validation
-#  dependencies:
-#    - notifiers
-#  people:
-#    - person.teagan
-#    - person.grace
-#    - device_tracker.keith
-#    - device_tracker.becky
-#    - person.alan
-#    - person.persia
-#    - person.gina
-#    - device_tracker.taylor
-#    - device_tracker.patrick
-#    - device_tracker.james
-#    - device_tracker.valerie
-#    - device_tracker.rhema
-#    - device_tracker.heather
-#    - device_tracker.seb
-#  lock: lock.front_door
+unlock:
+  module: security
+  class: DoorLock
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  dependencies:
+    - notifiers
+  people:
+    - person.teagan
+    - person.grace
+    - device_tracker.keith
+    - device_tracker.becky
+    - person.alan
+    - person.persia
+    - person.gina
+    - device_tracker.taylor
+    - device_tracker.patrick
+    - device_tracker.james
+    - device_tracker.valerie
+    - device_tracker.rhema
+    - device_tracker.heather
+    - device_tracker.seb
+  lock: lock.front_door
 
 garage_door_timeout:
   module: timeout

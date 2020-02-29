@@ -30,15 +30,15 @@ notifiers:
   people:
     - name: Teagan
       notifier:
-        - name: ios
+        - name: notify
           service: mobile_app_agrajag
     - name: Alan
       notifier:
-        - name: ios
+        - name: notify
           service: mobile_app_deviphone
     - name: Grace
       notifier:
-        - name: ios
+        - name: notify
           service: mobile_app_graces_iphone
 
 #notification_action_processor:
