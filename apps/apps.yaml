@@ -17,7 +17,7 @@ tracker_groups:
     - common.const
     - common.helpers
   groups:
-    test:
+    - group_name: test
       entity_id: person.teagan
   max_distance: 250
 
