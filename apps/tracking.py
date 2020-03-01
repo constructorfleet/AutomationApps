@@ -56,7 +56,7 @@ class TrackerGroup(BaseApp):
 
         for group in self.args[ARG_GROUPS]:
             group_name = group[ARG_GROUP_NAME]
-
+            self._entity_last_gps[group_name] = {}
             max_distance = group.get(ARG_MAX_DISTANCE,
                                      self.args[ARG_MAX_DISTANCE])
             self.log('GROUP {} {}'.format(group_name, max_distance))
@@ -70,10 +70,11 @@ class TrackerGroup(BaseApp):
                 self.log('Listening state {}'.format(entity))
                 self.listen_state(self._handle_tracker_update,
                                   entity=entity,
+                                  attribute='all',
                                   **callback_args)
 
     def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
-        self.log('Recieved state {} {} for {}'.format(str(new), str(attribute), entity))
+        self.log('Recieved state {} for {}'.format(str(new), entity))
         if new[ATTR_STATE] == 'home':
             self.log('Is home')
             gps = self._home_gps
