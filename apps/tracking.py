@@ -29,7 +29,10 @@ SCHEMA_GROUP = vol.Schema({
 
 class TrackerGroup(BaseApp):
     config_schema = vol.Schema({
-        vol.Required(ARG_GROUPS): SCHEMA_GROUP,
+        vol.Required(ARG_GROUPS): vol.All(
+            ensure_list,
+            [SCHEMA_GROUP]
+        ),
         vol.Optional(ARG_MAX_DISTANCE, default=ARG_MAX_DISTANCE): vol.Coerce(float)
     }, extra=vol.ALLOW_EXTRA)
 
