@@ -57,6 +57,7 @@ class TrackerGroup(BaseApp):
         for group in self.args[ARG_GROUPS]:
             group_name = group[ARG_GROUP_NAME]
             self._entity_last_gps[group_name] = {}
+            self._group_entities[group_name] = {}
             max_distance = group.get(ARG_MAX_DISTANCE,
                                      self.args[ARG_MAX_DISTANCE])
             self.log('GROUP {} {}'.format(group_name, max_distance))
@@ -92,7 +93,7 @@ class TrackerGroup(BaseApp):
         self._calculate_group_members(group_name, kwargs[ATTR_MAX_DISTANCE])
 
     def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
-        self.set_state(self._group_entities[group_name][ARG_ENTITY_ID],
+        self.set_state('device_tracker.group_%s' % group_name,
                        attributes={
                            ATTR_GROUP_MEMBERS: members or [],
                            ATTR_LATITUDE: lat_avg,
