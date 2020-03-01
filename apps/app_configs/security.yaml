@@ -18,13 +18,13 @@ unlock:
   dependencies:
     - notifiers
   people:
-    - person.teagan
-    - person.grace
+    - device_tracker.alan
+    - device_tracker.teagan
+    - device_tracker.grace_iphone
+    - device_tracker.iphone
+    - device_tracker.gina
     - device_tracker.keith
     - device_tracker.becky
-    - person.alan
-    - person.persia
-    - person.gina
     - device_tracker.taylor
     - device_tracker.patrick
     - device_tracker.james
