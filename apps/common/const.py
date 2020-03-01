@@ -18,6 +18,10 @@ ARG_NOTIFY_ENTITY_ID = 'response_entity_id'
 EVENT_STATE_CHANGED = 'state_changed'
 
 DOMAIN_NOTIFY = 'notify'
+DOMAIN_HOMEASSISTANT = 'homeassistant'
+
+SERVICE_TURN_ON = 'turn_on'
+SERVICE_TURN_OFF = 'turn_off'
 
 EQUALS = '='
 LESS_THAN = '<'

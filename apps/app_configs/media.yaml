@@ -1,0 +1,25 @@
+living_room_movie_mode:
+  module: movie_mode
+  class: MovieMode
+  global_dependencies:
+    - validation
+    - common.base_app
+  media_player: media_player.living_room_apple_tv
+  media_types:
+    - movie
+    - video
+  reset_on_pause: turn_on_between_episodes
+  check_sun: True
+  tv_delay: 30
+  turn_on_between_episodes:
+    - switch.lower_hall_light
+    - switch.lower_hall_switch_1
+    - switch.lower_hall_switch_2
+  turn_off:
+    - switch.lower_hall_light
+    - entity_id: switch.living_room_ceiling_light
+      remember: True
+    - switch.lower_hall_switch_1
+    - switch.lower_hall_switch_2
+  tv: remote.living_room_harmony_hub
+  toggle: light.toggle_movie_mode
