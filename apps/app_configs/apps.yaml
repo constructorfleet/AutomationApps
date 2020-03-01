@@ -31,7 +31,7 @@ tracker_groups:
         - person.grace
         - person.alan
         - person.persia
-    - group_name: device_tracker.2011_subaru_impreza_wagon
+    - group_name: 2011_subaru_impreza_wagon
       entity_id:
         - device_tracker.2019_jeep_compass
         - person.teagan
