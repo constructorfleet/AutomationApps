@@ -72,9 +72,12 @@ class TrackerGroup(BaseApp):
                                   **callback_args)
 
     def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
+        self.log('Recieved state {} for {}'.format(str(new), entity))
         if new[ATTR_STATE] == 'home':
+            self.log('Is home')
             gps = self._home_gps
         else:
+            self.log('Getting GPS')
             gps = self._get_gps(new[ATTR_ATTRIBUTES])
         if None in gps:
             return
@@ -83,6 +86,7 @@ class TrackerGroup(BaseApp):
             ARG_ENTITY_ID: entity,
             ATTR_GPS: gps
         }
+        self._calculate_group_members(group_name, kwargs[ATTR_MAX_DISTANCE])
 
     def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
         self.set_state(self._group_entities[group_name][ARG_ENTITY_ID],
@@ -98,6 +102,7 @@ class TrackerGroup(BaseApp):
         members = set()
         for entity1 in self._group_entities[group_name]:
             if None in entity1[ATTR_GPS]:
+                self.log("{} has not GPS".format(entity1))
                 continue
             for entity2 in [entity2 for entity2 in self._group_entities[group_name] if
                             entity1 != entity2 and None not in entity2[ATTR_GPS] and
