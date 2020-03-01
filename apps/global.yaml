@@ -1,6 +1,7 @@
 global_modules:
   - common.base_app
   - common.utils
+  - common.helpers
   - common.validation
   - notifiers.notification_action
   - notifiers.notification_category

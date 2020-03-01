@@ -48,9 +48,12 @@ class BaseApp(hassmqtt.HassMqtt):
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
     holidays = None
+    plugin_config = None
 
     def initialize(self):
         """Initialization of Base App class."""
+        self.plugin_config = self.get_plugin_config()
+
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
         if APP_HOLIDAYS in self.args.get(ARG_DEPENDENCIES, []):

@@ -7,6 +7,19 @@ holidays:
     - common.utils
   api_key: !secret holiday_api_key
 
+tracker_groups:
+  module: misc
+  class: TrackerGroup
+  global_dependencies:
+    - common.base_app
+    - common.validation
+    - common.utils
+    - common.helpers
+  groups:
+    test:
+      entity_id: person.teagan
+  max_distance: 250
+
 #bhg_call_in:
 #  module: bhg_call_in
 #  class: CallBHG
