@@ -18,8 +18,12 @@ tracker_groups:
     - common.helpers
   groups:
     - group_name: test
-      entity_id: person.teagan
-  max_distance: 250
+      entity_id:
+        - person.teagan
+        - person.grace
+        - person.alan
+        - person.teagan
+  max_distance: 1
 
 bhg_call_in:
   module: bhg_call_in
