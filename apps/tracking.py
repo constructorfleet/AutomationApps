@@ -70,11 +70,10 @@ class TrackerGroup(BaseApp):
                 self.log('Listening state {}'.format(entity))
                 self.listen_state(self._handle_tracker_update,
                                   entity=entity,
-                                  attribute='all',
                                   **callback_args)
 
     def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
-        self.log('Recieved state {} for {}'.format(str(new), entity))
+        self.log('Recieved state {} {} for {}'.format(str(new), str(attribute), entity))
         if new[ATTR_STATE] == 'home':
             self.log('Is home')
             gps = self._home_gps
