@@ -98,6 +98,7 @@ class TrackerGroup(BaseApp):
 
     def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
         entity_id = 'device_tracker.group_%s' % group_name
+        self.log('Setting state {}'.format(entity_id))
         new_state = {
                         ARG_ENTITY_ID: entity_id,
                         ATTR_ATTRIBUTES: {
@@ -121,6 +122,8 @@ class TrackerGroup(BaseApp):
         if old_state is not None:
             payload[ATTR_EVENT_DATA]['old_state'] = old_state
 
+        self.log('Publishing {}'.format(str(payload)))
+
         return self.mqtt_publish(
             'states/slaves/rules/entity_id',
             payload=json.dumps(payload),
@@ -130,6 +133,7 @@ class TrackerGroup(BaseApp):
         )
 
     def _calculate_group_members(self, group_name, max_distance):
+        self.log('Calculating members')
         avg_lat = 0
         avg_long = 0
         members = set()
@@ -142,12 +146,15 @@ class TrackerGroup(BaseApp):
                             entity2[ARG_ENTITY_ID] not in members]:
                 distance = self._get_distance(entity1[ATTR_GPS], entity2[ATTR_GPS])
                 if distance > max_distance:
+                    self.log(
+                        "{} too far from {}".format(entity1[ARG_ENTITY_ID], entity2[ARG_ENTITY_ID]))
                     continue
                 members.add(entity1[ARG_ENTITY_ID])
                 avg_lat += entity1[ATTR_GPS][0]
                 avg_long += entity2[ATTR_GPS][1]
 
         if len(members) == 0:
+            self.log('No members')
             self._set_group_state(group_name)
         else:
             self._set_group_state(
