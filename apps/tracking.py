@@ -101,6 +101,7 @@ class TrackerGroup(BaseApp):
         self.log('Setting state {}'.format(entity_id))
         new_state = {
                         ARG_ENTITY_ID: entity_id,
+                        ATTR_STATE: 'tracking',
                         ATTR_ATTRIBUTES: {
                             ATTR_GROUP_MEMBERS: members or [],
                             ATTR_LATITUDE: lat_avg,
