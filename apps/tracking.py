@@ -59,6 +59,7 @@ class TrackerGroup(BaseApp):
 
             max_distance = group.get(ARG_MAX_DISTANCE,
                                      self.args[ARG_MAX_DISTANCE])
+            self.log('GROUP {} {}'.format(group_name, max_distance))
             callback_args = {
                 ATTR_GROUP_NAME: group_name,
                 ATTR_GROUP_MEMBERS: group[ARG_ENTITY_ID],
@@ -66,6 +67,7 @@ class TrackerGroup(BaseApp):
             }
 
             for entity in group[ARG_ENTITY_ID]:
+                self.log('Listening state')
                 self.listen_state(self._handle_tracker_update,
                                   entity=entity,
                                   attribute='all',
