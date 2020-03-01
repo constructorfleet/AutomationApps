@@ -1,7 +1,9 @@
+import json
+
 import voluptuous as vol
 
-from common.base_app import BaseApp
-from common.const import ARG_ENTITY_ID, ARG_GROUPS
+from common.base_app import BaseApp, ATTR_EVENT_TYPE, ATTR_EVENT_DATA
+from common.const import ARG_ENTITY_ID, ARG_GROUPS, EVENT_STATE_CHANGED
 from common.helpers import get_distance_helper, Unit
 from common.validation import ensure_list, entity_id
 
@@ -45,6 +47,7 @@ class TrackerGroup(BaseApp):
 
     _entity_last_gps = {}
     _group_entities = {}
+    _group_states = {}
     _home_gps = None
     _get_distance = get_distance_helper(unit=Unit.MILES)
 
@@ -58,6 +61,7 @@ class TrackerGroup(BaseApp):
             group_name = group[ARG_GROUP_NAME]
             self._entity_last_gps[group_name] = {}
             self._group_entities[group_name] = {}
+            self._group_states[group_name] = {}
             max_distance = group.get(ARG_MAX_DISTANCE,
                                      self.args[ARG_MAX_DISTANCE])
             self.log('GROUP {} {}'.format(group_name, max_distance))
@@ -93,12 +97,32 @@ class TrackerGroup(BaseApp):
         self._calculate_group_members(group_name, kwargs[ATTR_MAX_DISTANCE])
 
     def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
-        self.set_state('device_tracker.group_%s' % group_name,
-                       attributes={
-                           ATTR_GROUP_MEMBERS: members or [],
-                           ATTR_LATITUDE: lat_avg,
-                           ATTR_LONGITUDE: long_avg
-                       })
+        entity_id = 'device_tracker.group_%s' % group_name
+        new_state = {
+                        ARG_ENTITY_ID: entity_id,
+                        ATTR_ATTRIBUTES: {
+                            ATTR_GROUP_MEMBERS: members or [],
+                            ATTR_LATITUDE: lat_avg,
+                            ATTR_LONGITUDE: long_avg
+                        }
+                    }
+        old_state = self._group_states[group_name]
+        self._group_states[group_name] = new_state
+
+        return self.mqtt_publish(
+            'states/slaves/rules/entity_id',
+            payload=json.dumps({
+                ATTR_EVENT_TYPE: EVENT_STATE_CHANGED,
+                ATTR_EVENT_DATA: {
+                    'new_state': new_state,
+                    'old_state': old_state
+                },
+                ATTR_SOURCE: self.name
+            }),
+            qos=1,
+            retain=True,
+            namespace='default'
+        )
 
     def _calculate_group_members(self, group_name, max_distance):
         avg_lat = 0
