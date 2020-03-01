@@ -31,7 +31,7 @@ class TrackerGroup(BaseApp):
     config_schema = vol.Schema({
         vol.Required(ARG_GROUPS): SCHEMA_GROUP,
         vol.Optional(ARG_MAX_DISTANCE, default=ARG_MAX_DISTANCE): vol.Coerce(float)
-    })
+    }, extra=vol.ALLOW_EXTRA)
 
     _entity_last_gps = {}
     _home_gps = None
