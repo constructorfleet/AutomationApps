@@ -1,5 +1,6 @@
 global_modules:
   - common.base_app
+  - common.const
   - common.utils
   - common.helpers
   - common.validation

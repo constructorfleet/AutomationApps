@@ -14,6 +14,7 @@ tracker_groups:
     - common.base_app
     - common.validation
     - common.utils
+    - common.const
     - common.helpers
   groups:
     test:
