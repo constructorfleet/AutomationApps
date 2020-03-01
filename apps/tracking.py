@@ -67,7 +67,7 @@ class TrackerGroup(BaseApp):
             }
 
             for entity in group[ARG_ENTITY_ID]:
-                self.log('Listening state')
+                self.log('Listening state {}'.format(entity))
                 self.listen_state(self._handle_tracker_update,
                                   entity=entity,
                                   attribute='all',
