@@ -71,6 +71,7 @@ class TrackerGroup(BaseApp):
                 self.listen_state(self._handle_tracker_update,
                                   entity=entity,
                                   attribute='all',
+                                  immediate=True,
                                   **callback_args)
 
     def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
