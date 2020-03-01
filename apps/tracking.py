@@ -64,7 +64,6 @@ class TrackerGroup(BaseApp):
             self._group_states[group_name] = None
             max_distance = group.get(ARG_MAX_DISTANCE,
                                      self.args[ARG_MAX_DISTANCE])
-            self.log('GROUP {} {}'.format(group_name, max_distance))
             callback_args = {
                 ATTR_GROUP_NAME: group_name,
                 ATTR_GROUP_MEMBERS: group[ARG_ENTITY_ID],
@@ -72,7 +71,6 @@ class TrackerGroup(BaseApp):
             }
 
             for entity in group[ARG_ENTITY_ID]:
-                self.log('Listening state {}'.format(entity))
                 self._entity_last_gps[group_name][entity] = self._home_gps
                 self._group_entities[group_name].append(entity)
                 self.listen_state(self._handle_tracker_update,
@@ -82,12 +80,9 @@ class TrackerGroup(BaseApp):
                                   **callback_args)
 
     def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
-        self.log('Recieved state {} for {}'.format(str(new), entity))
         if new[ATTR_STATE] == 'home':
-            self.log('Is home')
             gps = self._home_gps
         else:
-            self.log('Getting GPS')
             gps = self._get_gps(new[ATTR_ATTRIBUTES])
         if None in gps:
             return
@@ -97,7 +92,6 @@ class TrackerGroup(BaseApp):
 
     def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
         entity_id = 'device_tracker.group_%s' % group_name
-        self.log('Setting state {}'.format(entity_id))
         new_state = {
                         ARG_ENTITY_ID: entity_id,
                         ATTR_STATE: 'tracking',
@@ -122,8 +116,6 @@ class TrackerGroup(BaseApp):
         if old_state is not None:
             payload[ATTR_EVENT_DATA]['old_state'] = old_state
 
-        self.log('Publishing {}'.format(str(payload)))
-
         return self.mqtt_publish(
             'states/slaves/rules/entity_id',
             payload=json.dumps(payload),
@@ -133,13 +125,11 @@ class TrackerGroup(BaseApp):
         )
 
     def _calculate_group_members(self, group_name, max_distance):
-        self.log('Calculating members')
         avg_lat = 0
         avg_long = 0
         members = set()
         for entity1 in self._group_entities[group_name]:
             if None in self._entity_last_gps[group_name][entity1]:
-                self.log("{} has not GPS".format(entity1))
                 continue
             for entity2 in [entity2 for entity2 in self._group_entities[group_name] if
                             entity1 != entity2 and
@@ -149,8 +139,6 @@ class TrackerGroup(BaseApp):
                     self._entity_last_gps[group_name][entity1],
                     self._entity_last_gps[group_name][entity2])
                 if distance > max_distance:
-                    self.log(
-                        "{} too far from {}".format(entity1, entity2))
                     continue
                 members.add(entity1)
                 members.add(entity2)
@@ -160,7 +148,6 @@ class TrackerGroup(BaseApp):
                 avg_long += self._entity_last_gps[group_name][entity2][1]
 
         if len(members) == 0:
-            self.log('No members')
             self._set_group_state(group_name)
         else:
             self._set_group_state(
