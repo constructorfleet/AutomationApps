@@ -8,7 +8,7 @@ holidays:
   api_key: !secret holiday_api_key
 
 tracker_groups:
-  module: misc
+  module: tracking
   class: TrackerGroup
   global_dependencies:
     - common.base_app
