@@ -17,12 +17,27 @@ tracker_groups:
     - common.const
     - common.helpers
   groups:
-    - group_name: test
+    - group_name: jeep_cherokee
       entity_id:
+        - device_tracker.2015_jeep_cherokee
         - person.teagan
         - person.grace
         - person.alan
+        - person.persia
+    - group_name: jeep_compass
+      entity_id:
+        - device_tracker.2019_jeep_compass
         - person.teagan
+        - person.grace
+        - person.alan
+        - person.persia
+    - group_name: device_tracker.2011_subaru_impreza_wagon
+      entity_id:
+        - device_tracker.2019_jeep_compass
+        - person.teagan
+        - person.grace
+        - person.alan
+        - person.persia
   max_distance: 1
 
 bhg_call_in:
