@@ -60,7 +60,7 @@ class TrackerGroup(BaseApp):
         for group in self.args[ARG_GROUPS]:
             group_name = group[ARG_GROUP_NAME]
             self._entity_last_gps[group_name] = {}
-            self._group_entities[group_name] = {}
+            self._group_entities[group_name] = []
             self._group_states[group_name] = None
             max_distance = group.get(ARG_MAX_DISTANCE,
                                      self.args[ARG_MAX_DISTANCE])
@@ -73,6 +73,8 @@ class TrackerGroup(BaseApp):
 
             for entity in group[ARG_ENTITY_ID]:
                 self.log('Listening state {}'.format(entity))
+                self._entity_last_gps[group_name][entity] = self._home_gps
+                self._group_entities[group_name].append(entity)
                 self.listen_state(self._handle_tracker_update,
                                   entity=entity,
                                   attribute='all',
@@ -90,10 +92,7 @@ class TrackerGroup(BaseApp):
         if None in gps:
             return
         group_name = kwargs[ATTR_GROUP_NAME]
-        self._entity_last_gps[group_name][entity] = {
-            ARG_ENTITY_ID: entity,
-            ATTR_GPS: gps
-        }
+        self._entity_last_gps[group_name][entity] = gps
         self._calculate_group_members(group_name, kwargs[ATTR_MAX_DISTANCE])
 
     def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
@@ -139,20 +138,26 @@ class TrackerGroup(BaseApp):
         avg_long = 0
         members = set()
         for entity1 in self._group_entities[group_name]:
-            if None in entity1[ATTR_GPS]:
+            if None in self._entity_last_gps[group_name][entity1]:
                 self.log("{} has not GPS".format(entity1))
                 continue
             for entity2 in [entity2 for entity2 in self._group_entities[group_name] if
-                            entity1 != entity2 and None not in entity2[ATTR_GPS] and
+                            entity1 != entity2 and
+                            None not in self._entity_last_gps[group_name][entity2] and
                             entity2[ARG_ENTITY_ID] not in members]:
-                distance = self._get_distance(entity1[ATTR_GPS], entity2[ATTR_GPS])
+                distance = self._get_distance(
+                    self._entity_last_gps[group_name][entity1],
+                    self._entity_last_gps[group_name][entity2])
                 if distance > max_distance:
                     self.log(
-                        "{} too far from {}".format(entity1[ARG_ENTITY_ID], entity2[ARG_ENTITY_ID]))
+                        "{} too far from {}".format(entity1, entity2))
                     continue
-                members.add(entity1[ARG_ENTITY_ID])
-                avg_lat += entity1[ATTR_GPS][0]
-                avg_long += entity2[ATTR_GPS][1]
+                members.add(entity1)
+                members.add(entity2)
+                avg_lat += self._entity_last_gps[group_name][entity1][0]
+                avg_long += self._entity_last_gps[group_name][entity1][1]
+                avg_lat += self._entity_last_gps[group_name][entity2][0]
+                avg_long += self._entity_last_gps[group_name][entity2][1]
 
         if len(members) == 0:
             self.log('No members')
