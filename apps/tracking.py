@@ -61,7 +61,7 @@ class TrackerGroup(BaseApp):
             group_name = group[ARG_GROUP_NAME]
             self._entity_last_gps[group_name] = {}
             self._group_entities[group_name] = {}
-            self._group_states[group_name] = {}
+            self._group_states[group_name] = None
             max_distance = group.get(ARG_MAX_DISTANCE,
                                      self.args[ARG_MAX_DISTANCE])
             self.log('GROUP {} {}'.format(group_name, max_distance))
@@ -109,16 +109,21 @@ class TrackerGroup(BaseApp):
         old_state = self._group_states[group_name]
         self._group_states[group_name] = new_state
 
+        payload = {
+            ATTR_EVENT_TYPE: EVENT_STATE_CHANGED,
+            ATTR_EVENT_DATA: {
+                ARG_ENTITY_ID: entity_id,
+                'new_state': new_state
+            },
+            ATTR_SOURCE: self.name
+        }
+
+        if old_state is not None:
+            payload[ATTR_EVENT_DATA]['old_state'] = old_state
+
         return self.mqtt_publish(
             'states/slaves/rules/entity_id',
-            payload=json.dumps({
-                ATTR_EVENT_TYPE: EVENT_STATE_CHANGED,
-                ATTR_EVENT_DATA: {
-                    'new_state': new_state,
-                    'old_state': old_state
-                },
-                ATTR_SOURCE: self.name
-            }),
+            payload=json.dumps(payload),
             qos=1,
             retain=True,
             namespace='default'
