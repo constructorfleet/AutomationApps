@@ -45,7 +45,7 @@ class Haversine:
         unit = Unit(self._unit)
         return _AVG_EARTH_RADIUS_KM * _CONVERSIONS[unit]
 
-    def haversine(self, point1, point2):
+    def __call__(self, point1, point2):
         """ Calculate the great-circle distance between two points on the Earth surface.
 
         Takes two 2-tuples, containing the latitude and longitude of each point in decimal degrees,
