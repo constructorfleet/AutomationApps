@@ -144,7 +144,7 @@ class TrackerGroup(BaseApp):
             for entity2 in [entity2 for entity2 in self._group_entities[group_name] if
                             entity1 != entity2 and
                             None not in self._entity_last_gps[group_name][entity2] and
-                            entity2[ARG_ENTITY_ID] not in members]:
+                            entity2 not in members]:
                 distance = self._get_distance(
                     self._entity_last_gps[group_name][entity1],
                     self._entity_last_gps[group_name][entity2])
