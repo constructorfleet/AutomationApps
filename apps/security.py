@@ -56,10 +56,12 @@ class DoorLock(BaseApp):
     }, extra=vol.ALLOW_EXTRA)
 
     _lock_name = None
+    _last_states = {}
 
     def initialize_app(self):
         self._lock_name = self.get_state(self.args[ARG_LOCK], attribute='friendly_name')
         for person in self.args[ARG_PEOPLE]:
+            self._last_states[person] = None
             self.listen_state(self._handle_person_change,
                               entity=person,
                               oneshot=True)
@@ -69,7 +71,7 @@ class DoorLock(BaseApp):
         return self.get_state(self.args[ARG_LOCK]) == 'locked'
 
     def _handle_person_change(self, entity, attribute, old, new, kwargs):
-        if old == new:
+        if old == new or new == self._last_states[entity]:
             self.listen_state(self._handle_person_change,
                               entity=entity,
                               oneshot=True)
@@ -82,7 +84,7 @@ class DoorLock(BaseApp):
                               entity=entity,
                               oneshot=True)
             return
-
+        self._last_states[entity] = new
         person_name = self.get_state(entity, attribute='friendly_name')
         if new == 'home':
             self._handle_person_arrive(person_name)
