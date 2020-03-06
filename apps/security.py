@@ -6,8 +6,7 @@ from common.const import (
     ARG_NOTIFY_CATEGORY,
     ARG_STATE
 )
-
-from common.validation import entity_id, ensure_list, split_entity_id
+from common.validation import entity_id, ensure_list
 from notifiers.notification_category import NotificationCategory, VALID_NOTIFICATION_CATEGORIES
 
 ARG_DOORBELL = 'doorbell'
@@ -71,7 +70,8 @@ class DoorLock(BaseApp):
         return self.get_state(self.args[ARG_LOCK]) == 'locked'
 
     def _handle_person_change(self, entity, attribute, old, new, kwargs):
-        if old == new or new == self._last_states[entity]:
+        if old == new or new == self._last_states[entity] or 'unavailable' in [new.lower(),
+                                                                               old.lower()]:
             self.listen_state(self._handle_person_change,
                               entity=entity,
                               oneshot=True)
