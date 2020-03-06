@@ -181,7 +181,7 @@ lower_hall_light:
       value: 'off'
     - entity_id: sensor.lower_stairs_luminance
       comparator: '<'
-      value: 10
+      value: 5
   call:
     - domain: homeassistant
       service: turn_on
