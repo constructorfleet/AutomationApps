@@ -203,7 +203,8 @@ class MovieMode(BaseApp):
             self.handle_stopped()
 
     def handle_stopped(self):
-        self.log("Stopped")
+        if not self.is_enabled:
+            return
         if self.media_type and not is_movie(self.media_type):
             self.log("Delaying stop")
             self.delay_handle = \
@@ -225,8 +226,7 @@ class MovieMode(BaseApp):
             self.handle_player_stopped({})
 
     def handle_paused(self):
-        self.log("Paused")
-        if not self.args[ARG_RESET_ON_PAUSE]:
+        if not self.is_enabled or not self.args[ARG_RESET_ON_PAUSE]:
             return
 
         if isinstance(self.args[ARG_RESET_ON_PAUSE], bool):
