@@ -53,6 +53,8 @@ REPLACER_CAMERA = "{CAM}"
 FILE_NAME_TEMPLATE = "{}_snapshot.jpg".format(REPLACER_CAMERA)
 FILE_PATH = "/config/www/camera_snapshot/"
 
+ATTR_MATCHES = 'matches'
+
 
 def _get_image_url(url_base, file_name):
     return os.path.join(url_base, file_name)
@@ -113,7 +115,8 @@ class Doorbell(BaseApp):
 
         self._image_processor_handle = self.listen_state(
             self._handle_image_processor,
-            entity=self.args[ARG_IMAGE_PROCESSING][ARG_SENSOR])
+            entity=self.args[ARG_IMAGE_PROCESSING][ARG_SENSOR],
+            attribute=ATTR_MATCHES)
 
     def _pause_image_processing(self):
         if self._image_processor_handle is not None:
