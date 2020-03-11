@@ -103,6 +103,7 @@ class Doorbell(BaseApp):
             self._start_image_processing(None)
 
     def _start_image_processing(self, kwargs):
+        self.log('Starting image processing')
         if self._pause_handle is not None:
             self.cancel_timer(self._pause_handle)
 
@@ -118,17 +119,21 @@ class Doorbell(BaseApp):
 
     def _handle_image_processor(self, entity, attribute, old, new, kwargs):
         if old == new or self._should_ignore_processor:
+            self.log('Ignoring image processor')
             return
 
         matches = new.get(self.args[ARG_IMAGE_PROCESSING][ARG_CLASS], None)
         if not matches:
+            self.log('No matches')
             return
 
         for match in matches:
             if match.get(ATTR_SCORE, 0.0) >= self.args[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
+                'Got a match'
                 self._notify()
                 self._pause_image_processing()
                 return
+            self.log('No match')
 
     def _handle_doorbell(self, entity, attribute, old, new, kwargs):
         if old == new:
