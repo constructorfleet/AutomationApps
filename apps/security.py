@@ -12,7 +12,11 @@ from common.const import (
     ARG_COMPARATOR, EQUALS, VALID_COMPARATORS, ARG_VALUE, ATTR_SCORE, DOMAIN_CAMERA,
     SERVICE_SNAPSHOT, ARG_FILENAME)
 from common.validation import entity_id, ensure_list, any_value, url
-from notifiers.notification_category import NotificationCategory, VALID_NOTIFICATION_CATEGORIES
+from notifiers.notification_category import (
+    NotificationCategory,
+    VALID_NOTIFICATION_CATEGORIES,
+    get_category_by_name
+)
 from notifiers.person_notifier import ATTR_IMAGE_URL, ATTR_EXTENSION
 
 ARG_DOORBELL = 'doorbell'
@@ -85,7 +89,7 @@ class Doorbell(BaseApp):
         vol.Inclusive(ARG_CAMERA, 'snapshot'): entity_id,
         vol.Inclusive(ARG_IMAGE_URL, 'snapshot'): url,
         vol.Optional(ARG_NOTIFY_CATEGORY,
-                     default=NotificationCategory.PRESENCE_PERSON_DETECTED): vol.In(
+                     default=NotificationCategory.PRESENCE_PERSON_DETECTED.name): vol.In(
             VALID_NOTIFICATION_CATEGORIES)
     }, extra=vol.ALLOW_EXTRA)
 
@@ -94,7 +98,7 @@ class Doorbell(BaseApp):
     _notification_category = None
 
     def initialize_app(self):
-        self._notification_category = self.args[ARG_NOTIFY_CATEGORY]
+        self._notification_category = get_category_by_name(self.args[ARG_NOTIFY_CATEGORY])
         doorbell = self.args[ARG_DOORBELL]
         self.listen_state(self._handle_doorbell,
                           entity=doorbell[ARG_ENTITY_ID],
