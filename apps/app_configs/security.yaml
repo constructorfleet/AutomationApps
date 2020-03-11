@@ -16,8 +16,8 @@ doorbell:
       - entity_id: binary_sensor.front_door_sensor
         value: 'on'
     notify_interval: 2
-    camera: camera.front_door
-    image_url: https://automation.prettybaked.com/local/camera_snaphot/camera.front_door_snapshot.jpg
+  camera: camera.front_door
+  image_url: https://automation.prettybaked.com/local/camera_snaphot/camera.front_door_snapshot.jpg
 
 unlock:
   module: security
