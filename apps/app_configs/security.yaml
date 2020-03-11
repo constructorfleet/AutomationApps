@@ -8,6 +8,14 @@ doorbell:
     - notifiers
   doorbell:
     entity_id: switch.doorbell
+  image_processing:
+    sensor: sensor.front_door
+    confidence: 90
+    class: person
+    condition:
+      - entity_id: binary_sensor.front_door_sensor
+        value: 'on'
+    notify_interval: 2
 
 unlock:
   module: security
