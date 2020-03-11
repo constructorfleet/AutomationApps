@@ -74,7 +74,9 @@ class Doorbell(BaseApp):
             vol.Required(ARG_SENSOR): entity_id,
             vol.Optional(ARG_CONFIDENCE, default=DEFAULT_CONFIDENCE): vol.Coerce(int),
             vol.Optional(ARG_CLASS, default=DEFAULT_CLASS): vol.All(vol.Coerce(str), vol.Lower),
-            vol.Optional(ARG_CONDITION): SCHEMA_CONDITION,
+            vol.Optional(ARG_CONDITION): vol.All(
+                ensure_list,
+                [SCHEMA_CONDITION]),
             vol.Optional(ARG_NOTIFY_INTERVAL, default=DEFAULT_NOTIFY_INTERVAL): vol.All(
                 vol.Coerce(int),
                 vol.Range(1, 10)
@@ -165,9 +167,13 @@ class Doorbell(BaseApp):
 
     @property
     def _should_ignore_processor(self):
-        if ARG_IMAGE_PROCESSING not in self.args:
+        if ARG_IMAGE_PROCESSING not in self.args \
+                or ARG_CONDITION not in self.args[ARG_IMAGE_PROCESSING]:
             return False
-        return self.condition_met(self.args[ARG_IMAGE_PROCESSING][ARG_CONDITION])
+        for condition in self.args[ARG_IMAGE_PROCESSING][ARG_CONDITION]:
+            if self.condition_met(condition):
+                return True
+        return False
 
 
 class DoorLock(BaseApp):
