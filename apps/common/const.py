@@ -14,14 +14,21 @@ ARG_NOTIFY = 'notify'
 ARG_NOTIFY_CATEGORY = 'notify_category'
 ARG_NOTIFY_REPLACERS = 'replacers'
 ARG_NOTIFY_ENTITY_ID = 'response_entity_id'
+ARG_SENSOR = 'sensor'
+ARG_FILENAME = 'filename'
+
+ATTR_SCORE = 'score'
+ATTR_FILENAME = 'filename'
 
 EVENT_STATE_CHANGED = 'state_changed'
 
 DOMAIN_NOTIFY = 'notify'
 DOMAIN_HOMEASSISTANT = 'homeassistant'
+DOMAIN_CAMERA = 'camera'
 
 SERVICE_TURN_ON = 'turn_on'
 SERVICE_TURN_OFF = 'turn_off'
+SERVICE_SNAPSHOT = 'snapshot'
 
 EQUALS = '='
 LESS_THAN = '<'

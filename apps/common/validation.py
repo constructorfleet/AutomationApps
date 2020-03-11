@@ -7,12 +7,18 @@ from datetime import (
     timedelta,
     time as time_sys
 )
+from urllib.parse import urlparse
 
 import voluptuous as vol
+
+REGEX_IP = r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}' \
+           r'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'
 
 ENTITY_MATCH_ALL = "all"
 ENTITY_ID_PATTERN = re.compile(r'(?:[a-z0-9_]*)\.(?:[a-z0-9_]*)')
 FLOAT_PATTERN = re.compile(r'[+-]?([0-9]*[.])?[0-9]+')
+IP_PATTERN = re.compile(REGEX_IP)
+IP_PORT_PATTERN = re.compile(REGEX_IP + r':[0-9]{1,5}')
 
 SUN_EVENT_SUNSET = 'sunset'
 SUN_EVENT_SUNRISE = 'sunrise'
@@ -439,14 +445,20 @@ def socket_timeout(value):
 
 
 # pylint: disable=no-value-for-parameter
-# def url(value):
-#     """Validate an URL."""
-#     url_in = str(value)
-#
-#     if urlparse(url_in).scheme in ['http', 'https']:
-#         return vol.Schema(vol.Url())(url_in)
-#
-#     raise vol.Invalid('invalid url')
+def url(value):
+    """Validate an URL."""
+    url_in = str(value)
+
+    if IP_PATTERN.match(value):
+        return value + ':80'
+
+    if IP_PORT_PATTERN.match(value):
+        return value
+
+    if urlparse(url_in).scheme in ['http', 'https']:
+        return vol.Schema(vol.Url())(url_in)
+
+    raise vol.Invalid('invalid url')
 
 
 def x10_address(value):

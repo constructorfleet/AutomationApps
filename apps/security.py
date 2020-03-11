@@ -1,20 +1,67 @@
+import os
+
 import voluptuous as vol
 
+from call_when import ARG_CONDITION
 from common.base_app import BaseApp
 from common.const import (
     ARG_ENTITY_ID,
     ARG_NOTIFY_CATEGORY,
-    ARG_STATE
-)
-from common.validation import entity_id, ensure_list
+    ARG_STATE,
+    ARG_SENSOR,
+    ARG_COMPARATOR, EQUALS, VALID_COMPARATORS, ARG_VALUE, ATTR_SCORE, DOMAIN_CAMERA,
+    SERVICE_SNAPSHOT, ARG_FILENAME)
+from common.validation import entity_id, ensure_list, any_value, url
 from notifiers.notification_category import NotificationCategory, VALID_NOTIFICATION_CATEGORIES
+from notifiers.person_notifier import ATTR_IMAGE_URL, ATTR_EXTENSION
 
 ARG_DOORBELL = 'doorbell'
+ARG_IMAGE_PROCESSING = 'image_processing'
 ARG_PEOPLE = 'people'
 ARG_LOCK = 'lock'
 ARG_GPS_MAX_ACCURACY = 'gps_max_accuracy'
+ARG_CLASS = "class"
+ARG_CONFIDENCE = "confidence"
+ARG_CAMERA = 'camera'
+ARG_IMAGE_URL = 'image_url'
+ARG_NOTIFY_INTERVAL = 'notify_interval'
+
+SCHEMA_CONDITION_STATE = vol.Schema({
+    vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
+    vol.Required(ARG_VALUE): any_value
+})
+
+# SCHEMA_CONDITION_TIME = vol.Schema({
+#     vol.Exclusive(ARG_BEFORE, 'time_condition'): time,
+#     vol.Exclusive(ARG_AFTER, 'time_condition'): time
+# })
+
+SCHEMA_CONDITION = vol.Any(SCHEMA_CONDITION_STATE)  # , SCHEMA_CONDITION_TIME)
 
 DEFAULT_ACCURACY = 30
+DEFAULT_CONFIDENCE = 70
+DEFAULT_NOTIFY_INTERVAL = 2
+DEFAULT_CLASS = 'person'
+
+REPLACER_CAMERA = "{CAM}"
+
+FILE_NAME_TEMPLATE = "{}_snapshot.jpg".format(REPLACER_CAMERA)
+FILE_PATH = "/config/www/camera_snapshot/"
+
+
+def _get_image_url(url_base, file_name):
+    return os.path.join(url_base, file_name)
+
+
+def _get_file_name(camera):
+    return FILE_NAME_TEMPLATE \
+        .replace(REPLACER_CAMERA, camera)
+
+
+def _get_file_path(camera, file_name=None):
+    file_name = _get_file_name(camera) if file_name is None else file_name
+    return os.path.join(FILE_PATH, file_name)
 
 
 class Doorbell(BaseApp):
@@ -23,28 +70,107 @@ class Doorbell(BaseApp):
             vol.Required(ARG_ENTITY_ID): entity_id,
             vol.Optional(ARG_STATE, default='on'): str
         }),
-        vol.Optional(ARG_NOTIFY_CATEGORY): vol.In(VALID_NOTIFICATION_CATEGORIES)
+        vol.Optional(ARG_IMAGE_PROCESSING): vol.Schema({
+            vol.Required(ARG_SENSOR): entity_id,
+            vol.Optional(ARG_CONFIDENCE, default=DEFAULT_CONFIDENCE): vol.Coerce(int),
+            vol.Optional(ARG_CLASS, default=DEFAULT_CLASS): vol.All(vol.Coerce(str), vol.Lower),
+            vol.Optional(ARG_CONDITION): SCHEMA_CONDITION,
+            vol.Optional(ARG_NOTIFY_INTERVAL, default=DEFAULT_NOTIFY_INTERVAL): vol.All(
+                vol.Coerce(int),
+                vol.Range(1, 10)
+            )
+        }),
+        vol.Inclusive(ARG_CAMERA, 'snapshot'): entity_id,
+        vol.Inclusive(ARG_IMAGE_URL, 'snapshot'): url,
+        vol.Optional(ARG_NOTIFY_CATEGORY,
+                     default=NotificationCategory.PRESENCE_PERSON_DETECTED): vol.In(
+            VALID_NOTIFICATION_CATEGORIES)
     }, extra=vol.ALLOW_EXTRA)
 
+    _image_processor_handle = None
+    _pause_handle = None
+    _notification_category = None
+
     def initialize_app(self):
+        self._notification_category = self.args[ARG_NOTIFY_CATEGORY]
         doorbell = self.args[ARG_DOORBELL]
         self.listen_state(self._handle_doorbell,
                           entity=doorbell[ARG_ENTITY_ID],
                           new=doorbell[ARG_STATE])
+        if ARG_IMAGE_PROCESSING in self.args:
+            self._start_image_processing(None)
+
+    def _start_image_processing(self, kwargs):
+        if self._pause_handle is not None:
+            self.cancel_timer(self._pause_handle)
+
+        self._image_processor_handle = self.listen_state(
+            self._handle_image_processor,
+            entity=self.args[ARG_IMAGE_PROCESSING][ARG_SENSOR])
+
+    def _pause_image_processing(self):
+        if self._image_processor_handle is not None:
+            self.cancel_listen_state(self._image_processor_handle)
+        self._pause_handle = self.run_in(self._start_image_processing,
+                                         self.args[ARG_NOTIFY_INTERVAL] * 60)
+
+    def _handle_image_processor(self, entity, attribute, old, new, kwargs):
+        if old == new or self._should_ignore_processor:
+            return
+
+        matches = new.get(self.args[ARG_IMAGE_PROCESSING][ARG_CLASS], None)
+        if not matches:
+            return
+
+        for match in matches:
+            if match.get(ATTR_SCORE, 0.0) >= self.args[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
+                self._notify()
+                self._pause_image_processing()
+                return
 
     def _handle_doorbell(self, entity, attribute, old, new, kwargs):
         if old == new:
             return
 
+        self._notify()
+
+    def _notify(self):
         self.notifier.notify_people(
-            NotificationCategory.PRESENCE_PERSON_DETECTED,
+            self._notification_category,
             response_entity_id="lock.front_door",
-            location="the front door"
+            location="the front door",
+            **self._get_notify_args()
         )
+
+    def _get_notify_args(self):
+        if ARG_CAMERA not in self.args:
+            return {}
+
+        camera_id = self.args[ARG_CAMERA]
+        file_name = _get_file_name(camera_id)
+        file_path = _get_file_path(camera_id, file_name)
+        self.publish(
+            DOMAIN_CAMERA,
+            SERVICE_SNAPSHOT,
+            {
+                ARG_ENTITY_ID: camera_id,
+                ARG_FILENAME: file_path
+            }
+        )
+
+        return {
+            ATTR_IMAGE_URL: _get_image_url(self.args[ARG_IMAGE_URL], file_name),
+            ATTR_EXTENSION: "jpg"
+        }
+
+    @property
+    def _should_ignore_processor(self):
+        if ARG_IMAGE_PROCESSING not in self.args:
+            return False
+        return self.condition_met(self.args[ARG_IMAGE_PROCESSING][ARG_CONDITION])
 
 
 class DoorLock(BaseApp):
-
     config_schema = vol.Schema({
         vol.Required(ARG_PEOPLE): vol.All(
             ensure_list,
