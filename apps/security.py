@@ -27,7 +27,7 @@ ARG_GPS_MAX_ACCURACY = 'gps_max_accuracy'
 ARG_CLASS = "class"
 ARG_CONFIDENCE = "confidence"
 ARG_CAMERA = 'camera'
-ARG_IMAGE_URL = 'image_url'
+ARG_BASE_IMAGE_URL = 'base_image_url'
 ARG_NOTIFY_INTERVAL = 'notify_interval'
 
 SCHEMA_CONDITION_STATE = vol.Schema({
@@ -89,7 +89,7 @@ class Doorbell(BaseApp):
             )
         }),
         vol.Inclusive(ARG_CAMERA, 'snapshot'): entity_id,
-        vol.Inclusive(ARG_IMAGE_URL, 'snapshot'): url,
+        vol.Inclusive(ARG_BASE_IMAGE_URL, 'snapshot'): url,
         vol.Optional(ARG_NOTIFY_CATEGORY,
                      default=NotificationCategory.PRESENCE_PERSON_DETECTED.name): vol.In(
             VALID_NOTIFICATION_CATEGORIES)
@@ -173,7 +173,7 @@ class Doorbell(BaseApp):
         )
 
         return {
-            ATTR_IMAGE_URL: _get_image_url(self.args[ARG_IMAGE_URL], file_name),
+            ATTR_IMAGE_URL: _get_image_url(self.args[ARG_BASE_IMAGE_URL], file_name),
             ATTR_EXTENSION: "jpg"
         }
 
