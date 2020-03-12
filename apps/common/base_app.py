@@ -69,7 +69,7 @@ class BaseApp(hassmqtt.HassMqtt):
         return DEFAULT_PUBLISH_TOPIC
 
     def publish(self, domain, service, kwargs):
-        self.log("Publish Domain %s Service %s" % (domain, service))
+        self.log("Publish Domain %s Service %s with args %s" % (domain, service, str(kwargs)))
         return self.mqtt_publish(
             self.publish_topic,
             payload=json.dumps({
