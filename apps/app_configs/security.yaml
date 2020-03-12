@@ -17,7 +17,7 @@ doorbell:
         value: 'on'
     notify_interval: 2
   camera: camera.front_door
-  base_image_url: https://automation.prettybaked.com/local/camera_snaphot/
+  base_image_url: https://automation.prettybaked.com/local/camera_snapshot/
 
 unlock:
   module: security
