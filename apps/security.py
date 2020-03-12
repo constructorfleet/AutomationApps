@@ -115,7 +115,8 @@ class Doorbell(BaseApp):
         self._image_processor_handle = self.listen_state(
             self._handle_image_processor,
             entity=self.args[ARG_IMAGE_PROCESSING][ARG_SENSOR],
-            attribute=ATTR_MATCHES)
+            attribute=ATTR_MATCHES,
+            oneshot=True)
 
     def _pause_image_processing(self):
         if self._image_processor_handle is not None:
@@ -125,18 +126,18 @@ class Doorbell(BaseApp):
 
     def _handle_image_processor(self, entity, attribute, old, new, kwargs):
         if old == new or self._should_ignore_processor:
+            self._start_image_processing(None)
             return
 
         matches = new.get(self.args[ARG_IMAGE_PROCESSING][ARG_CLASS], None)
-        if not matches:
-            return
-
-        for match in matches:
-            if match.get(ATTR_SCORE, 0.0) >= self.args[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
-                'Got a match'
-                self._pause_image_processing()
-                self._notify()
-                return
+        if matches:
+            for match in matches:
+                if match.get(ATTR_SCORE, 0.0) >= self.args[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
+                    'Got a match'
+                    self._pause_image_processing()
+                    self._notify()
+                    return
+        self._start_image_processing(None)
 
     def _handle_doorbell(self, entity, attribute, old, new, kwargs):
         if old == new:
