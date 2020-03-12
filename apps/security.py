@@ -109,7 +109,6 @@ class Doorbell(BaseApp):
             self._start_image_processing(None)
 
     def _start_image_processing(self, kwargs):
-        self.log('Starting image processing')
         if self._pause_handle is not None:
             self.cancel_timer(self._pause_handle)
 
@@ -122,16 +121,14 @@ class Doorbell(BaseApp):
         if self._image_processor_handle is not None:
             self.cancel_listen_state(self._image_processor_handle)
         self._pause_handle = self.run_in(self._start_image_processing,
-                                         self.args[ARG_NOTIFY_INTERVAL] * 60)
+                                         self.args[ARG_IMAGE_PROCESSING][ARG_NOTIFY_INTERVAL] * 60)
 
     def _handle_image_processor(self, entity, attribute, old, new, kwargs):
         if old == new or self._should_ignore_processor:
-            self.log('Ignoring image processor')
             return
 
         matches = new.get(self.args[ARG_IMAGE_PROCESSING][ARG_CLASS], None)
         if not matches:
-            self.log('No matches')
             return
 
         for match in matches:
@@ -140,7 +137,6 @@ class Doorbell(BaseApp):
                 self._notify()
                 self._pause_image_processing()
                 return
-            self.log('No match')
 
     def _handle_doorbell(self, entity, attribute, old, new, kwargs):
         if old == new:
@@ -158,11 +154,15 @@ class Doorbell(BaseApp):
 
     def _get_notify_args(self):
         if ARG_CAMERA not in self.args:
+            self.log('No camera specified')
             return {}
 
         camera_id = self.args[ARG_CAMERA]
+        self.log('Camera %s' % camera_id)
         file_name = _get_file_name(camera_id)
+        self.log('Filename %s' % file_name)
         file_path = _get_file_path(camera_id, file_name)
+        self.log('Filepath %s' % file_path)
         self.publish(
             DOMAIN_CAMERA,
             SERVICE_SNAPSHOT,
