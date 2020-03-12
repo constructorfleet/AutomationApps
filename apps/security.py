@@ -134,8 +134,8 @@ class Doorbell(BaseApp):
         for match in matches:
             if match.get(ATTR_SCORE, 0.0) >= self.args[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
                 'Got a match'
-                self._notify()
                 self._pause_image_processing()
+                self._notify()
                 return
 
     def _handle_doorbell(self, entity, attribute, old, new, kwargs):
