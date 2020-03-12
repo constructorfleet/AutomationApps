@@ -133,7 +133,6 @@ class Doorbell(BaseApp):
         if matches:
             for match in matches:
                 if match.get(ATTR_SCORE, 0.0) >= self.args[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
-                    'Got a match'
                     self._pause_image_processing()
                     self._notify()
                     return
@@ -155,15 +154,11 @@ class Doorbell(BaseApp):
 
     def _get_notify_args(self):
         if ARG_CAMERA not in self.args:
-            self.log('No camera specified')
             return {}
 
         camera_id = self.args[ARG_CAMERA]
-        self.log('Camera %s' % camera_id)
         file_name = _get_file_name(camera_id)
-        self.log('Filename %s' % file_name)
         file_path = _get_file_path(camera_id, file_name)
-        self.log('Filepath %s' % file_path)
         self.publish(
             DOMAIN_CAMERA,
             SERVICE_SNAPSHOT,
@@ -241,15 +236,12 @@ class DoorLock(BaseApp):
                           oneshot=True)
 
     def _handle_person_arrive(self, person_name):
-        self.log("{} arrived".format(person_name))
         if not self.is_locked:
-            self.log("Notify presence")
             self._notify(
                 NotificationCategory.PRESENCE_PERSON_ARRIVED,
                 response_entity_id=None,
                 person_name=person_name)
             return
-        self.log('Unlock')
         self.publish(
             'lock',
             'unlock',
@@ -257,22 +249,18 @@ class DoorLock(BaseApp):
                 ARG_ENTITY_ID: self.args[ARG_LOCK]
             }
         )
-        self.log('Notify unlock')
         self._notify(
             NotificationCategory.SECURITY_UNLOCKED,
             response_entity_id=self.args[ARG_LOCK],
             person_name=person_name)
 
     def _handle_person_left(self, person_name):
-        self.log("{} left".format(person_name))
         if self.is_locked:
-            self.log('Notify departed')
             self._notify(
                 NotificationCategory.PRESENCE_PERSON_DEPARTED,
                 response_entity_id=None,
                 person_name=person_name)
             return
-        self.log('Lock')
         self.publish(
             'lock',
             'lock',
@@ -281,7 +269,6 @@ class DoorLock(BaseApp):
             }
         )
 
-        self.log('Notify lock')
         self._notify(
             NotificationCategory.SECURITY_LOCKED,
             response_entity_id=self.args[ARG_LOCK],
