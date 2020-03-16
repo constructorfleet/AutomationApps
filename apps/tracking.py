@@ -112,6 +112,7 @@ class AssumeVehicleHome(BaseApp):
         if entity_id is None:
             _LOGGER.warning('No entity id provided')
             return
+        del self._timer_handlers[entity_id]
         old_state = self._last_states[entity_id]
         new_state = copy.deepcopy(old_state)
         new_state[ATTR_STATE] = 'home'
