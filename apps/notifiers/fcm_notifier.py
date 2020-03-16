@@ -102,7 +102,7 @@ class FcmNotifier(BaseApp):
                 service,
                 json.dumps(payload)
             ))
-            self.publish(
+            self.publish_service_call(
                 DOMAIN_NOTIFY,
                 service,
                 payload

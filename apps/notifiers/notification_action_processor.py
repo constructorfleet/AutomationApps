@@ -60,7 +60,7 @@ class NotificationActionProcessor(BaseApp):
             self.log("Not enough data")
             return
 
-        self.publish(
+        self.publish_service_call(
             action.service.split('/')[0],
             action.service.split('/')[1],
             {

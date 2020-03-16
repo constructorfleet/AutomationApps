@@ -215,7 +215,7 @@ class MovieMode(BaseApp):
                     if self.get_state(device) == "on":
                         continue
                     self.log("Turning on {}".format(device))
-                    self.publish(
+                    self.publish_service_call(
                         DOMAIN_HOMEASSISTANT,
                         SERVICE_TURN_OFF,
                         {
@@ -242,7 +242,7 @@ class MovieMode(BaseApp):
                 if self.get_state(device_id) == "on":
                     continue
                 self.log("Turning on {}".format(device_id))
-                self.publish(
+                self.publish_service_call(
                     DOMAIN_HOMEASSISTANT,
                     SERVICE_TURN_ON,
                     {
@@ -263,7 +263,7 @@ class MovieMode(BaseApp):
             if self.get_state(device_id) == "off":
                 continue
             self.log("Turning off {}".format(device_id))
-            self.publish(
+            self.publish_service_call(
                 DOMAIN_HOMEASSISTANT,
                 SERVICE_TURN_OFF,
                 {
@@ -274,7 +274,7 @@ class MovieMode(BaseApp):
         if not self.should_turn_on:
             return
 
-        self.publish(
+        self.publish_service_call(
             DOMAIN_HOMEASSISTANT,
             SERVICE_TURN_ON,
             {
@@ -286,7 +286,7 @@ class MovieMode(BaseApp):
         self.cancel_delay_timer()
         self.media_type = None
 
-        self.publish(
+        self.publish_service_call(
             DOMAIN_HOMEASSISTANT,
             SERVICE_TURN_OFF,
             {
@@ -305,7 +305,7 @@ class MovieMode(BaseApp):
                 if self.get_state(device_id) == "on":
                     continue
                 self.log("Turning on {}".format(device_id))
-                self.publish(
+                self.publish_service_call(
                     DOMAIN_HOMEASSISTANT,
                     SERVICE_TURN_ON,
                     {

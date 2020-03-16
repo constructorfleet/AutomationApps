@@ -128,7 +128,7 @@ class NightLights(BaseApp):
             if holiday_colors and '_on' in entity_service[ARG_SERVICE]:
                 data[ATTR_RGB_COLOR] = holiday_colors[i % len(holiday_colors)]
 
-            self.publish(
+            self.publish_service_call(
                 entity_service[ARG_DOMAIN],
                 entity_service[ARG_SERVICE],
                 data

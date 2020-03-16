@@ -191,17 +191,17 @@ class CallBHG(BaseApp):
         for transcript in [transcript for transcript in transcripts]:
             if REGEX_SCHEDULED.match(transcript):
                 if ARG_SCHEDULE_TOGGLE in self.args:
-                    self.publish(DOMAIN_FLAG_SERVICE,
-                                 TURN_ON_SERVICE,
-                                 {
+                    self.publish_service_call(DOMAIN_FLAG_SERVICE,
+                                              TURN_ON_SERVICE,
+                                              {
                                      ARG_ENTITY_ID: self.args[ARG_SCHEDULE_TOGGLE]
                                  })
                 self._notify(NotificationCategory.WARNING_BHG_SCHEDULED, transcript=transcript)
             elif REGEX_NOT_SCHEDULED.match(transcript):
                 if ARG_SCHEDULE_TOGGLE in self.args:
-                    self.publish(DOMAIN_FLAG_SERVICE,
-                                 TURN_OFF_SERVICE,
-                                 {
+                    self.publish_service_call(DOMAIN_FLAG_SERVICE,
+                                              TURN_OFF_SERVICE,
+                                              {
                                      ARG_ENTITY_ID: self.args[ARG_SCHEDULE_TOGGLE]
                                  })
                 self._notify(NotificationCategory.WARNING_BHG_ALL_CLEAR, transcript=transcript)

@@ -159,7 +159,7 @@ class Doorbell(BaseApp):
         camera_id = self.args[ARG_CAMERA]
         file_name = _get_file_name(camera_id)
         file_path = _get_file_path(camera_id, file_name)
-        self.publish(
+        self.publish_service_call(
             DOMAIN_CAMERA,
             SERVICE_SNAPSHOT,
             {
@@ -242,7 +242,7 @@ class DoorLock(BaseApp):
                 response_entity_id=None,
                 person_name=person_name)
             return
-        self.publish(
+        self.publish_service_call(
             'lock',
             'unlock',
             {
@@ -261,7 +261,7 @@ class DoorLock(BaseApp):
                 response_entity_id=None,
                 person_name=person_name)
             return
-        self.publish(
+        self.publish_service_call(
             'lock',
             'lock',
             {

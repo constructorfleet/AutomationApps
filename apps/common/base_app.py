@@ -68,22 +68,29 @@ class BaseApp(hassmqtt.HassMqtt):
     def publish_topic(self):
         return DEFAULT_PUBLISH_TOPIC
 
-    def publish(self, domain, service, kwargs):
+    def publish_service_call(self, domain, service, kwargs):
         self.log("Publish Domain %s Service %s with args %s" % (domain, service, str(kwargs)))
+        return self.publish_event(
+            EVENT_CALL_SERVICE,
+            {
+                ATTR_DOMAIN: domain,
+                ATTR_SERVICE: service,
+                ATTR_SERVICE_DATA: kwargs or {}
+            }
+        )
+
+    def publish_event(self, event, event_data, qos=0, retain=False, namespace='default'):
+        self.log("Publish Event %s Data %s " % (event, str(event_data)))
         return self.mqtt_publish(
             self.publish_topic,
             payload=json.dumps({
-                ATTR_EVENT_TYPE: EVENT_CALL_SERVICE,
-                ATTR_EVENT_DATA: {
-                    ATTR_DOMAIN: domain,
-                    ATTR_SERVICE: service,
-                    ATTR_SERVICE_DATA: kwargs or {}
-                },
+                ATTR_EVENT_TYPE: event,
+                ATTR_EVENT_DATA: event_data,
                 ATTR_SOURCE: self.name
             }),
-            qos=0,
-            retain=False,
-            namespace='default'
+            qos=qos,
+            retain=retain,
+            namespace=namespace
         )
 
     def condition_met(self, condition):

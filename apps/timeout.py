@@ -151,7 +151,7 @@ class Timeout(BaseApp):
         self.log("Firing on time out events")
         events = self.args.get(ARG_ON_TIMEOUT, [])
         for event in events:
-            self.publish(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
+            self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
 
         if self._notification_category is not None:
             self.notifier.notify_people(
