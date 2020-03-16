@@ -19,6 +19,8 @@ ARG_FILENAME = 'filename'
 
 ATTR_SCORE = 'score'
 ATTR_FILENAME = 'filename'
+ATTR_OLD_STATE = 'old_state'
+ATTR_NEW_STATE = 'new_state'
 
 EVENT_STATE_CHANGED = 'state_changed'
 
