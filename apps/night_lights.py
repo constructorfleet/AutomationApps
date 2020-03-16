@@ -4,15 +4,14 @@ from time import sleep
 
 import voluptuous as vol
 
+from common.base_app import BaseApp
 from common.const import (
     ARG_DOMAIN,
     ARG_ENTITY_ID,
     ARG_SERVICE,
-    ARG_SERVICE_DATA,
-    ARG_DEPENDENCIES)
-from common.base_app import BaseApp
+    ARG_SERVICE_DATA)
 from common.utils import minutes_to_seconds
-from common.validation import entity_id, ensure_list, service
+from common.validation import ensure_list, entity_id
 
 ARG_DUSK = "dusk"
 ARG_DAWN = "dawn"
@@ -26,8 +25,6 @@ DEFAULT_OFFSET = 0
 DEFAULT_DOMAIN = "homeassistant"
 DEFAULT_DUSK_SERVICE = "turn_on"
 DEFAULT_DAWN_SERVICE = "turn_off"
-
-MIDNIGHT = "00:01:00"
 
 ENTITY_SCHEMA = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
@@ -100,9 +97,10 @@ class NightLights(BaseApp):
 
         if self.night_entities:
             self.run_daily(self._handle_night,
-                           MIDNIGHT)
+                           datetime.time())
             now = datetime.datetime.now().time()
-            if self.sun_down() and now.hour < 12 and now > MIDNIGHT:
+            if self.sun_down() and now.hour < 12 and \
+                    now > datetime.time():
                 self._handle_night(None)
 
     def _handle_dawn(self, kwargs):
