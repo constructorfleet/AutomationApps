@@ -57,7 +57,7 @@ def get_home_gps(hass_config):
         )
 
 
-class AssumeVehicleHome(BaseApp):
+class CloseEnoughToHome(BaseApp):
     config_schema = vol.Schema({
         vol.Required(ARG_ENTITY_ID): vol.All(
             ensure_list,
@@ -65,7 +65,7 @@ class AssumeVehicleHome(BaseApp):
         ),
         vol.Required(ARG_ZONES_ASSUME_HOME): vol.All(
             ensure_list,
-            [entity_id]
+            [str]
         ),
         vol.Optional(ARG_MINUTES_BEFORE_ASSUME, default=DEFAULT_MINUTES_BEFORE_ASSUME): vol.All(
             vol.Coerce(int),
