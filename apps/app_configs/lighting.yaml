@@ -317,6 +317,21 @@ basement_stair_light_timeout:
         - switch.basement_stair_switch_1
         - switch.basement_stair_switch_2
 
+lower_bathroom_fan_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - common.base_app
+    - common.validation
+  trigger:
+    entity_id: switch.lower_bathroom_fan
+  duration: 20
+  on_timeout:
+    domain: homeassistant
+    service: turn_off
+    service_data:
+      entity_id: switch.lower_bathroom_fan
+
 night_lights:
   module: night_lights
   class: NightLights
