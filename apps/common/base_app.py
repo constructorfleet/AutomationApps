@@ -7,13 +7,17 @@ from common.const import (
     ARG_ENTITY_ID,
     ARG_VALUE,
     ARG_COMPARATOR,
+    ARG_LOG_LEVEL,
     EQUALS,
     NOT_EQUAL,
     LESS_THAN,
     LESS_THAN_EQUAL_TO,
     GREATER_THAN,
     GREATER_THAN_EQUAL_TO,
-    ARG_DEPENDENCIES)
+    ARG_DEPENDENCIES,
+    LogLevel,
+    VALID_LOG_LEVELS
+)
 from common.utils import converge_types
 from common.validation import valid_entity_id
 
@@ -58,7 +62,12 @@ class BaseApp(hassmqtt.HassMqtt):
             self.notifier = self.get_app(APP_NOTIFIERS)
         if APP_HOLIDAYS in self.args.get(ARG_DEPENDENCIES, []):
             self.holidays = self.get_app(APP_HOLIDAYS)
+        self.config_schema.extend({
+            vol.Optional(ARG_LOG_LEVEL, default=LogLevel.UNSET): vol.In(VALID_LOG_LEVELS)
+        })
+
         self.args = self.config_schema(self.args)
+        self.set_log_level(self.args[ARG_LOG_LEVEL])
         self.initialize_app()
 
     def initialize_app(self):

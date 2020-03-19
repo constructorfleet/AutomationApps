@@ -1,3 +1,5 @@
+from enum import Enum
+
 ARG_ENTITY_ID = 'entity_id'
 ARG_STATE = 'state'
 ARG_VALUE = 'value'
@@ -16,6 +18,7 @@ ARG_NOTIFY_REPLACERS = 'replacers'
 ARG_NOTIFY_ENTITY_ID = 'response_entity_id'
 ARG_SENSOR = 'sensor'
 ARG_FILENAME = 'filename'
+ARG_LOG_LEVEL = 'log_level'
 
 ATTR_SCORE = 'score'
 ATTR_FILENAME = 'filename'
@@ -47,3 +50,21 @@ VALID_COMPARATORS = [
     GREATER_THAN_EQUAL_TO,
     NOT_EQUAL
 ]
+
+
+class LogLevel(Enum):
+    CRITICAL = 'CRITICAL'
+    ERROR = 'ERROR'
+    WARNING = 'WARNING'
+    INFO = 'INFO'
+    DEBUG = 'DEBUG'
+    UNSET = 'UNSET'
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
+
+
+VALID_LOG_LEVELS = [level.value for level in LogLevel]
