@@ -48,7 +48,9 @@ def _split_service(service):
 
 
 class BaseApp(hassmqtt.HassMqtt):
-
+    _base_config_schema = vol.Schema({
+        vol.Optional(ARG_LOG_LEVEL, default=LogLevel): vol.In(VALID_LOG_LEVELS)
+    }, extra=vol.ALLOW_EXTRA)
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
     holidays = None
@@ -58,13 +60,12 @@ class BaseApp(hassmqtt.HassMqtt):
         """Initialization of Base App class."""
         self.plugin_config = self.get_plugin_config()
 
+        self.config_schema.extend(self._base_config_schema)
+
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
         if APP_HOLIDAYS in self.args.get(ARG_DEPENDENCIES, []):
             self.holidays = self.get_app(APP_HOLIDAYS)
-        self.config_schema.extend({
-            vol.Optional(ARG_LOG_LEVEL, default=LogLevel.UNSET): vol.In(VALID_LOG_LEVELS)
-        })
 
         self.args = self.config_schema(self.args)
         self.set_log_level(self.args[ARG_LOG_LEVEL])
