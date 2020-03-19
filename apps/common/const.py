@@ -9,7 +9,7 @@ ARG_AFTER = 'after'
 ARG_AT = 'at'
 ARG_DOMAIN = 'domain'
 ARG_GROUPS = 'groups'
-ARG_SERVICE  = 'service'
+ARG_SERVICE = 'service'
 ARG_SERVICE_DATA = 'service_data'
 ARG_COMPARATOR = 'comparator'
 ARG_DEPENDENCIES = "dependencies"
@@ -62,10 +62,17 @@ class LogLevel(Enum):
     UNSET = 'UNSET'
 
     @classmethod
+    def names(cls):
+        return [level.name for level in LogLevel]
+
+    @classmethod
     def from_name(cls, name):
+        if isinstance(name, LogLevel):
+            return name
+
         result = [level for level in LogLevel if level.name == name]
-        # if len(result) != 1:
-        #     raise ValueInvalid('{} is not a valid log level'.format(name))
+        if len(result) != 1:
+            raise Exception('{} is not a valid log level'.format(name))
 
         return result[0]
 

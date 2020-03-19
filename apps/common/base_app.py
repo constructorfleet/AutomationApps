@@ -114,7 +114,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def set_log_level(self, log_level):
         level = log_level.name if isinstance(log_level, LogLevel) else log_level
-        super().set_log_level(log_level)
+        super().set_log_level(level)
 
     def condition_met(self, condition):
         # TODO : Other conditions
