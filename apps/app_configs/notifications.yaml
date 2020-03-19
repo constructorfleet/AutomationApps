@@ -2,28 +2,28 @@ fcm_notifier:
   module: fcm_notifier
   class: FcmNotifier
   global_dependencies:
-    - common.validation
-    - notifiers.notification_action
-    - notifiers.notification_category
-    - notifiers.notification_channels
+    - validation
+    - notification_action
+    - notification_category
+    - notification_channels
 
 ios_notifier:
   module: ios_notifier
   class: iOSNotifier
   global_dependencies:
-    - common.validation
-    - notifiers.notification_action
-    - notifiers.notification_category
-    - notifiers.notification_channels
+    - validation
+    - notification_action
+    - notification_category
+    - notification_channels
 
 notifiers:
   module: person_notifier
   class: PersonNotifier
   global_dependencies:
-    - common.validation
-    - notifiers.notification_action
-    - notification.notification_category
-    - notification.notification_channels
+    - validation
+    - notification_action
+    - notification_category
+    - notification_channels
   dependencies:
     - ios_notifier
     - fcm_notifier
@@ -45,10 +45,10 @@ notifiers:
 #  module: notification_action_processor
 #  class: NotificationActionProcessor
 #  global_dependencies:
-#    - common.validation
-#    - notifiers.notification_action
-#    - notification.notification_category
-#    - notification.notification_channels
+#    - validation
+#    - notification_action
+#    - notification_category
+#    - notification_channels
 #  dependencies:
 #    - notifiers
 #    - ios_notifier

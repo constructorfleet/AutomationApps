@@ -2,8 +2,8 @@ washer_done:
   module: notify_when
   class: NotifyWhen
   global_dependencies:
-    - common.base_app
-    - common.validation
+    - base_app
+    - validation
   dependencies:
     - notifiers
   entity_id: sensor.washer_current_draw
@@ -21,8 +21,8 @@ dryer_done:
   module: notify_when
   class: NotifyWhen
   global_dependencies:
-    - common.base_app
-    - common.validation
+    - base_app
+    - validation
   dependencies:
     - notifiers
   entity_id: sensor.dryer_current_draw

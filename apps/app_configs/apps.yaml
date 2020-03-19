@@ -2,20 +2,20 @@ holidays:
   module: holidays
   class: HolidayColors
   global_dependencies:
-    - common.base_app
-    - common.validation
-    - common.utils
+    - base_app
+    - validation
+    - utils
   api_key: !secret holiday_api_key
 
 #tracker_groups:
 #  module: tracking
 #  class: TrackerGroup
 #  global_dependencies:
-#    - common.base_app
-#    - common.validation
-#    - common.utils
-#    - common.const
-#    - common.helpers
+#    - base_app
+#    - validation
+#    - utils
+#    - const
+#    - helpers
 #  groups:
 #    - group_name: jeep_cherokee
 #      entity_id:
@@ -44,9 +44,9 @@ close_enough_to_home:
   module: tracking
   class: CloseEnoughToHome
   global_dependencies:
-    - common.base_app
-    - common.validation
-    - common.utils
+    - base_app
+    - validation
+    - utils
   entity_id:
     - device_tracker.2015_jeep_cherokee
     - device_tracker.2019_jeep_compass
@@ -60,9 +60,9 @@ bhg_call_in:
   module: bhg_call_in
   class: CallBHG
   global_dependencies:
-    - common.base_app
-    - common.validation
-    - common.utils
+    - base_app
+    - validation
+    - utils
   dependencies:
     - notifiers
   schedule_toggle: input_boolean.bhg_scheduled

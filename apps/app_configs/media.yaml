@@ -3,7 +3,7 @@ living_room_movie_mode:
   class: MovieMode
   global_dependencies:
     - validation
-    - common.base_app
+    - base_app
   media_player: media_player.living_room_apple_tv
   media_types:
     - movie

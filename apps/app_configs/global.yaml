@@ -1,9 +1,9 @@
 global_modules:
-  - common.base_app
-  - common.const
-  - common.utils
-  - common.helpers
-  - common.validation
-  - notifiers.notification_action
-  - notifiers.notification_category
-  - notifiers.notification_channels
+  - base_app
+  - const
+  - utils
+  - helpers
+  - validation
+  - notification_action
+  - notification_category
+  - notification_channels
