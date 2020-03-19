@@ -59,7 +59,7 @@ class LogLevel(Enum):
     WARNING = 'WARNING'
     INFO = 'INFO'
     DEBUG = 'DEBUG'
-    UNSET = 'UNSET'
+    NOTSET = 'NOTSET'
 
     @classmethod
     def names(cls):
