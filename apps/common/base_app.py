@@ -54,7 +54,7 @@ class BaseApp(hassmqtt.HassMqtt):
     plugin_config = None
 
     _base_config_schema = {
-        vol.Optional(ARG_LOG_LEVEL, default=LogLevel): vol.In(VALID_LOG_LEVELS)
+        vol.Optional(ARG_LOG_LEVEL, default=LogLevel.UNSET): vol.In(VALID_LOG_LEVELS)
     }
 
     def initialize(self):
