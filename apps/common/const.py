@@ -64,8 +64,8 @@ class LogLevel(Enum):
     @classmethod
     def from_name(cls, name):
         result = [level for level in LogLevel if level.name == name]
-        if len(result) != 1:
-            raise ValueInvalid('{} is not a valid log level'.format(name))
+        # if len(result) != 1:
+        #     raise ValueInvalid('{} is not a valid log level'.format(name))
 
         return result[0]
 
