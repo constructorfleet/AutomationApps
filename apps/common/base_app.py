@@ -60,10 +60,17 @@ class BaseApp(hassmqtt.HassMqtt):
     def initialize(self):
         """Initialization of Base App class."""
         self.plugin_config = self.get_plugin_config()
+        self.log("Pre Type-check: Type: %s Value %s" % (
+            type(self.config_schema).str(self.config_schema)))
         if isinstance(self.config_schema, dict):
+            self.log("Wrapping dict with Scheam")
             self.config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
-
+        self.log("Post Type-check: Type: %s Value %s" % (
+            type(self.config_schema).str(self.config_schema)))
         self.config_schema = self.config_schema.extend(self._base_config_schema)
+
+        self.log("Post Extend: Type: %s Value %s" % (
+            type(self.config_schema).str(self.config_schema)))
 
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
