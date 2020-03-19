@@ -71,12 +71,12 @@ class BaseApp(hassmqtt.HassMqtt):
 
         self.log("Post Extend: Type: %s Value %s" % (
             type(self.config_schema), str(self.config_schema)))
-
+        self.log("Pre-validated Args: %s" % self.args)
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
         if APP_HOLIDAYS in self.args.get(ARG_DEPENDENCIES, []):
             self.holidays = self.get_app(APP_HOLIDAYS)
-        self.log("Pre-validated Args: %s" % self.args)
+
         self.args = self.config_schema(self.args)
         self.set_log_level(self.args[ARG_LOG_LEVEL])
         self.initialize_app()
