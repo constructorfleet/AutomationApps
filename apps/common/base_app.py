@@ -15,8 +15,7 @@ from common.const import (
     GREATER_THAN,
     GREATER_THAN_EQUAL_TO,
     ARG_DEPENDENCIES,
-    LogLevel,
-    VALID_LOG_LEVELS
+    LogLevel
 )
 from common.utils import converge_types
 from common.validation import valid_entity_id
@@ -54,7 +53,7 @@ class BaseApp(hassmqtt.HassMqtt):
     plugin_config = None
 
     _base_config_schema = {
-        vol.Optional(ARG_LOG_LEVEL, default=LogLevel.UNSET): vol.In(VALID_LOG_LEVELS)
+        vol.Optional(ARG_LOG_LEVEL, default=LogLevel.UNSET): LogLevel.from_name
     }
 
     def initialize(self):
@@ -112,6 +111,10 @@ class BaseApp(hassmqtt.HassMqtt):
             retain=retain,
             namespace=namespace
         )
+
+    def set_log_level(self, log_level):
+        level = log_level.name if isinstance(log_level, LogLevel) else log_level
+        super().set_log_level(log_level)
 
     def condition_met(self, condition):
         # TODO : Other conditions

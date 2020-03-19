@@ -1,4 +1,5 @@
 from enum import Enum
+from voluptuous.error import ValueInvalid
 
 ARG_ENTITY_ID = 'entity_id'
 ARG_STATE = 'state'
@@ -60,11 +61,16 @@ class LogLevel(Enum):
     DEBUG = 'DEBUG'
     UNSET = 'UNSET'
 
+    @classmethod
+    def from_name(cls, name):
+        result = [level for level in LogLevel if level.name == name]
+        if len(result) != 1:
+            raise ValueInvalid('{} is not a valid log level'.format(name))
+
+        return result[0]
+
     def __str__(self):
         return self.value
 
     def __repr__(self):
         return self.value
-
-
-VALID_LOG_LEVELS = [level.value for level in LogLevel]
