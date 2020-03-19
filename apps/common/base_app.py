@@ -53,9 +53,9 @@ class BaseApp(hassmqtt.HassMqtt):
     holidays = None
     plugin_config = None
 
-    _base_config_schema = vol.Schema({
+    _base_config_schema = {
         vol.Optional(ARG_LOG_LEVEL, default=LogLevel): vol.In(VALID_LOG_LEVELS)
-    }, extra=vol.ALLOW_EXTRA)
+    }
 
     def initialize(self):
         """Initialization of Base App class."""
