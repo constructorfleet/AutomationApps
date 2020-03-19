@@ -15,7 +15,7 @@ appdaemon:
   longitude: !secret home_longitude
   elevation: !secret home_elevation
   time_zone: !secret home_timezone
-  threads: 20
+  load_distribution: load
   plugins:
     MQTT_States:
       type: hassmqtt
