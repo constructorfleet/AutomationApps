@@ -69,7 +69,7 @@ class BaseApp(hassmqtt.HassMqtt):
         self.plugin_config = self.get_plugin_config()
 
         if isinstance(self.config_schema, dict):
-            self.log("Wrapping dict with Scheam")
+            self.log("Wrapping dict with Schema")
             self.config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
 
         self.config_schema = self.config_schema.extend(self._base_config_schema)
