@@ -130,6 +130,7 @@ class HolidayColors(BaseApp):
     _holidays = {}
 
     def initialize_app(self):
+        self.log('File %s' % self._persistent_data_file)
         self.log('Data {}'.format(str(self.data)))
         if self.data.get(KEY_YEAR, self._for_year) != datetime.now().year:
             self.log('Retrieving holidays')
@@ -160,7 +161,6 @@ class HolidayColors(BaseApp):
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
     def _retrieve_holidays(self):
-        self.clear_data()
         response = requests.get(self.api_url)
         try:
             response.raise_for_status()
@@ -169,6 +169,7 @@ class HolidayColors(BaseApp):
             if not holidays:
                 self.error('Unable to parse holidays from response')
                 return
+            self.clear_data()
             self._for_year = datetime.now().year
             self.record_data(KEY_YEAR, self._for_year)
 
