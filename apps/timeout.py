@@ -116,7 +116,9 @@ class Timeout(BaseApp):
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
+        self.log("Triggered!")
         if self._timeout_handler is None:
+            self.log("Setting up pause handlers")
             for pause_when in self.args[ARG_PAUSE_WHEN]:
                 self._when_handlers.add(self.listen_state(self._handle_pause_when,
                                                           entity=pause_when[ARG_ENTITY_ID]))
@@ -141,6 +143,7 @@ class Timeout(BaseApp):
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
+        self.log("UNTRIGGERD!")
         self._cancel_timer()
         self._cancel_handlers()
 
