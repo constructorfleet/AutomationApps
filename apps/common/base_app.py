@@ -104,7 +104,7 @@ class BaseApp(hassmqtt.HassMqtt):
             if self._data_save_handle is not None:
                 return
 
-            self._data_save_handle = self.create_task(self.save_data, 4)
+            self._data_save_handle = self.run_in(self.save_data, 4)
 
     def clear_data(self):
         with self._data_lock:
