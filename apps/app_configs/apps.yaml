@@ -6,7 +6,6 @@ holidays:
     - validation
     - utils
   api_key: !secret holiday_api_key
-  log_level: DEBUG
 
 #tracker_groups:
 #  module: tracking
