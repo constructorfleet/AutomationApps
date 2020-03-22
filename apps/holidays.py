@@ -168,7 +168,7 @@ class HolidayColors(BaseApp):
                 self.error('Unable to parse holidays from response')
                 return
             self._for_year = datetime.now().year
-            self._record_data(KEY_YEAR, self._for_year)
+            self.record_data(KEY_YEAR, self._for_year)
 
             for holiday in holidays:
                 name = holiday.get('name', '')
@@ -177,7 +177,7 @@ class HolidayColors(BaseApp):
                     self.log('%s not in colors', name)
                     continue
                 holiday_date = holiday.get('date', {}).get('datetime', {})
-                self._record_data(name, holiday_date)
+                self.record_data(name, holiday_date)
                 self._holidays[name] = self._parse_holiday_date(holiday_date)
 
         except requests.HTTPError as err:

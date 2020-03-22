@@ -95,7 +95,7 @@ class BaseApp(hassmqtt.HassMqtt):
     def _on_persistent_data_loaded(self):
         return
 
-    def _record_data(self, key, value):
+    def record_data(self, key, value):
         with self._data_lock:
             if key not in self.data:
                 self.data[key] = None
@@ -104,9 +104,10 @@ class BaseApp(hassmqtt.HassMqtt):
             if self._data_save_handle is None:
                 return
 
-            self._data_save_handle = self.create_task(asyncio.sleep(4), callback=self._save_data)
+            self._data_save_handle = self.run_in(self.save_data,
+                                                 delay=4)
 
-    def _clear_data(self):
+    def clear_data(self):
         with self._data_lock:
             os.makedirs(
                 os.path.join(self.config_dir, self.namespace),
@@ -115,7 +116,8 @@ class BaseApp(hassmqtt.HassMqtt):
                 os.remove(self._persistent_data_file)
             self.data = {}
 
-    async def _save_data(self):
+    def save_data(self):
+        self.log("Saving %s" % str(self.data))
         with self._data_lock:
             with open(self._persistent_data_file, 'w') as json_file:
                 json.dump(self.data, json_file)
