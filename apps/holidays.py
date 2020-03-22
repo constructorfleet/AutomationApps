@@ -159,8 +159,10 @@ class HolidayColors(BaseApp):
     def get_closest_holiday_colors(self):
         now = datetime.now()
 
+        dates = [value for key, value in self.data.items() if key != KEY_YEAR]
+
         closest = min(
-            self.data.values(),
+            dates,
             key=lambda x: abs(x - now))
         holiday = [name for name, date in self.data.items() if
                    closest.month == date.month and closest.day == date.day][0]

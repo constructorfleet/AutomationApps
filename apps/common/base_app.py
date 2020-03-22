@@ -83,6 +83,7 @@ class BaseApp(hassmqtt.HassMqtt):
         if os.path.exists(self._persistent_data_file):
             with open(self._persistent_data_file, 'r') as json_file:
                 self.data = json.load(json_file)
+            self._on_persistent_data_loaded()
 
         self.initialize_app()
 
