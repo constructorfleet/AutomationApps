@@ -116,7 +116,7 @@ class BaseApp(hassmqtt.HassMqtt):
                 os.remove(self._persistent_data_file)
             self.data = {}
 
-    def save_data(self):
+    def save_data(self, kwargs):
         self.log("Saving %s" % str(self.data))
         with self._data_lock:
             with open(self._persistent_data_file, 'w') as json_file:
