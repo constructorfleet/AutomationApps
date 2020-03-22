@@ -1,4 +1,7 @@
 import json
+import os
+import asyncio
+from threading import Lock
 
 import voluptuous as vol
 
@@ -51,6 +54,10 @@ class BaseApp(hassmqtt.HassMqtt):
     notifier = None
     holidays = None
     plugin_config = None
+    data = {}
+    _persistent_data_file = None
+    _data_save_handle = None
+    _data_lock = Lock()
 
     _base_config_schema = {
         vol.Optional(ARG_LOG_LEVEL, default=LogLevel.ERROR): LogLevel.from_name
@@ -58,6 +65,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def initialize(self):
         """Initialization of Base App class."""
+        self._persistent_data_file = os.path.join(self.config_dir, self.namespace, self.name + ".js")
         self.plugin_config = self.get_plugin_config()
 
         if isinstance(self.config_schema, dict):
@@ -73,10 +81,40 @@ class BaseApp(hassmqtt.HassMqtt):
 
         self.args = self.config_schema(self.args)
         self.set_log_level(self.args[ARG_LOG_LEVEL])
+        if os.path.exists(self._persistent_data_file):
+            with open(self._persistent_data_file, 'r') as json_file:
+                self.data = json.load(json_file)
+
         self.initialize_app()
 
     def initialize_app(self):
         pass
+
+    def _on_persistent_data_loaded(self):
+        return
+
+    def _record_data(self, key, value):
+        with self._data_lock:
+            if key not in self.data:
+                self.data[key] = None
+            self.data[key] = value
+
+            if self._data_save_handle is None:
+                return
+
+            self._data_save_handle = self.create_task(asyncio.sleep(4), callback=self._save_data)
+
+    def _clear_data(self):
+        with self._data_lock:
+            if os.path.exists(self._persistent_data_file):
+                os.remove(self._persistent_data_file)
+            self.data = {}
+
+    async def _save_data(self):
+        with self._data_lock:
+            with open(self._persistent_data_file, 'w') as json_file:
+                json.dump(self.data, json_file)
+            self._data_save_handle = None
 
     @property
     def publish_topic(self):
@@ -148,3 +186,7 @@ class BaseApp(hassmqtt.HassMqtt):
             else:
                 self.log('Invalid comparator %s' % comparator)
                 return False
+
+    def __del__(self):
+        """Handle application death."""
+

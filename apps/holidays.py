@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 
 import requests
@@ -13,6 +14,8 @@ DEFAULT_COUNTRY = 'US'
 
 BASE_URL = \
     'https://calendarific.com/api/v2/holidays?api_key={api_key}&country={country}&year={year}'
+
+KEY_YEAR = 'year'
 
 VALENTINES = "Valentine's Day"
 ST_PATRICKS = "St. Patrick's Day"
@@ -124,13 +127,23 @@ class HolidayColors(BaseApp):
             vol.All(vol.Length(min=2, max=2), vol.Upper)
     }, extra=vol.ALLOW_EXTRA)
 
-    _holidays = {}
     _for_year = None
 
     def initialize_app(self):
-        if self._for_year != datetime.now().year:
+        if self.data.get(KEY_YEAR, self._for_year) != datetime.now().year:
             self.log('Retrieving holidays')
             self._retrieve_holidays()
+
+    def _on_persistent_data_loaded(self):
+        transformed = {KEY_YEAR: datetime.now().year}
+
+        for key, value in transformed:
+            if key == KEY_YEAR and key not in HOLIDAY_COLORS.keys():
+                continue
+
+            transformed[key] = datetime.fromisoformat(value)
+
+        self.data = transformed
 
     @property
     def api_url(self):
@@ -145,9 +158,9 @@ class HolidayColors(BaseApp):
         now = datetime.now()
 
         closest = min(
-            self._holidays.values(),
+            self.data.values(),
             key=lambda x: abs(x - now))
-        holiday = [name for name, date in self._holidays.items() if
+        holiday = [name for name, date in self.data.items() if
                    closest.month == date.month and closest.day == date.day][0]
         self.log('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
@@ -161,6 +174,8 @@ class HolidayColors(BaseApp):
             if not holidays:
                 self.error('Unable to parse holidays from response')
                 return
+            self.data
+            self._record_data(KEY_YEAR, self._for_year)
 
             for holiday in holidays:
                 name = holiday.get('name', '')
@@ -169,19 +184,23 @@ class HolidayColors(BaseApp):
                     self.log('%s not in colors', name)
                     continue
                 holiday_date = holiday.get('date', {}).get('datetime', {})
-                day = holiday_date.get('day')
-                month = holiday_date.get('month')
-                year = holiday_date.get('year')
-                if day and month and year:
-                    self._holidays[name] = \
-                        datetime(
-                            day=day,
-                            month=month,
-                            year=year
-                        )
-                else:
-                    self.log('Missing a date piece %s', str(holiday_date))
+                self._record_data(name, holiday_date)
 
             self._for_year = datetime.now().year
         except requests.HTTPError as err:
             self.error(str(err))
+
+    def _parse_holiday_date(self, name, holiday_date):
+        day = holiday_date.get('day')
+        month = holiday_date.get('month')
+        year = holiday_date.get('year')
+        if day and month and year:
+            self._record_data(
+                name,
+                datetime(
+                    day=day,
+                    month=month,
+                    year=year
+                ))
+        else:
+            self.log('Missing a date piece %s', str(holiday_date))

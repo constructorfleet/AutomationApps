@@ -1,3 +1,4 @@
+import datetime
 import logging
 from string import Formatter
 
@@ -36,6 +37,12 @@ def converge_types(v1, v2):
 
     # Tried everything, return originals
     return v1, v2
+
+
+def json_serializer(obj):
+    if isinstance(obj, datetime.datetime):
+        return obj.isoformat
+    return str(obj)
 
 
 class KWArgFormatter(Formatter):
