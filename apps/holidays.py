@@ -1,4 +1,3 @@
-import copy
 from datetime import datetime
 
 import requests
@@ -128,24 +127,12 @@ class HolidayColors(BaseApp):
     }, extra=vol.ALLOW_EXTRA)
 
     _for_year = None
+    _holidays = {}
 
     def initialize_app(self):
         if self.data.get(KEY_YEAR, self._for_year) != datetime.now().year:
             self.log('Retrieving holidays')
             self._retrieve_holidays()
-
-    def _on_persistent_data_loaded(self):
-        self.log('Transforming json data')
-        transformed = {KEY_YEAR: datetime.now().year}
-
-        for key, value in transformed:
-            if key == KEY_YEAR and key not in HOLIDAY_COLORS.keys() and value is None:
-                continue
-
-            transformed[key] = datetime.fromisoformat(value)
-
-        self.log("Data %%s", str(self.data))
-        self.data = transformed
 
     @property
     def api_url(self):
@@ -158,13 +145,15 @@ class HolidayColors(BaseApp):
 
     def get_closest_holiday_colors(self):
         now = datetime.now()
+        if self._for_year != now.year:
+            self._retrieve_holidays()
 
         dates = [value for key, value in self.data.items() if key != KEY_YEAR]
 
         closest = min(
             dates,
             key=lambda x: abs(x - now))
-        holiday = [name for name, date in self.data.items() if
+        holiday = [name for name, date in self._holidays.items() if
                    closest.month == date.month and closest.day == date.day][0]
         self.log('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
@@ -178,6 +167,7 @@ class HolidayColors(BaseApp):
             if not holidays:
                 self.error('Unable to parse holidays from response')
                 return
+            self._for_year = datetime.now().year
             self._record_data(KEY_YEAR, self._for_year)
 
             for holiday in holidays:
@@ -188,22 +178,32 @@ class HolidayColors(BaseApp):
                     continue
                 holiday_date = holiday.get('date', {}).get('datetime', {})
                 self._record_data(name, holiday_date)
+                self._holidays[name] = self._parse_holiday_date(holiday_date)
 
-            self._for_year = datetime.now().year
         except requests.HTTPError as err:
             self.error(str(err))
 
-    def _parse_holiday_date(self, name, holiday_date):
+    def _on_persistent_data_loaded(self):
+        self.log('Transforming json data')
+
+        for name, holiday_date in self.data.items():
+            if name == KEY_YEAR and name not in HOLIDAY_COLORS.keys():
+                continue
+
+            self._holidays[name] = self._parse_holiday_date(holiday_date)
+
+        self.log("Holidays %%s", str(self._holidays))
+
+    def _parse_holiday_date(self, holiday_date):
         day = holiday_date.get('day')
         month = holiday_date.get('month')
         year = holiday_date.get('year')
         if day and month and year:
-            self._record_data(
-                name,
-                datetime(
-                    day=day,
-                    month=month,
-                    year=year
-                ))
+            return datetime(
+                day=day,
+                month=month,
+                year=year
+            )
         else:
             self.log('Missing a date piece %s', str(holiday_date))
+            return None
