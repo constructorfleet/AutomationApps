@@ -97,6 +97,7 @@ front_door_lock_timeout:
     response_entity_id: lock.front_door
     replacers:
       entity_name: front door
+  log_level: DEBUG
 
 
 
