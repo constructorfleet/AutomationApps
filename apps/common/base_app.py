@@ -107,6 +107,9 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def _clear_data(self):
         with self._data_lock:
+            os.makedirs(
+                os.path.join(self.config_dir, self.namespace),
+                exist_ok=True)
             if os.path.exists(self._persistent_data_file):
                 os.remove(self._persistent_data_file)
             self.data = {}
