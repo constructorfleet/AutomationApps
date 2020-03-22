@@ -79,13 +79,14 @@ class BaseApp(hassmqtt.HassMqtt):
         if APP_HOLIDAYS in self.args.get(ARG_DEPENDENCIES, []):
             self.holidays = self.get_app(APP_HOLIDAYS)
 
-        self.args = self.config_schema(self.args)
-        self.set_log_level(self.args[ARG_LOG_LEVEL])
         if os.path.exists(self._persistent_data_file):
             with open(self._persistent_data_file, 'r') as json_file:
                 self.data = json.load(json_file)
 
         self.initialize_app()
+
+        self.args = self.config_schema(self.args)
+        self.set_log_level(self.args[ARG_LOG_LEVEL])
 
     def initialize_app(self):
         pass
