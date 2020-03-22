@@ -101,7 +101,7 @@ class BaseApp(hassmqtt.HassMqtt):
                 self.data[key] = None
             self.data[key] = value
 
-            if self._data_save_handle is None:
+            if self._data_save_handle is not None:
                 return
 
             self._data_save_handle = self.run_in(self.save_data,
