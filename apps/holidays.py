@@ -134,6 +134,8 @@ class HolidayColors(BaseApp):
             self.log('Retrieving holidays')
             self._retrieve_holidays()
 
+        self.log(str(self._holidays))
+
     @property
     def api_url(self):
         return KWArgFormatter().format(
@@ -148,10 +150,8 @@ class HolidayColors(BaseApp):
         if self._for_year != now.year:
             self._retrieve_holidays()
 
-        dates = [value for key, value in self.data.items() if key != KEY_YEAR]
-
         closest = min(
-            dates,
+            self._holidays.values(),
             key=lambda x: abs(x - now))
         holiday = [name for name, date in self._holidays.items() if
                    closest.month == date.month and closest.day == date.day][0]
