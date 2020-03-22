@@ -83,8 +83,11 @@ class BaseApp(hassmqtt.HassMqtt):
             self.holidays = self.get_app(APP_HOLIDAYS)
 
         if os.path.exists(self._persistent_data_file):
+            self.log("Reading storage")
             with open(self._persistent_data_file, 'r') as json_file:
+                self.log("Loading json")
                 self.data = json.load(json_file)
+            self.log("JSON %s" % str(self.data))
             self._on_persistent_data_loaded()
 
         self.initialize_app()
