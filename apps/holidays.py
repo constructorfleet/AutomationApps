@@ -139,7 +139,7 @@ class HolidayColors(BaseApp):
         transformed = {KEY_YEAR: datetime.now().year}
 
         for key, value in transformed:
-            if key == KEY_YEAR and key not in HOLIDAY_COLORS.keys():
+            if key == KEY_YEAR and key not in HOLIDAY_COLORS.keys() and value is None:
                 continue
 
             transformed[key] = datetime.fromisoformat(value)
