@@ -132,7 +132,7 @@ class HolidayColors(BaseApp):
     def initialize_app(self):
         self.log('File %s' % self._persistent_data_file)
         self.log('Data {}'.format(str(self.data)))
-        if self.data.get(KEY_YEAR, self._for_year) != datetime.now().year:
+        if self._for_year != datetime.now().year:
             self.log('Retrieving holidays')
             self._retrieve_holidays()
 
@@ -150,6 +150,7 @@ class HolidayColors(BaseApp):
     def get_closest_holiday_colors(self):
         now = datetime.now()
         if self._for_year != now.year:
+            self.log('New year, reload data...')
             self._retrieve_holidays()
 
         closest = min(
@@ -188,6 +189,10 @@ class HolidayColors(BaseApp):
 
     def _on_persistent_data_loaded(self):
         self.log('Transforming json data')
+
+        self._for_year = self.data[KEY_YEAR]
+
+        self.log('FOR YEAR %d'.format(self._for_year))
 
         for name, holiday_date in self.data.items():
             if name == KEY_YEAR and name not in HOLIDAY_COLORS.keys():
