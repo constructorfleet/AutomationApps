@@ -73,6 +73,7 @@ class BaseApp(hassmqtt.HassMqtt):
             self.config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
 
         self.config_schema = self.config_schema.extend(self._base_config_schema)
+        self.args = self.config_schema(self.args)
 
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
@@ -85,7 +86,6 @@ class BaseApp(hassmqtt.HassMqtt):
 
         self.initialize_app()
 
-        self.args = self.config_schema(self.args)
         self.set_log_level(self.args[ARG_LOG_LEVEL])
 
     def initialize_app(self):
