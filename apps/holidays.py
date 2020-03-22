@@ -135,6 +135,7 @@ class HolidayColors(BaseApp):
             self._retrieve_holidays()
 
     def _on_persistent_data_loaded(self):
+        self.log('Transforming json data')
         transformed = {KEY_YEAR: datetime.now().year}
 
         for key, value in transformed:
@@ -143,6 +144,7 @@ class HolidayColors(BaseApp):
 
             transformed[key] = datetime.fromisoformat(value)
 
+        self.log("Data %%s", str(self.data))
         self.data = transformed
 
     @property
