@@ -174,7 +174,6 @@ class HolidayColors(BaseApp):
             if not holidays:
                 self.error('Unable to parse holidays from response')
                 return
-            self.data
             self._record_data(KEY_YEAR, self._for_year)
 
             for holiday in holidays:
