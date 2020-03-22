@@ -183,6 +183,8 @@ class HolidayColors(BaseApp):
                 self.record_data(name, holiday_date)
                 self._holidays[name] = self._parse_holiday_date(holiday_date)
 
+            self.save_data()
+
         except requests.HTTPError as err:
             self.error(str(err))
 
