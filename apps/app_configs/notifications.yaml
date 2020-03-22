@@ -41,15 +41,16 @@ notifiers:
         - name: ios
           service: mobile_app_graces_iphone
 
-#notification_action_processor:
-#  module: notification_action_processor
-#  class: NotificationActionProcessor
-#  global_dependencies:
-#    - validation
-#    - notification_action
-#    - notification_category
-#    - notification_channels
-#  dependencies:
-#    - notifiers
-#    - ios_notifier
-#    - fcm_notifier
+notification_action_processor:
+  module: notification_action_processor
+  class: NotificationActionProcessor
+  global_dependencies:
+    - base_app
+    - validation
+    - notification_action
+    - notification_category
+    - notification_channels
+  dependencies:
+    - notifiers
+    - ios_notifier
+    - fcm_notifier

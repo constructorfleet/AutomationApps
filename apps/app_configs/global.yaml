@@ -6,4 +6,4 @@ global_modules:
   - validation
   - notification_action
   - notification_category
-  - notification_channels
+  - notification_channel
