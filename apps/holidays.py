@@ -161,6 +161,7 @@ class HolidayColors(BaseApp):
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
     def _retrieve_holidays(self):
+        self.clear_data()
         response = requests.get(self.api_url)
         try:
             response.raise_for_status()
@@ -169,7 +170,6 @@ class HolidayColors(BaseApp):
             if not holidays:
                 self.error('Unable to parse holidays from response')
                 return
-            self.clear_data()
             self._for_year = datetime.now().year
             self.record_data(KEY_YEAR, self._for_year)
 
@@ -182,8 +182,6 @@ class HolidayColors(BaseApp):
                 holiday_date = holiday.get('date', {}).get('datetime', {})
                 self.record_data(name, holiday_date)
                 self._holidays[name] = self._parse_holiday_date(holiday_date)
-
-            self.save_data()
 
         except requests.HTTPError as err:
             self.error(str(err))

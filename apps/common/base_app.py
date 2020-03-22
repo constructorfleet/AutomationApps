@@ -101,6 +101,11 @@ class BaseApp(hassmqtt.HassMqtt):
                 self.data[key] = None
             self.data[key] = value
 
+            if self._data_save_handle is not None:
+                return
+
+            self._data_save_handle = self.create_task(self.save_data, 4)
+
     def clear_data(self):
         with self._data_lock:
             os.makedirs(
@@ -110,11 +115,12 @@ class BaseApp(hassmqtt.HassMqtt):
                 os.remove(self._persistent_data_file)
             self.data = {}
 
-    def save_data(self):
+    def save_data(self, kwargs):
         self.log("Saving %s" % str(self.data))
         with self._data_lock:
             with open(self._persistent_data_file, 'w') as json_file:
                 json.dump(self.data, json_file)
+            self._data_save_handle = None
 
     @property
     def publish_topic(self):
