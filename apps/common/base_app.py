@@ -60,7 +60,7 @@ class BaseApp(hassmqtt.HassMqtt):
     _data_lock = Lock()
 
     _base_config_schema = {
-        vol.Optional(ARG_LOG_LEVEL, default=LogLevel.UNSET): LogLevel.from_name
+        vol.Optional(ARG_LOG_LEVEL, default=LogLevel.NOTSET): LogLevel.from_name
     }
 
     def initialize(self):
