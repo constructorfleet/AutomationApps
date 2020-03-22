@@ -192,7 +192,7 @@ class HolidayColors(BaseApp):
 
         self._for_year = self.data[KEY_YEAR]
 
-        self.log('FOR YEAR %d'.format(self._for_year))
+        self.log('FOR YEAR {}'.format(self._for_year))
 
         for name, holiday_date in self.data.items():
             if name == KEY_YEAR and name not in HOLIDAY_COLORS.keys():
