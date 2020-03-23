@@ -70,7 +70,7 @@ class SaneLoggingApp(object):
             fmt="[%(levelname)s %(filename)s:%(lineno)s - "
                 "%(name)s.%(funcName)s() ] %(message)s"
         )
-        self.get_main_log().handlers[0].setFormatter(formatter)
+        # self.get_main_log().handlers[0].setFormatter(formatter)
         self.get_main_log().setLevel(log_level)
 
     def debug(self, msg, *args, **kwargs):
@@ -103,23 +103,23 @@ class LogWrapper:
         self._log_level = log_level
 
     def debug(self, msg, *args, **kwargs):
-        if self.logger.isEnabledFor(logging.DEBUG):
+        if self._log_level >= logging.DEBUG:
             self._log(logging.DEBUG, msg, args, **kwargs)
 
     def info(self, msg, *args, **kwargs):
-        if self.logger.isEnabledFor(logging.INFO):
+        if self._log_level >= logging.INFO:
             self._log(logging.INFO, msg, args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
-        if self.logger.isEnabledFor(logging.WARNING):
+        if self._log_level >= logging.WARNING:
             self._log(logging.WARNING, msg, args, **kwargs)
 
     def error(self, msg, *args, **kwargs):
-        if self.logger.isEnabledFor(logging.ERROR):
+        if self._log_level >= logging.ERROR:
             self._log(logging.ERROR, msg, args, **kwargs)
 
     def critical(self, msg, *args, **kwargs):
-        if self.logger.isEnabledFor(logging.CRITICAL):
+        if self._log_level >= logging.CRITICAL:
             self._log(logging.CRITICAL, msg, args, **kwargs)
 
     def log(self, msg, *args, **kwargs):
@@ -137,7 +137,7 @@ class LogWrapper:
                 raise TypeError("level must be an integer")
             else:
                 return
-        if self.logger.isEnabledFor(level):
+        if self._log_level >= logging.INFO:
             self._log(level, msg, args, **kwargs)
 
     def _log(self, level, msg, args, exc_info=None, extra=None):
