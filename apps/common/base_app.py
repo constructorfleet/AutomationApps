@@ -140,6 +140,9 @@ class LogWrapper:
         if self._log_level >= logging.INFO:
             self._log(level, msg, args, **kwargs)
 
+    def __call__(self, *args, **kwargs):
+        self.log(*args, **kwargs)
+
     def _log(self, level, msg, args, exc_info=None, extra=None):
         """
         Low-level logging routine which creates a LogRecord and then calls
