@@ -91,17 +91,21 @@ class SaneLoggingApp(object):
     def critical(self, msg, *args, **kwargs):
         self._log.critical(msg, *args, **kwargs)
 
+    def log(self, msg, *args, **kwargs):
+        self._log.log(msg, *args, **kwargs
+
 
 class LogWrapper:
     """
     Thanks to https://stackoverflow.com/a/22091220/211734
     """
-
+    _log_level = logging.ERROR
     def __init__(self, logger, log_level=logging.ERROR):
         self.logger = logger
         self.set_log_level(log_level)
 
     def set_log_level(self, log_level):
+        self._log_level = log_level
         self.logger.handlers[0].setLevel(log_level)
 
     def debug(self, msg, *args, **kwargs):
@@ -124,7 +128,7 @@ class LogWrapper:
         if self.logger.isEnabledFor(logging.CRITICAL):
             self._log(logging.CRITICAL, msg, args, **kwargs)
 
-    def log(self, level, msg, *args, **kwargs):
+    def log(self, msg, *args, **kwargs):
         """
         Log 'msg % args' with the integer severity 'level'.
 
@@ -133,6 +137,7 @@ class LogWrapper:
 
         logger.log(level, "We have a %s", "mysterious problem", exc_info=1)
         """
+        level = self._log_level
         if not isinstance(level, int):
             if logging.raiseExceptions:
                 raise TypeError("level must be an integer")
