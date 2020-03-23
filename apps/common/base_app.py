@@ -190,6 +190,10 @@ def _split_service(service):
 #         return rv
 
 
+def _prepend_log_msg(msg):
+    return "{} {} {}".format('__function__', '__line__', msg)
+
+
 class BaseApp(hassmqtt.HassMqtt):
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
@@ -339,23 +343,30 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def debug(self, msg, *args, **kwargs):
         if self._log_level >= logging.DEBUG:
-            self.log(msg, *args, level=logging.getLevelName(logging.DEBUG), **kwargs)
+            self.log(_prepend_log_msg(msg),
+                     *args,
+                     level=logging.getLevelName(logging.DEBUG), **kwargs)
 
     def info(self, msg, *args, **kwargs):
         if self._log_level >= logging.INFO:
-            self.log(msg, *args, level=logging.getLevelName(logging.INFO), **kwargs)
+            self.log(_prepend_log_msg(msg),
+                     *args,
+                     level=logging.getLevelName(logging.INFO), **kwargs)
 
     def warning(self, msg, *args, **kwargs):
         if self._log_level >= logging.WARNING:
-            self.log(msg, *args, level=logging.getLevelName(logging.WARNING), **kwargs)
+            self.log(_prepend_log_msg(msg),
+                     *args,
+                     level=logging.getLevelName(logging.WARNING), **kwargs)
 
     def error(self, msg, *args, **kwargs):
         if self._log_level >= logging.ERROR:
-            self.log(msg, *args, level=logging.getLevelName(logging.ERROR), **kwargs)
+            self.log(_prepend_log_msg(msg),
+                     *args,
+                     level=logging.getLevelName(logging.ERROR), **kwargs)
 
     def critical(self, msg, *args, **kwargs):
         if self._log_level >= logging.CRITICAL:
-            self.log(msg, *args, level=logging.getLevelName(logging.CRITICAL), **kwargs)
-
-    def __del__(self):
-        """Handle application death."""
+            self.log(_prepend_log_msg(msg),
+                     *args,
+                     level=logging.getLevelName(logging.CRITICAL), **kwargs)
