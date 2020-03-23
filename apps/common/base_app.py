@@ -71,7 +71,6 @@ class SaneLoggingApp(object):
                 "%(name)s.%(funcName)s() ] %(message)s"
         )
         self.get_main_log().handlers[0].setFormatter(formatter)
-        self._log.set_log_level(log_level)
 
     def set_log_level(self, level):
         self._log.set_log_level(level)
