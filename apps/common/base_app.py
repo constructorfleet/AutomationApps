@@ -62,7 +62,7 @@ def _split_service(service):
 
 
 @abc.ABC
-class SaneLoggingApp(object):
+class SaneLoggingApp:
 
     def _setup_logging(self, app_class_name, log_level=logging.ERROR):
         self._app_class_name = app_class_name
@@ -79,7 +79,7 @@ class SaneLoggingApp(object):
 
 
 @abc.ABC
-class LogWrapper(object):
+class LogWrapper:
     """
     Thanks to https://stackoverflow.com/a/22091220/211734
     """
