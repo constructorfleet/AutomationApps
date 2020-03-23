@@ -1,4 +1,3 @@
-from common.base_app import logging
 import datetime
 import os
 import re
@@ -10,6 +9,8 @@ from datetime import (
 from urllib.parse import urlparse
 
 import voluptuous as vol
+
+from common.base_app import logging
 
 REGEX_IP = r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}' \
            r'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'

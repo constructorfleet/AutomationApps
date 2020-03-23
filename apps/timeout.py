@@ -116,9 +116,9 @@ class Timeout(BaseApp):
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
-        self.log("Triggered!")
+        self.debug("Triggered!")
         if self._timeout_handler is None:
-            self.log("Setting up pause handlers")
+            self.debug("Setting up pause handlers")
             for pause_when in self.args[ARG_PAUSE_WHEN]:
                 self._when_handlers.add(self.listen_state(self._handle_pause_when,
                                                           entity=pause_when[ARG_ENTITY_ID]))
@@ -129,32 +129,33 @@ class Timeout(BaseApp):
         if old == new:
             return
 
-        self.log("Might reset timer")
+        self.debug("Might reset timer")
         if self.condition_met(self._pause_when[entity]):
-            self.log("Pause timer")
+            self.debug("Pause timer")
             self._cancel_timer()
         elif self._timeout_handler is None:
             for entity, condition in self._pause_when.items():
                 if self.condition_met(condition):
                     return
-            self.log("Starting timer")
+            self.debug("Starting timer")
             self._reset_timer()
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
-        self.log("UNTRIGGERD!")
+        self.debug("UNTRIGGERD!")
         self._cancel_timer()
         self._cancel_handlers()
 
     def _handle_timeout(self, kwargs):
         self._cancel_timer()
         self._cancel_handlers()
-        
-        self.log("Firing on time out events")
+
+        self.debug("Firing on time out events")
         events = self.args.get(ARG_ON_TIMEOUT, [])
         for event in events:
-            self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
+            self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
+                                      event[ARG_SERVICE_DATA])
 
         if self._notification_category is not None:
             self.notifier.notify_people(
@@ -176,7 +177,7 @@ class Timeout(BaseApp):
         self._timeout_handler = None
 
     def _reset_timer(self):
-        self.log("Resetting timer")
+        self.debug("Resetting timer")
         self._cancel_timer()
         self._timeout_handler = self.run_in(self._handle_timeout,
                                             self.duration * 60)

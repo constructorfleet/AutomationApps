@@ -4,8 +4,7 @@ import traceback
 import voluptuous as vol
 from appdaemon import adbase, adapi
 
-from common.validation import ensure_list, service
-from common.const import ARG_DOMAIN
+from common.validation import ensure_list
 from notifiers.notification_channel import NotificationChannel
 
 NOTIFIER_IOS = "ios"
@@ -89,7 +88,7 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
                     except Exception:
                         exc_type, exc_value, exc_traceback = sys.exc_info()
                         lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                        self.log(''.join('!! ' + line for line in lines))
+                        self.error(''.join('!! ' + line for line in lines))
                         continue
                 return
         else:

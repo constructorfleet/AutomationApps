@@ -1,6 +1,5 @@
-from math import radians, cos, sin, asin, sqrt
 from enum import Enum
-
+from math import radians, cos, sin, asin, sqrt
 
 # mean earth radius - https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
 _AVG_EARTH_RADIUS_KM = 6371.0088
@@ -22,12 +21,12 @@ class Unit(Enum):
 
 
 # Unit values taken from http://www.unitconversion.org/unit_converter/length.html
-_CONVERSIONS = {Unit.KILOMETERS:       1.0,
-                Unit.METERS:           1000.0,
-                Unit.MILES:            0.621371192,
-                Unit.NAUTICAL_MILES:   0.539956803,
-                Unit.FEET:             3280.839895013,
-                Unit.INCHES:           39370.078740158}
+_CONVERSIONS = {Unit.KILOMETERS: 1.0,
+                Unit.METERS: 1000.0,
+                Unit.MILES: 0.621371192,
+                Unit.NAUTICAL_MILES: 0.539956803,
+                Unit.FEET: 3280.839895013,
+                Unit.INCHES: 39370.078740158}
 
 
 def get_distance_helper(unit):

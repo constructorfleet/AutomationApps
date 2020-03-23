@@ -11,7 +11,7 @@ ARG_SERVICE = "service"
 class iOSNotifier(BaseApp):
 
     def initialize_app(self):
-        self.log("Initialized")
+        return
 
     @property
     def service(self):

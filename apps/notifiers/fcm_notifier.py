@@ -1,10 +1,10 @@
 import json
 
-from notifiers.notification_channel import NotificationChannel
-from notifiers.person_notifier import ATTR_IMAGE_URL
 from common.base_app import BaseApp
 from common.const import DOMAIN_NOTIFY
 from common.utils import KWArgFormatter
+from notifiers.notification_channel import NotificationChannel
+from notifiers.person_notifier import ATTR_IMAGE_URL
 
 TOPIC_FORMAT = "/notify/{}"
 TOPIC_ACTION = "/service/call"

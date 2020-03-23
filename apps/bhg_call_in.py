@@ -74,8 +74,6 @@ class CallBHG(BaseApp):
     _calling = False
 
     def initialize_app(self):
-        self.log("Initializing")
-
         self._client = Client(
             self.args[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
             self.args[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
@@ -88,8 +86,6 @@ class CallBHG(BaseApp):
         self.run_daily(self._daily_call,
                        "%02d:%02d:00" % (self.args[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
                                          self.args[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
-
-        self.log("Initialized")
 
     def _new_day(self, kwargs):
         self._called_today = False
@@ -105,7 +101,7 @@ class CallBHG(BaseApp):
         self._calling = True
         self._call_instance = None
 
-        self.log("Calling BHG")
+        self.info("Calling BHG")
 
         if self.args[ARG_MESSAGE].startswith("http"):
             twimlet_url = self.args[ARG_MESSAGE]
@@ -194,14 +190,14 @@ class CallBHG(BaseApp):
                     self.publish_service_call(DOMAIN_FLAG_SERVICE,
                                               TURN_ON_SERVICE,
                                               {
-                                     ARG_ENTITY_ID: self.args[ARG_SCHEDULE_TOGGLE]
-                                 })
+                                                  ARG_ENTITY_ID: self.args[ARG_SCHEDULE_TOGGLE]
+                                              })
                 self._notify(NotificationCategory.WARNING_BHG_SCHEDULED, transcript=transcript)
             elif REGEX_NOT_SCHEDULED.match(transcript):
                 if ARG_SCHEDULE_TOGGLE in self.args:
                     self.publish_service_call(DOMAIN_FLAG_SERVICE,
                                               TURN_OFF_SERVICE,
                                               {
-                                     ARG_ENTITY_ID: self.args[ARG_SCHEDULE_TOGGLE]
-                                 })
+                                                  ARG_ENTITY_ID: self.args[ARG_SCHEDULE_TOGGLE]
+                                              })
                 self._notify(NotificationCategory.WARNING_BHG_ALL_CLEAR, transcript=transcript)

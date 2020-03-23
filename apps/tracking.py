@@ -52,9 +52,9 @@ SCHEMA_GROUP = vol.Schema({
 
 def get_home_gps(hass_config):
     return (
-            hass_config.get(ATTR_LATITUDE, None),
-            hass_config.get(ATTR_LONGITUDE, None)
-        )
+        hass_config.get(ATTR_LATITUDE, None),
+        hass_config.get(ATTR_LONGITUDE, None)
+    )
 
 
 class CloseEnoughToHome(BaseApp):
@@ -188,14 +188,14 @@ class TrackerGroup(BaseApp):
     def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
         entity_id = 'device_tracker.group_%s' % group_name
         new_state = {
-                        ARG_ENTITY_ID: entity_id,
-                        ATTR_STATE: 'tracking',
-                        ATTR_ATTRIBUTES: {
-                            ATTR_GROUP_MEMBERS: members or [],
-                            ATTR_LATITUDE: lat_avg,
-                            ATTR_LONGITUDE: long_avg
-                        }
-                    }
+            ARG_ENTITY_ID: entity_id,
+            ATTR_STATE: 'tracking',
+            ATTR_ATTRIBUTES: {
+                ATTR_GROUP_MEMBERS: members or [],
+                ATTR_LATITUDE: lat_avg,
+                ATTR_LONGITUDE: long_avg
+            }
+        }
         old_state = self._group_states[group_name]
         self._group_states[group_name] = new_state
 

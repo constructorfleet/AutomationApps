@@ -1,6 +1,3 @@
-from enum import Enum
-from voluptuous.error import ValueInvalid
-
 ARG_ENTITY_ID = 'entity_id'
 ARG_STATE = 'state'
 ARG_VALUE = 'value'
@@ -51,4 +48,3 @@ VALID_COMPARATORS = [
     GREATER_THAN_EQUAL_TO,
     NOT_EQUAL
 ]
-

@@ -13,16 +13,14 @@ class NotificationActionProcessor(BaseApp):
     acknowledge_listeners = []
 
     def initialize_app(self):
-        self.log("Initializing")
-
-        self.log("Starting listener for iOS")
+        self.debug("Starting listener for iOS")
         self.listen_event(self.handle_event,
                           event="ios.notification_action_fired")
-
+        self.debug("Starting listener for mobile app")
         self.listen_event(self.handle_event,
                           event="mobile_app_notification_action")
 
-        self.log("Starting listener for FCM")
+        self.debug("Starting listener for FCM")
         self.listen_event(self.handle_event,
                           event="html5_notification.clicked")
 
@@ -30,15 +28,15 @@ class NotificationActionProcessor(BaseApp):
         self.acknowledge_listeners.append(listener)
 
     def handle_event(self, event_name, data, kwargs):
-        self.log("Event Data {} and kwargs {}".format(str(data), str(kwargs)))
-        self.log("ACTION NAME {} ".format(data.get(ACTION_NAME, data.get(ACTION, "")).lower()))
+        self.debug("Event Data {} and kwargs {}".format(str(data), str(kwargs)))
+        self.debug("ACTION NAME {} ".format(data.get(ACTION_NAME, data.get(ACTION, "")).lower()))
         for name, member in NotificationAction.__members__.items():
-            self.log("NAME {} VALUE {}".format(name, member))
+            self.debug("NAME {} VALUE {}".format(name, member))
         found_action = [member for name, member in NotificationAction.__members__.items() if
                         name.lower().replace('_', '') == data.get(ACTION_NAME,
                                                                   data.get(ACTION, "")).lower()]
         if not found_action:
-            self.log("No action found for {}".format(str(data)))
+            self.debug("No action found for {}".format(str(data)))
             return
 
         action = found_action[0]
@@ -57,7 +55,7 @@ class NotificationActionProcessor(BaseApp):
             else data[ACTION_DATA][ENTITY_ID]
 
         if not action or not entity_id:
-            self.log("Not enough data")
+            self.warning("Not enough data")
             return
 
         self.publish_service_call(

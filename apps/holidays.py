@@ -130,13 +130,13 @@ class HolidayColors(BaseApp):
     _holidays = {}
 
     def initialize_app(self):
-        self.log('File %s' % self._persistent_data_file)
-        self.log('Data {}'.format(str(self.data)))
+        self.debug('File %s' % self._persistent_data_file)
+        self.debug('Data {}'.format(str(self.data)))
         if self._for_year != datetime.now().year:
-            self.log('Retrieving holidays')
+            self.debug('Retrieving holidays')
             self._retrieve_holidays()
 
-        self.log(str(self._holidays))
+        self.debug(str(self._holidays))
 
     @property
     def api_url(self):
@@ -150,7 +150,7 @@ class HolidayColors(BaseApp):
     def get_closest_holiday_colors(self):
         now = datetime.now()
         if self._for_year != now.year:
-            self.log('New year, reload data...')
+            self.info('New year, reload data...')
             self._retrieve_holidays()
 
         closest = min(
@@ -158,7 +158,7 @@ class HolidayColors(BaseApp):
             key=lambda x: abs(x - now))
         holiday = [name for name, date in self._holidays.items() if
                    closest.month == date.month and closest.day == date.day][0]
-        self.log('Holiday %s', holiday)
+        self.debug('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
     def _retrieve_holidays(self):
@@ -176,9 +176,9 @@ class HolidayColors(BaseApp):
 
             for holiday in holidays:
                 name = holiday.get('name', '')
-                self.log('Got holiday %s', name)
+                self.debug('Got holiday %s', name)
                 if name not in HOLIDAY_COLORS.keys():
-                    self.log('%s not in colors', name)
+                    self.debug('%s not in colors', name)
                     continue
                 holiday_date = holiday.get('date', {}).get('datetime', {})
                 self.record_data(name, holiday_date)
@@ -188,11 +188,11 @@ class HolidayColors(BaseApp):
             self.error(str(err))
 
     def _on_persistent_data_loaded(self):
-        self.log('Transforming json data')
+        self.debug('Transforming json data')
 
         self._for_year = self.data[KEY_YEAR]
 
-        self.log('FOR YEAR {}'.format(self._for_year))
+        self.debug('FOR YEAR {}'.format(self._for_year))
 
         for name, holiday_date in self.data.items():
             if name == KEY_YEAR and name not in HOLIDAY_COLORS.keys():
@@ -200,7 +200,7 @@ class HolidayColors(BaseApp):
 
             self._holidays[name] = self._parse_holiday_date(holiday_date)
 
-        self.log("Holidays %%s", str(self._holidays))
+        self.debug("Holidays %%s", str(self._holidays))
 
     def _parse_holiday_date(self, holiday_date):
         day = holiday_date.get('day')
@@ -213,5 +213,5 @@ class HolidayColors(BaseApp):
                 year=year
             )
         else:
-            self.log('Missing a date piece %s', str(holiday_date))
+            self.warning('Missing a date piece %s', str(holiday_date))
             return None

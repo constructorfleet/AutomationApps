@@ -1,5 +1,3 @@
-from builtins import int, isinstance
-
 import voluptuous as vol
 
 from common.base_app import BaseApp
@@ -90,9 +88,10 @@ class CallWhen(BaseApp):
 
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if not self.conditions_met:
-            self.log("Conditions no met")
+            self.debug("Conditions no met")
             return
 
         events = self.args[ARG_CALL]
         for event in events:
-            self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE], event[ARG_SERVICE_DATA])
+            self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
+                                      event[ARG_SERVICE_DATA])
