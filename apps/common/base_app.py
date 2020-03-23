@@ -8,7 +8,6 @@ from threading import Lock
 import voluptuous as vol
 
 import hassmqttapi as hassmqtt
-from common.sane_logging import SaneLoggingApp, logging
 from common.const import (
     ARG_ENTITY_ID,
     ARG_VALUE,
