@@ -205,7 +205,7 @@ class BaseApp(hassmqtt.HassMqtt, SaneLoggingApp):
             self.config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
 
         self.config_schema = self.config_schema.extend(self._base_config_schema)
-        self.args = self.config_schema(self.args, self.args[ARG_LOG_LEVEL])
+        self.args = self.config_schema(self.args)
 
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
