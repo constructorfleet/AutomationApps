@@ -219,6 +219,8 @@ class BaseApp(hassmqtt.HassMqtt, SaneLoggingApp):
         self.config_schema = self.config_schema.extend(self._base_config_schema)
         self.args = self.config_schema(self.args)
 
+        self.set_log_level(self.args[ARG_LOG_LEVEL])
+
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
         if APP_HOLIDAYS in self.args.get(ARG_DEPENDENCIES, []):
