@@ -60,17 +60,8 @@ def _split_service(service):
     else:
         raise ValueError("Invalid service %s" % service)
 
-class SaneLoggingApp(object):
 
-    def _setup_logging(self, app_class_name, log_level):
-        self._app_class_name = app_class_name
-        self._log = LogWrapper(self.get_main_log(), log_level)
-        formatter = logging.Formatter(
-            fmt="[%(levelname)s %(filename)s:%(lineno)s - "
-                "%(name)s.%(funcName)s() ] %(message)s"
-        )
-        self.get_main_log().handlers[0].setFormatter(formatter)
-        self.set_log_level(log_level)
+class SaneLoggingApp(object):
 
     def _setup_logging(self, app_class_name, log_level=logging.ERROR):
         self._app_class_name = app_class_name
