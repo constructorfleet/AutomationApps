@@ -100,6 +100,7 @@ class LogWrapper:
     Thanks to https://stackoverflow.com/a/22091220/211734
     """
     _log_level = logging.ERROR
+
     def __init__(self, logger, log_level=logging.ERROR):
         self.logger = logger
         self.set_log_level(log_level)
