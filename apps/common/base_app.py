@@ -339,23 +339,23 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def debug(self, msg, *args, **kwargs):
         if self._log_level >= logging.DEBUG:
-            self._log(logging.DEBUG, msg, args, **kwargs)
+            self.log(msg, *args, level=logging.getLevelName(logging.DEBUG), **kwargs)
 
     def info(self, msg, *args, **kwargs):
         if self._log_level >= logging.INFO:
-            self._log(logging.INFO, msg, args, **kwargs)
+            self.log(msg, *args, level=logging.getLevelName(logging.INFO), **kwargs)
 
     def warning(self, msg, *args, **kwargs):
         if self._log_level >= logging.WARNING:
-            self._log(logging.WARNING, msg, args, **kwargs)
+            self.log(msg, *args, level=logging.getLevelName(logging.WARNING), **kwargs)
 
     def error(self, msg, *args, **kwargs):
         if self._log_level >= logging.ERROR:
-            self._log(logging.ERROR, msg, args, **kwargs)
+            self.log(msg, *args, level=logging.getLevelName(logging.ERROR), **kwargs)
 
     def critical(self, msg, *args, **kwargs):
         if self._log_level >= logging.CRITICAL:
-            self._log(logging.CRITICAL, msg, args, **kwargs)
+            self.log(msg, *args, level=logging.getLevelName(logging.CRITICAL), **kwargs)
 
     def __del__(self):
         """Handle application death."""
