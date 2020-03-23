@@ -92,7 +92,7 @@ class SaneLoggingApp(object):
         self._log.critical(msg, *args, **kwargs)
 
     def log(self, msg, *args, **kwargs):
-        self._log.log(msg, *args, **kwargs
+        self._log.log(msg, *args, **kwargs)
 
 
 class LogWrapper:
