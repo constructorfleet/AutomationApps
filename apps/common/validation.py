@@ -1,5 +1,5 @@
+from common.sane_logging import logging
 import datetime
-import logging
 import os
 import re
 import string
@@ -426,6 +426,12 @@ def time(value):
 #
 #
 # weekdays = vol.All(ensure_list, [vol.In(WEEKDAYS)])
+
+def valid_log_level(value):
+    if value.upper() not in logging._nameToLevel:
+        raise vol.Invalid("Invalid log level {}".format(value.upper()))
+
+    return logging._nameToLevel[value.upper()]
 
 
 def socket_timeout(value):

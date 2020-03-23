@@ -1,11 +1,11 @@
 import json
 import os
-import asyncio
 from threading import Lock
 
 import voluptuous as vol
 
 import hassmqttapi as hassmqtt
+from common.sane_logging import SaneLoggingApp, logging
 from common.const import (
     ARG_ENTITY_ID,
     ARG_VALUE,
@@ -18,10 +18,9 @@ from common.const import (
     GREATER_THAN,
     GREATER_THAN_EQUAL_TO,
     ARG_DEPENDENCIES,
-    LogLevel
 )
 from common.utils import converge_types
-from common.validation import valid_entity_id
+from common.validation import valid_entity_id, valid_log_level
 
 APP_NOTIFIERS = "notifiers"
 APP_HOLIDAYS = "holidays"
@@ -49,7 +48,7 @@ def _split_service(service):
         raise ValueError("Invalid service %s" % service)
 
 
-class BaseApp(hassmqtt.HassMqtt):
+class BaseApp(hassmqtt.HassMqtt, SaneLoggingApp):
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
     holidays = None
@@ -58,9 +57,10 @@ class BaseApp(hassmqtt.HassMqtt):
     _persistent_data_file = None
     _data_save_handle = None
     _data_lock = Lock()
+    _min_log_level = None
 
     _base_config_schema = {
-        vol.Optional(ARG_LOG_LEVEL, default=LogLevel.ERROR): LogLevel.from_name
+        vol.Optional(ARG_LOG_LEVEL, default='ERROR'): valid_log_level
     }
 
     def initialize(self):
@@ -73,9 +73,7 @@ class BaseApp(hassmqtt.HassMqtt):
             self.config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
 
         self.config_schema = self.config_schema.extend(self._base_config_schema)
-        self.args = self.config_schema(self.args)
-
-        self.set_log_level(self.args[ARG_LOG_LEVEL])
+        self.args = self.config_schema(self.args, self.args[ARG_LOG_LEVEL])
 
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
@@ -153,10 +151,6 @@ class BaseApp(hassmqtt.HassMqtt):
             retain=retain,
             namespace=namespace
         )
-
-    def set_log_level(self, log_level):
-        level = log_level.name if isinstance(log_level, LogLevel) else log_level
-        super().set_log_level(level)
 
     def condition_met(self, condition):
         # TODO : Other conditions

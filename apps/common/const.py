@@ -52,32 +52,3 @@ VALID_COMPARATORS = [
     NOT_EQUAL
 ]
 
-
-class LogLevel(Enum):
-    CRITICAL = 'CRITICAL'
-    ERROR = 'ERROR'
-    WARNING = 'WARNING'
-    INFO = 'INFO'
-    DEBUG = 'DEBUG'
-    NOTSET = 'NOTSET'
-
-    @classmethod
-    def names(cls):
-        return [level.name for level in LogLevel]
-
-    @classmethod
-    def from_name(cls, name):
-        if isinstance(name, LogLevel):
-            return name
-
-        result = [level for level in LogLevel if level.name == name]
-        if len(result) != 1:
-            raise Exception('{} is not a valid log level'.format(name))
-
-        return result[0]
-
-    def __str__(self):
-        return self.value
-
-    def __repr__(self):
-        return self.value
