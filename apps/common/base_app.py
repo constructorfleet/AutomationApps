@@ -76,6 +76,21 @@ class SaneLoggingApp(object):
     def set_log_level(self, level):
         self._log.set_log_level(level)
 
+    def debug(self, msg, *args, **kwargs):
+        self._log.debug(msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        self._log.info(msg, *args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        self._log.warning(msg, *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        self._log.error(msg, *args, **kwargs)
+
+    def critical(self, msg, *args, **kwargs):
+        self._log.critical(msg, *args, **kwargs)
+
 
 class LogWrapper:
     """
