@@ -140,9 +140,13 @@ class LogWrapper:
         if self._log_level >= logging.INFO:
             self._log(level, msg, args, **kwargs)
 
-    def __call__(self, msg, *args, **kwargs):
-        self.warning("MSG: {}, args {}".format(str(msg), str(args)))
-        self.log(msg, *[arg for arg in args if arg is not None], **kwargs)
+    def __call__(self, *args, **kwargs):
+        msg = args[0]
+        if len(args) > 1:
+            args = []
+        else:
+            args = args[1:]
+        self.log(msg, *args, **kwargs)
 
     def _log(self, level, msg, args, exc_info=None, extra=None):
         """
