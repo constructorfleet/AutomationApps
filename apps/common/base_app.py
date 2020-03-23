@@ -1,6 +1,7 @@
 import json
-import logging
 import os
+import abc
+import logging
 import sys
 from threading import Lock
 
@@ -59,6 +60,31 @@ def _split_service(service):
     else:
         raise ValueError("Invalid service %s" % service)
 
+class SaneLoggingApp(object):
+
+    def _setup_logging(self, app_class_name, log_level):
+        self._app_class_name = app_class_name
+        self._log = LogWrapper(self.get_main_log(), log_level)
+        formatter = logging.Formatter(
+            fmt="[%(levelname)s %(filename)s:%(lineno)s - "
+                "%(name)s.%(funcName)s() ] %(message)s"
+        )
+        self.get_main_log().handlers[0].setFormatter(formatter)
+        self.set_log_level(log_level)
+
+    def _setup_logging(self, app_class_name, log_level=logging.ERROR):
+        self._app_class_name = app_class_name
+        self._log = LogWrapper(self.get_main_log(), log_level)
+        formatter = logging.Formatter(
+            fmt="[%(levelname)s %(filename)s:%(lineno)s - "
+                "%(name)s.%(funcName)s() ] %(message)s"
+        )
+        self.get_main_log().handlers[0].setFormatter(formatter)
+        self.set_log_level(log_level)
+
+    def set_log_level(self, level):
+        self._log.set_log_level(level)
+
 
 class LogWrapper:
     """
@@ -69,8 +95,8 @@ class LogWrapper:
         self.logger = logger
         self.set_log_level(log_level)
 
-    def set_log_level(self, level):
-        self.logger.handlers[0].setLevel(level)
+    def set_log_level(self, log_level):
+        self.logger.handlers[0].setLevel(log_level)
 
     def debug(self, msg, *args, **kwargs):
         if self.logger.isEnabledFor(logging.DEBUG):
@@ -154,7 +180,7 @@ class LogWrapper:
         return rv
 
 
-class BaseApp(hassmqtt.HassMqtt):
+class BaseApp(hassmqtt.HassMqtt, SaneLoggingApp):
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
     holidays = None
@@ -171,8 +197,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def initialize(self):
         """Initialization of Base App class."""
-        self._persistent_data_file = os.path.join(self.config_dir, self.namespace,
-                                                  self.name + ".js")
+        self._persistent_data_file = os.path.join(self.config_dir, self.namespace, self.name + ".js")
         self.plugin_config = self.get_plugin_config()
 
         if isinstance(self.config_schema, dict):
@@ -180,9 +205,7 @@ class BaseApp(hassmqtt.HassMqtt):
             self.config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
 
         self.config_schema = self.config_schema.extend(self._base_config_schema)
-        self.args = self.config_schema(self.args)
-
-        self._setup_logging(self.__class__.__name__, self.args[ARG_LOG_LEVEL])
+        self.args = self.config_schema(self.args, self.args[ARG_LOG_LEVEL])
 
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
@@ -198,19 +221,6 @@ class BaseApp(hassmqtt.HassMqtt):
             self._on_persistent_data_loaded()
 
         self.initialize_app()
-
-    def _setup_logging(self, app_class_name, log_level=logging.ERROR):
-        self._app_class_name = app_class_name
-        self._log = LogWrapper(self.get_main_log(), log_level)
-        formatter = logging.Formatter(
-            fmt="[%(levelname)s %(filename)s:%(lineno)s - "
-                "%(name)s.%(funcName)s() ] %(message)s"
-        )
-        self.get_main_log().handlers[0].setFormatter(formatter)
-        self.set_log_level(log_level)
-
-    def set_log_level(self, level):
-        self._log.set_log_level(level)
 
     def initialize_app(self):
         pass
