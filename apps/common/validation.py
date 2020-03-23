@@ -1,4 +1,4 @@
-from common.sane_logging import logging
+from common.base_app import logging
 import datetime
 import os
 import re
