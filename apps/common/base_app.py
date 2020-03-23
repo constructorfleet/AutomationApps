@@ -71,9 +71,7 @@ class SaneLoggingApp(object):
                 "%(name)s.%(funcName)s() ] %(message)s"
         )
         self.get_main_log().handlers[0].setFormatter(formatter)
-
-    def set_log_level(self, level):
-        self._log.set_log_level(level)
+        self.get_main_log().setLevel(log_level)
 
     def debug(self, msg, *args, **kwargs):
         self._log.debug(msg, *args, **kwargs)
@@ -102,11 +100,7 @@ class LogWrapper:
 
     def __init__(self, logger, log_level=logging.ERROR):
         self.logger = logger
-        self.set_log_level(log_level)
-
-    def set_log_level(self, log_level):
         self._log_level = log_level
-        self.logger.handlers[0].setLevel(log_level)
 
     def debug(self, msg, *args, **kwargs):
         if self.logger.isEnabledFor(logging.DEBUG):
