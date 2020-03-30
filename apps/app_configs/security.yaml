@@ -44,6 +44,20 @@ unlock:
     - device_tracker.seb
   lock: lock.front_door
 
+car_garage_door:
+  module: security
+  class: GarageDoor
+  global_dependencies:
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  vehicles:
+    - device_tracker.2011_subaru_impreza_wagon
+    - device_tracker.2015_jeep_cherokee
+    - device_tracker.2019_jeep_compass
+  cover: cover.garage_door
+
 garage_door_timeout:
   module: timeout
   class: Timeout
