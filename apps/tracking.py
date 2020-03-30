@@ -86,6 +86,11 @@ class CloseEnoughToHome(BaseApp):
             self._last_states[entity] = self.get_state(
                 entity_id=entity,
                 attribute='all')
+            self._handle_entity_change(entity=entity,
+                                       attribute=None,
+                                       old=None,
+                                       new=self._last_states[entity],
+                                       kwargs={})
             self.listen_state(self._handle_entity_change,
                               entity=entity,
                               attribute='all')
@@ -105,7 +110,8 @@ class CloseEnoughToHome(BaseApp):
     def _reset_timer(self, entity):
         self._stop_timer(entity)
         self._timer_handlers[entity] = self.run_in(self._handle_assume_home,
-                                                   self.args[ARG_MINUTES_BEFORE_ASSUME] * 60)
+                                                   self.args[ARG_MINUTES_BEFORE_ASSUME] * 60,
+                                                   **{ATTR_ENTITY_ID: entity})
 
     def _handle_assume_home(self, kwargs):
         entity_id = kwargs.get(ATTR_ENTITY_ID, None)
