@@ -11,10 +11,10 @@ def get_category_by_name(category_name):
 
 class NotificationCategory(Enum):
     SECURITY_COVER_OPENED = (
-        NotificationChannel.SECURITY, "Opened {entity_name} for {person_name}",
+        NotificationChannel.SECURITY, "Opened {entity_name} for {vehicle_name}",
         [NotificationAction.ACTION_CLOSE_COVER])
     SECURITY_COVER_CLOSED = (
-        NotificationChannel.SECURITY, "Closed {entity_name} for {person_name}",
+        NotificationChannel.SECURITY, "Closed {entity_name} for {vehicle_name}",
         [NotificationAction.ACTION_OPEN_COVER])
     SECURITY_COVER_CLOSED_TIMEOUT = (
         NotificationChannel.SECURITY, "Closed {entity_name}",
