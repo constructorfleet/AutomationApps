@@ -60,10 +60,6 @@ def _split_service(service):
         raise ValueError("Invalid service %s" % service)
 
 
-def _prepend_log_msg(msg):
-    return "{} {} {}".format('__function__', '__line__', msg)
-
-
 class BaseApp(hassmqtt.HassMqtt):
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
@@ -114,6 +110,9 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def _on_persistent_data_loaded(self):
         return
+
+    def _prepend_log_msg(self, msg):
+        return "{}({}#{}): {}".format(self.name, '__function__', '__line__', msg)
 
     def record_data(self, key, value):
         with self._data_lock:
@@ -211,30 +210,30 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def debug(self, msg, *args, **kwargs):
         if self._log_level >= logging.DEBUG:
-            self.log(_prepend_log_msg(msg),
+            self.log(self._prepend_log_msg(msg),
                      *args,
                      level=logging.getLevelName(logging.DEBUG), **kwargs)
 
     def info(self, msg, *args, **kwargs):
         if self._log_level >= logging.INFO:
-            self.log(_prepend_log_msg(msg),
+            self.log(self._prepend_log_msg(msg),
                      *args,
                      level=logging.getLevelName(logging.INFO), **kwargs)
 
     def warning(self, msg, *args, **kwargs):
         if self._log_level >= logging.WARNING:
-            self.log(_prepend_log_msg(msg),
+            self.log(self._prepend_log_msg(msg),
                      *args,
                      level=logging.getLevelName(logging.WARNING), **kwargs)
 
     def error(self, msg, *args, **kwargs):
         if self._log_level >= logging.ERROR:
-            self.log(_prepend_log_msg(msg),
+            self.log(self._prepend_log_msg(msg),
                      *args,
                      level=logging.getLevelName(logging.ERROR), **kwargs)
 
     def critical(self, msg, *args, **kwargs):
         if self._log_level >= logging.CRITICAL:
-            self.log(_prepend_log_msg(msg),
+            self.log(self._prepend_log_msg(msg),
                      *args,
                      level=logging.getLevelName(logging.CRITICAL), **kwargs)
