@@ -48,12 +48,14 @@ close_enough_to_home:
     - validation
     - utils
   entity_id:
+    - device_tracker.2011_subaru_impreza_wagon
     - device_tracker.2015_jeep_cherokee
     - device_tracker.2019_jeep_compass
   zones_assume_home:
     - Garage Radius
     - home
   minutes_before_assume_home: 60
+  log_level: DEBUG
 
 bhg_call_in:
   module: bhg_call_in
