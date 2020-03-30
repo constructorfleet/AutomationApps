@@ -22,7 +22,9 @@ from notifiers.person_notifier import ATTR_IMAGE_URL, ATTR_EXTENSION
 ARG_DOORBELL = 'doorbell'
 ARG_IMAGE_PROCESSING = 'image_processing'
 ARG_PEOPLE = 'people'
+ARG_VEHICLES = 'vehicles'
 ARG_LOCK = 'lock'
+ARG_COVER = 'cover'
 ARG_GPS_MAX_ACCURACY = 'gps_max_accuracy'
 ARG_CLASS = "class"
 ARG_CONFIDENCE = "confidence"
@@ -280,3 +282,98 @@ class DoorLock(BaseApp):
             response_entity_id=response_entity_id,
             person_name=person_name,
             entity_name=self._lock_name)
+
+
+class GarageDoor(BaseApp):
+    config_schema = vol.Schema({
+        vol.Required(ARG_VEHICLES): vol.All(
+            ensure_list,
+            [entity_id]
+        ),
+        vol.Optional(ARG_GPS_MAX_ACCURACY, default=DEFAULT_ACCURACY): vol.Range(1, 100),
+        vol.Required(ARG_COVER): entity_id
+    }, extra=vol.ALLOW_EXTRA)
+
+    _cover_name = None
+    _last_states = {}
+
+    def initialize_app(self):
+        self._cover_name = self.get_state(self.args[ARG_COVER], attribute='friendly_name')
+        for vehicle in self.args[ARG_VEHICLES]:
+            self._last_states[vehicle] = None
+            self.listen_state(self._handle_vehicle_change,
+                              entity=vehicle,
+                              oneshot=True)
+
+    @property
+    def is_closed(self):
+        return self.get_state(self.args[ARG_COVER]) == 'closed'
+
+    def _handle_vehicle_change(self, entity, attribute, old, new, kwargs):
+        if old == new or new == self._last_states[entity] or 'unavailable' in [new.lower(),
+                                                                               old.lower()]:
+            self.listen_state(self._handle_vehicle_change,
+                              entity=entity,
+                              oneshot=True)
+            return
+
+        accuracy = self.get_state(entity, attribute='gps accuracy', default=None)
+        if accuracy is not None and accuracy > self.args[ARG_GPS_MAX_ACCURACY]:
+            self.warning('{} accuracy too high {}'.format(entity, accuracy))
+            self.listen_state(self._handle_vehicle_change,
+                              entity=entity,
+                              oneshot=True)
+            return
+        self._last_states[entity] = new
+        vehicle_name = self.get_state(entity, attribute='friendly_name')
+        if new == 'home':
+            self._handle_vehicle_arrive(vehicle_name)
+        elif old == 'home':
+            self._handle_vehicle_left(vehicle_name)
+
+        self.listen_state(self._handle_vehicle_change,
+                          entity=entity,
+                          oneshot=True)
+
+    def _handle_vehicle_arrive(self, vehicle_name):
+        if not self.is_closed:
+            self._notify(
+                NotificationCategory.SECURITY_COVER_OPENED,
+                response_entity_id=None,
+                vehicle_name=vehicle_name)
+            return
+        self.publish_service_call(
+            'cover',
+            'open_cover',
+            {
+                ARG_ENTITY_ID: self.args[ARG_COVER]
+            }
+        )
+        self._notify(
+            NotificationCategory.SECURITY_UNLOCKED,
+            response_entity_id=self.args[ARG_COVER],
+            vehicle_name=vehicle_name)
+
+    def _handle_vehicle_left(self, vehicle_name):
+        if self.is_closed:
+            return
+
+        self.publish_service_call(
+            'cover',
+            'close_cover',
+            {
+                ARG_ENTITY_ID: self.args[ARG_COVER]
+            }
+        )
+
+        self._notify(
+            NotificationCategory.SECURITY_LOCKED,
+            response_entity_id=self.args[ARG_LOCK],
+            vehicle_name=vehicle_name)
+
+    def _notify(self, category, response_entity_id, vehicle_name):
+        self.notifier.notify_people(
+            category,
+            response_entity_id=response_entity_id,
+            vehicle_name=vehicle_name,
+            entity_name=self._cover_name)
