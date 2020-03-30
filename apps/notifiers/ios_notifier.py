@@ -18,7 +18,7 @@ class iOSNotifier(BaseApp):
         return ""
 
     def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
-        critical = notification_category == notification_category.WARNING_BHG_SCHEDULED
+        critical = notification_category.critical
         if notification_category.channel.name in person.notification_channels:
             service_data = {
                 "title": str(notification_category.channel.name).title(),
