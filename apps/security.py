@@ -326,9 +326,9 @@ class GarageDoor(BaseApp):
             return
         self._last_states[entity] = new
         vehicle_name = self.get_state(entity, attribute='friendly_name')
-        if new == 'home':
+        if new in ['Garage Radius', 'home'] and old != 'home':
             self._handle_vehicle_arrive(vehicle_name)
-        elif old == 'home':
+        elif old in ['Garage Radius', 'home'] and new == 'not_home':
             self._handle_vehicle_left(vehicle_name)
 
         self.listen_state(self._handle_vehicle_change,
