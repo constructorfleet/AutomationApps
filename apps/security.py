@@ -340,10 +340,6 @@ class GarageDoor(Secure):
 
     def _handle_arrive(self, entity_name):
         if not self.is_secured:
-            self._notify(
-                NotificationCategory.SECURITY_COVER_OPENED,
-                response_entity_id=None,
-                vehicle_name=entity_name)
             return
         self.publish_service_call(
             'cover',
@@ -353,7 +349,7 @@ class GarageDoor(Secure):
             }
         )
         self._notify(
-            NotificationCategory.SECURITY_UNLOCKED,
+            NotificationCategory.SECURITY_COVER_OPENED,
             response_entity_id=self.args[ARG_COVER],
             vehicle_name=entity_name)
 
@@ -370,7 +366,7 @@ class GarageDoor(Secure):
         )
 
         self._notify(
-            NotificationCategory.SECURITY_LOCKED,
+            NotificationCategory.SECURITY_COVER_CLOSED,
             response_entity_id=self.args[ARG_LOCK],
             vehicle_name=entity_name)
 
