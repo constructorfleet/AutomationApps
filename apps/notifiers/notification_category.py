@@ -56,25 +56,29 @@ class NotificationCategory(Enum):
     WARNING_LOW_BATTERY = (
         NotificationChannel.WARNING, "Time to replace {entity_name}'s battery"
     )
-    WARNING_BHG_ALL_CLEAR = (
-        NotificationChannel.WARNING, "{transcript}"
+    IMPORTANT_BHG_ALL_CLEAR = (
+        NotificationChannel.IMPORTANT,
+        "{transcript}",
+        None,
+        "priority",
+        True
     )
-    WARNING_BHG_CALL_FAILED = (
-        NotificationChannel.WARNING,
+    IMPORTANT_BHG_CALL_FAILED = (
+        NotificationChannel.IMPORTANT,
         "Automated call to BHG failed, please try manually",
         None,
         "priority",
         True
     )
-    WARNING_BHG_TRANSCRIBE_FAILED = (
-        NotificationChannel.WARNING,
+    IMPORTANT_BHG_TRANSCRIBE_FAILED = (
+        NotificationChannel.IMPORTANT,
         "Unable to receive transcription from BHG, please try manually",
         None,
         "priority",
         True
     )
-    WARNING_BHG_SCHEDULED = (
-        NotificationChannel.WARNING,
+    IMPORTANT_BHG_SCHEDULED = (
+        NotificationChannel.IMPORTANT,
         "{transcript}",
         None,
         "priority",
