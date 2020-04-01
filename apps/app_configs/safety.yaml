@@ -1,0 +1,20 @@
+leak_detected:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  entity_id:
+    - binary_sensor.dog_bowl_leak_sensor_dry
+    - binary_sensor.laundry_leak_sensor_dry
+    - binary_sensor.server_leak_sensor_dry
+  from:
+    value: 'off'
+  to:
+    value: 'on'
+  notify:
+    notify_category: SAFETY_LEAK_DETECTED
+    replacers:
+      entity_name: entity_name
