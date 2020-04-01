@@ -11,11 +11,12 @@ from common.const import (
     EQUALS, VALID_COMPARATORS,
     ARG_NOTIFY_ENTITY_ID,
     ARG_NOTIFY_REPLACERS,
-    ARG_NOTIFY)
+    ARG_NOTIFY,
+    ATTR_ENTITY_NAME)
 from common.validation import (
     entity_id,
-    any_value
-)
+    any_value,
+    ensure_list)
 from notifiers.notification_category import (
     VALID_NOTIFICATION_CATEGORIES,
     get_category_by_name
@@ -38,7 +39,9 @@ SCHEMA_NOTIFY = vol.Schema({
 
 class NotifyWhen(BaseApp):
     config_schema = vol.Schema({
-        vol.Required(ARG_ENTITY_ID): entity_id,
+        vol.Required(ARG_ENTITY_ID): vol.All(
+            ensure_list,
+            [entity_id]),
         vol.Required(ARG_FROM): SCHEMA_CONDITION,
         vol.Required(ARG_TO): SCHEMA_CONDITION,
         vol.Required(ARG_NOTIFY): SCHEMA_NOTIFY
@@ -49,8 +52,9 @@ class NotifyWhen(BaseApp):
     def initialize_app(self):
         self._notification_category = \
             get_category_by_name(self.args[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
-        self.listen_state(self._handle_state_change,
-                          entity=self.args[ARG_ENTITY_ID])
+        for entity in self.args[ARG_ENTITY_ID]:
+            self.listen_state(self._handle_state_change,
+                              entity=entity)
 
     def _condition_to(self, value):
         condition_to = copy.deepcopy(self.args[ARG_TO])
@@ -68,10 +72,15 @@ class NotifyWhen(BaseApp):
 
         if self.condition_met(self._condition_from(old)) and \
                 self.condition_met(self._condition_to(new)):
-            self._notify()
+            self._notify(entity)
 
-    def _notify(self):
+    def _notify(self, entity):
+        replacers = copy.copy(self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS])
+        for key, value in [(key, value) for key, value in
+                           self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS].items() if
+                           value == ATTR_ENTITY_NAME]:
+            replacers[key] = self.get_state(entity_id=entity, attribute='friendly_name')
         self.notifier.notify_people(
             self._notification_category,
             response_entity_id=self.args[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
-            **self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS])
+            **replacers)

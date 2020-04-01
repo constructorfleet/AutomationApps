@@ -81,6 +81,14 @@ class NotificationCategory(Enum):
         True
     )
 
+    SAFETY_LEAK_DETECTED = (
+        NotificationChannel.SAFETY,
+        "There appears to be a water leak around {entity_name}",
+        None,
+        'priority',
+        True
+    )
+
     INFO_APPLIANCE_DONE = (
         NotificationChannel.INFO, "The {appliance_name} is done."
     )

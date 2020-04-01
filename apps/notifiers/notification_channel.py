@@ -6,6 +6,7 @@ class NotificationChannel(Enum):
     PRESENCE = auto()
     TRAINING = auto()
     WARNING = auto()
+    SAFETY = auto()
     INFO = auto()
 
     def __str__(self):
