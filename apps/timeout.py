@@ -101,10 +101,12 @@ class Timeout(BaseApp):
 
         self.listen_state(self._trigger_met_handler,
                           entity=trigger[ARG_ENTITY_ID],
-                          new=trigger[ARG_STATE])
+                          new=trigger[ARG_STATE],
+                          immediate=True)
         self.listen_state(self._trigger_unmet_handler,
                           entity=trigger[ARG_ENTITY_ID],
-                          old=trigger[ARG_STATE])
+                          old=trigger[ARG_STATE],
+                          immediate=True)
 
     @property
     def duration(self):
@@ -120,8 +122,10 @@ class Timeout(BaseApp):
         if self._timeout_handler is None:
             self.debug("Setting up pause handlers")
             for pause_when in self.args[ARG_PAUSE_WHEN]:
-                self._when_handlers.add(self.listen_state(self._handle_pause_when,
-                                                          entity=pause_when[ARG_ENTITY_ID]))
+                self._when_handlers.add(
+                    self.listen_state(self._handle_pause_when,
+                                      entity=pause_when[ARG_ENTITY_ID],
+                                      immediate=True))
 
         self._reset_timer()
 
@@ -141,9 +145,6 @@ class Timeout(BaseApp):
             self._reset_timer()
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
-        if new == old:
-            return
-        self.debug("UNTRIGGERD!")
         self._cancel_timer()
         self._cancel_handlers()
 
@@ -168,13 +169,10 @@ class Timeout(BaseApp):
         handlers = self._when_handlers.copy()
         self._when_handlers.clear()
         for handler in handlers:
-            if handler is not None:
-                self.cancel_listen_state(handler)
+            self.cancel_listen_state(handler)
 
     def _cancel_timer(self):
-        if self._timeout_handler is not None:
-            self.cancel_timer(self._timeout_handler)
-        self._timeout_handler = None
+        self._timeout_handler = self.cancel_timer(self._timeout_handler)
 
     def _reset_timer(self):
         self.debug("Resetting timer")

@@ -51,15 +51,6 @@ EVENT_CALL_SERVICE = "call_service"
 DEFAULT_PUBLISH_TOPIC = "events/rules"
 
 
-def _split_service(service):
-    if '/' in service:
-        return service.split('/')
-    if '.' in service:
-        return service.split('.')
-    else:
-        raise ValueError("Invalid service %s" % service)
-
-
 class BaseApp(hassmqtt.HassMqtt):
     config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
@@ -172,6 +163,8 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def condition_met(self, condition):
         # TODO : Other conditions
+        if condition is None:
+            return
         return self._state_condition_met(condition)
 
     # noinspection PyTypeChecker
