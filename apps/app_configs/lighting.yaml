@@ -118,7 +118,7 @@ laundry_light_timeout:
   trigger:
     entity_id: switch.laundry_room_lights
   pause_when:
-    - entity_id: binary_sensor.kitchen_motion
+    - entity_id: binary_sensor.server_rack_motion
       value: 'on'
     - entity_id: binary_sensor.laundry_room_motion
       value: 'on'
