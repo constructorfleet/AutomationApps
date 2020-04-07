@@ -79,7 +79,7 @@ class Timeout(BaseApp):
     }, extra=vol.ALLOW_EXTRA)
 
     def initialize_app(self):
-        _notification_category = None
+        self._notification_category = None
         if ARG_NOTIFY in self.config:
             self._notification_category = \
                 get_category_by_name(self.config[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
