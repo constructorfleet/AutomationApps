@@ -75,8 +75,8 @@ class CallBHG(BaseApp):
 
     def initialize_app(self):
         self._client = Client(
-            self.args[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
-            self.args[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
+            self.config[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
+            self.config[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
         )
 
         self.run_daily(self._new_day,
@@ -84,8 +84,8 @@ class CallBHG(BaseApp):
         self.listen_event(self._call_bhg,
                           event="call_bhg")
         self.run_daily(self._daily_call,
-                       "%02d:%02d:00" % (self.args[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
-                                         self.args[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
+                       "%02d:%02d:00" % (self.config[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
+                                         self.config[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
 
     def _new_day(self, kwargs):
         self._called_today = False
@@ -103,18 +103,18 @@ class CallBHG(BaseApp):
 
         self.info("Calling BHG")
 
-        if self.args[ARG_MESSAGE].startswith("http"):
-            twimlet_url = self.args[ARG_MESSAGE]
+        if self.config[ARG_MESSAGE].startswith("http"):
+            twimlet_url = self.config[ARG_MESSAGE]
         else:
             twimlet_url = "http://twimlets.com/message?Message="
-            twimlet_url += parse.quote(self.args[ARG_MESSAGE], safe="")
+            twimlet_url += parse.quote(self.config[ARG_MESSAGE], safe="")
 
         if self._call_instance is not None:
             return
 
         self._call_instance = self._client.calls.create(
-            to=self.args[ARG_CALL_TO],
-            from_=self.args[ARG_CALL_FROM],
+            to=self.config[ARG_CALL_TO],
+            from_=self.config[ARG_CALL_FROM],
             url=twimlet_url
         )
 
@@ -186,18 +186,18 @@ class CallBHG(BaseApp):
     def _process_transcriptions(self, transcripts):
         for transcript in [transcript for transcript in transcripts]:
             if REGEX_SCHEDULED.match(transcript):
-                if ARG_SCHEDULE_TOGGLE in self.args:
+                if ARG_SCHEDULE_TOGGLE in self.config:
                     self.publish_service_call(DOMAIN_FLAG_SERVICE,
                                               TURN_ON_SERVICE,
                                               {
-                                                  ARG_ENTITY_ID: self.args[ARG_SCHEDULE_TOGGLE]
+                                                  ARG_ENTITY_ID: self.config[ARG_SCHEDULE_TOGGLE]
                                               })
                 self._notify(NotificationCategory.WARNING_BHG_SCHEDULED, transcript=transcript)
             elif REGEX_NOT_SCHEDULED.match(transcript):
-                if ARG_SCHEDULE_TOGGLE in self.args:
+                if ARG_SCHEDULE_TOGGLE in self.config:
                     self.publish_service_call(DOMAIN_FLAG_SERVICE,
                                               TURN_OFF_SERVICE,
                                               {
-                                                  ARG_ENTITY_ID: self.args[ARG_SCHEDULE_TOGGLE]
+                                                  ARG_ENTITY_ID: self.config[ARG_SCHEDULE_TOGGLE]
                                               })
                 self._notify(NotificationCategory.WARNING_BHG_ALL_CLEAR, transcript=transcript)

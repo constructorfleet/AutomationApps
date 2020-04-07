@@ -102,12 +102,12 @@ class Doorbell(BaseApp):
     _notification_category = None
 
     def initialize_app(self):
-        self._notification_category = get_category_by_name(self.args[ARG_NOTIFY_CATEGORY])
-        doorbell = self.args[ARG_DOORBELL]
+        self._notification_category = get_category_by_name(self.config[ARG_NOTIFY_CATEGORY])
+        doorbell = self.config[ARG_DOORBELL]
         self.listen_state(self._handle_doorbell,
                           entity=doorbell[ARG_ENTITY_ID],
                           new=doorbell[ARG_STATE])
-        if ARG_IMAGE_PROCESSING in self.args:
+        if ARG_IMAGE_PROCESSING in self.config:
             self._start_image_processing(None)
 
     def _start_image_processing(self, kwargs):
@@ -116,7 +116,7 @@ class Doorbell(BaseApp):
 
         self._image_processor_handle = self.listen_state(
             self._handle_image_processor,
-            entity=self.args[ARG_IMAGE_PROCESSING][ARG_SENSOR],
+            entity=self.config[ARG_IMAGE_PROCESSING][ARG_SENSOR],
             attribute=ATTR_MATCHES,
             oneshot=True)
 
@@ -124,17 +124,17 @@ class Doorbell(BaseApp):
         if self._image_processor_handle is not None:
             self.cancel_listen_state(self._image_processor_handle)
         self._pause_handle = self.run_in(self._start_image_processing,
-                                         self.args[ARG_IMAGE_PROCESSING][ARG_NOTIFY_INTERVAL] * 60)
+                                         self.config[ARG_IMAGE_PROCESSING][ARG_NOTIFY_INTERVAL] * 60)
 
     def _handle_image_processor(self, entity, attribute, old, new, kwargs):
         if old == new or self._should_ignore_processor:
             self._start_image_processing(None)
             return
 
-        matches = new.get(self.args[ARG_IMAGE_PROCESSING][ARG_CLASS], None)
+        matches = new.get(self.config[ARG_IMAGE_PROCESSING][ARG_CLASS], None)
         if matches:
             for match in matches:
-                if match.get(ATTR_SCORE, 0.0) >= self.args[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
+                if match.get(ATTR_SCORE, 0.0) >= self.config[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
                     self._pause_image_processing()
                     self._notify()
                     return
@@ -155,10 +155,10 @@ class Doorbell(BaseApp):
         )
 
     def _get_notify_args(self):
-        if ARG_CAMERA not in self.args:
+        if ARG_CAMERA not in self.config:
             return {}
 
-        camera_id = self.args[ARG_CAMERA]
+        camera_id = self.config[ARG_CAMERA]
         file_name = _get_file_name(camera_id)
         file_path = _get_file_path(camera_id, file_name)
         self.publish_service_call(
@@ -171,16 +171,16 @@ class Doorbell(BaseApp):
         )
 
         return {
-            ATTR_IMAGE_URL: _get_image_url(self.args[ARG_BASE_IMAGE_URL], file_name),
+            ATTR_IMAGE_URL: _get_image_url(self.config[ARG_BASE_IMAGE_URL], file_name),
             ATTR_EXTENSION: "jpg"
         }
 
     @property
     def _should_ignore_processor(self):
-        if ARG_IMAGE_PROCESSING not in self.args \
-                or ARG_CONDITION not in self.args[ARG_IMAGE_PROCESSING]:
+        if ARG_IMAGE_PROCESSING not in self.config \
+                or ARG_CONDITION not in self.config[ARG_IMAGE_PROCESSING]:
             return False
-        for condition in self.args[ARG_IMAGE_PROCESSING][ARG_CONDITION]:
+        for condition in self.config[ARG_IMAGE_PROCESSING][ARG_CONDITION]:
             if self.condition_met(condition):
                 return True
         return False
@@ -193,10 +193,10 @@ class Secure(BaseApp):
 
     def initialize_app(self):
         self._security_entity_name = self.get_state(
-            self.args[self._arg_security_entity],
+            self.config[self._arg_security_entity],
             attribute='friendly_name'
         )
-        for entity in self.args[self._arg_watched_entities]:
+        for entity in self.config[self._arg_watched_entities]:
             self._last_states[entity] = None
             self.listen_state(self._handle_entity_change,
                               entity=entity,
@@ -211,7 +211,7 @@ class Secure(BaseApp):
             return
 
         accuracy = self.get_state(entity, attribute='gps_accuracy', default=None)
-        if accuracy is not None and accuracy > self.args[ARG_GPS_MAX_ACCURACY]:
+        if accuracy is not None and accuracy > self.config[ARG_GPS_MAX_ACCURACY]:
             self.warning('{} accuracy too high {}'.format(entity, accuracy))
             self.listen_state(self._handle_entity_change,
                               entity=entity,
@@ -259,7 +259,7 @@ class DoorLock(Secure):
 
     @property
     def is_secured(self):
-        return self.get_state(self.args[ARG_LOCK]) == 'locked'
+        return self.get_state(self.config[ARG_LOCK]) == 'locked'
 
     @property
     def _arg_watched_entities(self):
@@ -280,12 +280,12 @@ class DoorLock(Secure):
             'lock',
             'unlock',
             {
-                ARG_ENTITY_ID: self.args[ARG_LOCK]
+                ARG_ENTITY_ID: self.config[ARG_LOCK]
             }
         )
         self._notify(
             NotificationCategory.SECURITY_UNLOCKED,
-            response_entity_id=self.args[ARG_LOCK],
+            response_entity_id=self.config[ARG_LOCK],
             person_name=entity_name)
 
     def _handle_left(self, entity_name):
@@ -299,13 +299,13 @@ class DoorLock(Secure):
             'lock',
             'lock',
             {
-                ARG_ENTITY_ID: self.args[ARG_LOCK]
+                ARG_ENTITY_ID: self.config[ARG_LOCK]
             }
         )
 
         self._notify(
             NotificationCategory.SECURITY_LOCKED,
-            response_entity_id=self.args[ARG_LOCK],
+            response_entity_id=self.config[ARG_LOCK],
             person_name=entity_name)
 
     def _notify(self, category, response_entity_id, person_name):
@@ -336,7 +336,7 @@ class GarageDoor(Secure):
 
     @property
     def is_secured(self):
-        return self.get_state(self.args[ARG_COVER]) == 'closed'
+        return self.get_state(self.config[ARG_COVER]) == 'closed'
 
     def _handle_arrive(self, entity_name):
         if not self.is_secured:
@@ -345,12 +345,12 @@ class GarageDoor(Secure):
             'cover',
             'open_cover',
             {
-                ARG_ENTITY_ID: self.args[ARG_COVER]
+                ARG_ENTITY_ID: self.config[ARG_COVER]
             }
         )
         self._notify(
             NotificationCategory.SECURITY_COVER_OPENED,
-            response_entity_id=self.args[ARG_COVER],
+            response_entity_id=self.config[ARG_COVER],
             vehicle_name=entity_name)
 
     def _handle_left(self, entity_name):
@@ -361,13 +361,13 @@ class GarageDoor(Secure):
             'cover',
             'close_cover',
             {
-                ARG_ENTITY_ID: self.args[ARG_COVER]
+                ARG_ENTITY_ID: self.config[ARG_COVER]
             }
         )
 
         self._notify(
             NotificationCategory.SECURITY_COVER_CLOSED,
-            response_entity_id=self.args[ARG_LOCK],
+            response_entity_id=self.config[ARG_LOCK],
             vehicle_name=entity_name)
 
     def _notify(self, category, response_entity_id, vehicle_name):

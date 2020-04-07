@@ -77,9 +77,9 @@ class NightLights(BaseApp):
 
     def initialize_app(self):
         """Initalize the application."""
-        conf_dawn = self.args.get(ARG_DAWN)
-        conf_dusk = self.args.get(ARG_DUSK)
-        self.night_entities = self.args.get(ARG_NIGHT)
+        conf_dawn = self.config.get(ARG_DAWN)
+        conf_dusk = self.config.get(ARG_DUSK)
+        self.night_entities = self.config.get(ARG_NIGHT)
 
         if conf_dawn:
             self.dawn_entities = conf_dawn[ARG_ENTITIES]

@@ -127,24 +127,24 @@ class MovieMode(BaseApp):
     def initialize_app(self):
         self.listen_state(
             self.player_state_changed,
-            entity=self.args[ARG_MEDIA_PLAYER]
+            entity=self.config[ARG_MEDIA_PLAYER]
         )
 
         self.player_state_changed(
-            self.args[ARG_MEDIA_PLAYER],
+            self.config[ARG_MEDIA_PLAYER],
             None,
             None,
-            self.get_state(self.args[ARG_MEDIA_PLAYER]),
+            self.get_state(self.config[ARG_MEDIA_PLAYER]),
             None
         )
 
-        if self.args.get(ARG_ENABLE_TOGGLE, None):
+        if self.config.get(ARG_ENABLE_TOGGLE, None):
             self.listen_state(self.handle_toggle_changed,
-                              entity=self.args[ARG_ENABLE_TOGGLE])
+                              entity=self.config[ARG_ENABLE_TOGGLE])
 
-        if ARG_TV in self.args:
+        if ARG_TV in self.config:
             self.listen_state(self.handle_toggle_changed,
-                              entity=self.args[ARG_TV])
+                              entity=self.config[ARG_TV])
 
     @property
     def is_playing(self):
@@ -152,12 +152,12 @@ class MovieMode(BaseApp):
 
     @property
     def should_turn_on(self):
-        return not self.args[ARG_CHECK_SUN] or self.sun_down()
+        return not self.config[ARG_CHECK_SUN] or self.sun_down()
 
     @property
     def is_enabled(self):
-        return self.args.get(ARG_ENABLE_TOGGLE, None) is None \
-               or self.get_state(self.args[ARG_ENABLE_TOGGLE]) == "on"
+        return self.config.get(ARG_ENABLE_TOGGLE, None) is None \
+               or self.get_state(self.config[ARG_ENABLE_TOGGLE]) == "on"
 
     def player_state_changed(self, entity, attribute, old, new, kwargs):
         if not new or new == "" or self.state == new:
@@ -166,15 +166,15 @@ class MovieMode(BaseApp):
         if new != STATE_IDLE and new != STATE_UNKNOWN:
             self.media_type = _plex_media_content_type(
                 self.get_state(
-                    self.args[ARG_MEDIA_PLAYER],
+                    self.config[ARG_MEDIA_PLAYER],
                     attribute=ATTR_MEDIA_TYPE
                 ),
                 self.get_state(
-                    self.args[ARG_MEDIA_PLAYER],
+                    self.config[ARG_MEDIA_PLAYER],
                     attribute=ATTR_TITLE
                 ),
                 self.get_state(
-                    self.args[ARG_MEDIA_PLAYER],
+                    self.config[ARG_MEDIA_PLAYER],
                     attribute=ATTR_DURATION
                 )
             )
@@ -187,7 +187,7 @@ class MovieMode(BaseApp):
     def pause_media_player(self):
         self.call_service(
             "media_player/media_pause",
-            entity_id=self.args[ARG_MEDIA_PLAYER]
+            entity_id=self.config[ARG_MEDIA_PLAYER]
         )
 
     def process(self):
@@ -207,9 +207,9 @@ class MovieMode(BaseApp):
             self.debug("Delaying stop")
             self.delay_handle = \
                 self.run_in(self.handle_player_stopped,
-                            seconds=self.args[ARG_TV_DELAY])
+                            seconds=self.config[ARG_TV_DELAY])
             if self.should_turn_on:
-                for device in self.args[ARG_ON_BETWEEN_EPISODES]:
+                for device in self.config[ARG_ON_BETWEEN_EPISODES]:
                     if self.get_state(device) == "on":
                         continue
                     self.debug("Turning on {}".format(device))
@@ -224,13 +224,13 @@ class MovieMode(BaseApp):
             self.handle_player_stopped({})
 
     def handle_paused(self):
-        if not self.is_enabled or not self.args[ARG_RESET_ON_PAUSE]:
+        if not self.is_enabled or not self.config[ARG_RESET_ON_PAUSE]:
             return
 
-        if isinstance(self.args[ARG_RESET_ON_PAUSE], bool):
+        if isinstance(self.config[ARG_RESET_ON_PAUSE], bool):
             self.handle_stopped()
-        elif self.should_turn_on and self.args[ARG_RESET_ON_PAUSE] in self.args:
-            for device in self.args[self.args[ARG_RESET_ON_PAUSE]]:
+        elif self.should_turn_on and self.config[ARG_RESET_ON_PAUSE] in self.config:
+            for device in self.config[self.config[ARG_RESET_ON_PAUSE]]:
                 if isinstance(device, str):
                     device_id = device
                 else:
@@ -252,7 +252,7 @@ class MovieMode(BaseApp):
         if not self.is_enabled:
             return
         self.debug("Playing")
-        for device in self.args[ARG_TURN_OFF]:
+        for device in self.config[ARG_TURN_OFF]:
             if isinstance(device, dict):
                 device_id = device[ARG_TURN_OFF_ENTITY_ID]
                 self.memory[device_id] = self.get_state(device_id) == STATE_ON
@@ -276,7 +276,7 @@ class MovieMode(BaseApp):
             DOMAIN_HOMEASSISTANT,
             SERVICE_TURN_ON,
             {
-                ARG_ENTITY_ID: self.args.get(ARG_TURN_ON, [])
+                ARG_ENTITY_ID: self.config.get(ARG_TURN_ON, [])
             })
 
     def handle_player_stopped(self, kwargs):
@@ -288,12 +288,12 @@ class MovieMode(BaseApp):
             DOMAIN_HOMEASSISTANT,
             SERVICE_TURN_OFF,
             {
-                ARG_ENTITY_ID: self.args.get(ARG_TURN_ON, [])
+                ARG_ENTITY_ID: self.config.get(ARG_TURN_ON, [])
             }
         )
 
         if self.should_turn_on:
-            for device in self.args[ARG_TURN_OFF]:
+            for device in self.config[ARG_TURN_OFF]:
                 if isinstance(device, str):
                     device_id = device
                 else:

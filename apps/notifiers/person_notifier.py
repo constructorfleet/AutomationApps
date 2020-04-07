@@ -50,12 +50,13 @@ def get_arg_schema(args):
 class PersonNotifier(adbase.ADBase, adapi.ADAPI):
     _notifier = None
     _service = None
+    configs ={}
 
     def initialize(self):
-        self.args = get_arg_schema(self.args)
+        self.configs = get_arg_schema(self.config)
 
     def notify_people(self, notification_category, response_entity_id=None, **kwargs):
-        for person_args in self.args[ARG_PEOPLE]:
+        for person_args in self.configs[ARG_PEOPLE]:
             self.log(
                 "Notifying {} on {}".format(person_args[ARG_PERSON_NAME], notification_category))
             self.notify_person(
@@ -95,7 +96,7 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
             self.log("Not found {}".format(name))
 
     def _get_person(self, name):
-        return next((self.Person(self, person_args) for person_args in self.args[ARG_PEOPLE] if
+        return next((self.Person(self, person_args) for person_args in self.config[ARG_PEOPLE] if
                      person_args[ARG_PERSON_NAME] == name), None)
 
     class Person(object):

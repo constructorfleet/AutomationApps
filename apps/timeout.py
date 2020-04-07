@@ -84,14 +84,14 @@ class Timeout(BaseApp):
     _notification_category = None
 
     def initialize_app(self):
-        if ARG_NOTIFY in self.args:
+        if ARG_NOTIFY in self.config:
             self._notification_category = \
-                get_category_by_name(self.args[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
+                get_category_by_name(self.config[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
 
-        for when in self.args[ARG_PAUSE_WHEN]:
+        for when in self.config[ARG_PAUSE_WHEN]:
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
-        trigger = self.args[ARG_TRIGGER]
+        trigger = self.config[ARG_TRIGGER]
 
         self.listen_state(self._trigger_met_handler,
                           entity=trigger[ARG_ENTITY_ID],
@@ -104,10 +104,10 @@ class Timeout(BaseApp):
 
     @property
     def duration(self):
-        if isinstance(self.args[ARG_DURATION], str):
-            return self.get_state(self.args[ARG_DURATION])
+        if isinstance(self.config[ARG_DURATION], str):
+            return self.get_state(self.config[ARG_DURATION])
         else:
-            return self.args[ARG_DURATION]
+            return self.config[ARG_DURATION]
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
@@ -115,7 +115,7 @@ class Timeout(BaseApp):
         self.debug("Triggered!")
         if self._timeout_handler is None:
             self.debug("Setting up pause handlers")
-            for pause_when in self.args[ARG_PAUSE_WHEN]:
+            for pause_when in self.config[ARG_PAUSE_WHEN]:
                 self._when_handlers.add(
                     self.listen_state(self._handle_pause_when,
                                       entity=pause_when[ARG_ENTITY_ID],
@@ -146,7 +146,7 @@ class Timeout(BaseApp):
         self._cancel_handlers()
 
         self.debug("Firing on time out events")
-        events = self.args.get(ARG_ON_TIMEOUT, [])
+        events = self.config.get(ARG_ON_TIMEOUT, [])
         for event in events:
             self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
                                       event[ARG_SERVICE_DATA])
@@ -154,8 +154,8 @@ class Timeout(BaseApp):
         if self._notification_category is not None:
             self.notifier.notify_people(
                 self._notification_category,
-                response_entity_id=self.args[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
-                **self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
+                response_entity_id=self.config[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
+                **self.config[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
             )
 
     def _cancel_handlers(self):

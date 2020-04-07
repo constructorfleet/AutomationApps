@@ -51,18 +51,18 @@ class NotifyWhen(BaseApp):
 
     def initialize_app(self):
         self._notification_category = \
-            get_category_by_name(self.args[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
-        for entity in self.args[ARG_ENTITY_ID]:
+            get_category_by_name(self.config[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
+        for entity in self.config[ARG_ENTITY_ID]:
             self.listen_state(self._handle_state_change,
                               entity=entity)
 
     def _condition_to(self, value):
-        condition_to = copy.deepcopy(self.args[ARG_TO])
+        condition_to = copy.deepcopy(self.config[ARG_TO])
         condition_to[ARG_ENTITY_ID] = value
         return condition_to
 
     def _condition_from(self, value):
-        condition_to = copy.deepcopy(self.args[ARG_FROM])
+        condition_to = copy.deepcopy(self.config[ARG_FROM])
         condition_to[ARG_ENTITY_ID] = value
         return condition_to
 
@@ -75,12 +75,12 @@ class NotifyWhen(BaseApp):
             self._notify(entity)
 
     def _notify(self, entity):
-        replacers = copy.copy(self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS])
+        replacers = copy.copy(self.config[ARG_NOTIFY][ARG_NOTIFY_REPLACERS])
         for key, value in [(key, value) for key, value in
-                           self.args[ARG_NOTIFY][ARG_NOTIFY_REPLACERS].items() if
+                           self.config[ARG_NOTIFY][ARG_NOTIFY_REPLACERS].items() if
                            value == ATTR_ENTITY_NAME]:
             replacers[key] = self.get_state(entity_id=entity, attribute='friendly_name')
         self.notifier.notify_people(
             self._notification_category,
-            response_entity_id=self.args[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
+            response_entity_id=self.config[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
             **replacers)
