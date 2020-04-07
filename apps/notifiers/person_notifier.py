@@ -31,29 +31,33 @@ DEFAULT_CHANNELS = ARG_VALID_CHANNELS
 def get_arg_schema(args):
     """Retrieve the validation schema."""
     return vol.Schema({
-        vol.Required(ARG_PEOPLE): vol.All(ensure_list, [{
-            vol.Required(ARG_PERSON_NAME): str,
-            vol.Required(ARG_NOTIFIER): vol.All(
-                ensure_list,
-                [vol.Schema({
-                    vol.Required(ARG_NAME): vol.In(ARG_VALID_NOTIFIERS),
-                    vol.Required(ARG_SERVICE): str
-                })]
-            ),
-            vol.Optional(ARG_CHANNELS, default=DEFAULT_CHANNELS): vol.All(ensure_list,
-                                                                          [vol.In(
-                                                                              ARG_VALID_CHANNELS)])
-        }])
+        vol.Required(ARG_PEOPLE): vol.All(
+            ensure_list,
+            [{
+                vol.Required(ARG_PERSON_NAME): str,
+                vol.Required(ARG_NOTIFIER): vol.All(
+                    ensure_list,
+                    [vol.Schema({
+                        vol.Required(ARG_NAME): vol.In(ARG_VALID_NOTIFIERS),
+                        vol.Required(ARG_SERVICE): str
+                    })]
+                ),
+                vol.Optional(ARG_CHANNELS, default=DEFAULT_CHANNELS):
+                    vol.All(ensure_list,
+                            [vol.In(
+                                ARG_VALID_CHANNELS)])
+            }]
+        )
     }, extra=vol.ALLOW_EXTRA)(args)
 
 
 class PersonNotifier(adbase.ADBase, adapi.ADAPI):
     _notifier = None
     _service = None
-    configs ={}
+    configs = {}
 
     def initialize(self):
-        self.configs = get_arg_schema(self.config)
+        self.configs = get_arg_schema(self.args)
 
     def notify_people(self, notification_category, response_entity_id=None, **kwargs):
         for person_args in self.configs[ARG_PEOPLE]:
