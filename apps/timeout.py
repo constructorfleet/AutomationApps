@@ -133,9 +133,8 @@ class Timeout(BaseApp):
         if old == new:
             return
 
-        self.debug("Might reset timer")
-        if self.condition_met(self._pause_when[entity]):
-            self.debug("Pause timer")
+        if self._timeout_handler is not None and self.condition_met(self._pause_when[entity]):
+            self.debug("Pause time because {} is {}".format(entity, new))
             self._cancel_timer()
         elif self._timeout_handler is None:
             for entity, condition in self._pause_when.items():
