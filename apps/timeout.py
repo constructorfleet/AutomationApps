@@ -91,6 +91,8 @@ class Timeout(BaseApp):
         for when in self.config[ARG_PAUSE_WHEN]:
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
+        self.warning('When lenght: {}', len(self._pause_when))
+
         trigger = self.config[ARG_TRIGGER]
 
         self.listen_state(self._trigger_met_handler,
@@ -126,7 +128,7 @@ class Timeout(BaseApp):
     def _handle_pause_when(self, entity, attribute, old, new, kwargs):
         if old == new:
             return
-
+        self.warning('When lenght: {}', len(self._pause_when))
         if self._timeout_handler is not None and self.condition_met(self._pause_when[entity]):
             self.debug("Pause time because {} is {}".format(entity, new))
             self._cancel_timer()
