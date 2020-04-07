@@ -182,9 +182,9 @@ class BaseApp(hassmqtt.HassMqtt):
         entity_state, value = converge_types(entity_state, value)
 
         comparator = condition[ARG_COMPARATOR]
-        self.err(
+        self.log(
             "[{}] {}{} {} {}{}".format(condition[ARG_ENTITY_ID], entity_state, type(entity_state),
-                                       comparator, value, type(value)))
+                                       comparator, value, type(value)), level='WARNING')
         if comparator == EQUALS:
             return entity_state == value
         elif comparator == NOT_EQUAL:
