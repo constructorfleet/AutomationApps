@@ -60,7 +60,7 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
         self.configs = get_arg_schema(self.args)
 
     def notify_people(self, notification_category, response_entity_id=None, **kwargs):
-        for person_args in self.configs[ARG_PEOPLE]:
+        for person_args in self.configs.get(ARG_PEOPLE, []):
             self.log(
                 "Notifying {} on {}".format(person_args[ARG_PERSON_NAME], notification_category))
             self.notify_person(
