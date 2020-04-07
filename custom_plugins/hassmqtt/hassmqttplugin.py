@@ -140,16 +140,16 @@ class HassmqttPlugin(PluginBase):
         }
 
     def stop(self):
-        self.logger.warning("stop() called for %s", self.name)
+        self.logger.debug("stop() called for %s", self.name)
         self.stopping = True
         if self.mqtt_connected:
             self.logger.info("Stopping MQTT Plugin and Unsubscribing from URL %s:%s",
                              self.mqtt_client_host, self.mqtt_client_port)
             for topic in self.mqtt_client_topics:
-                self.logger.warning("Unsubscribing from Topic: %s", topic)
+                self.logger.debug("Unsubscribing from Topic: %s", topic)
                 result = self.mqtt_client.unsubscribe(topic)
                 if result[0] == 0:
-                    self.logger.warning("Unsubscribing from Topic %s Successful", topic)
+                    self.logger.debug("Unsubscribing from Topic %s Successful", topic)
 
             self.mqtt_client.publish(self.mqtt_will_topic, self.mqtt_shutdown_payload,
                                      self.mqtt_qos, retain=self.mqtt_will_retain)
@@ -242,7 +242,7 @@ class HassmqttPlugin(PluginBase):
 
     def mqtt_on_message(self, client, userdata, msg):
         try:
-            self.logger.warn("Message Received: Topic = %s, Payload = %s", msg.topic, msg.payload)
+            self.logger.debug("Message Received: Topic = %s, Payload = %s", msg.topic, msg.payload)
             topic = msg.topic
             payload_dict = {}
             try:
@@ -250,7 +250,7 @@ class HassmqttPlugin(PluginBase):
             except TypeError as err:
                 self.logger.critical("Payload is not JSON")
 
-            self.logger.warn("GOT  %s" % msg.payload.decode())
+            self.logger.debug("GOT  %s" % msg.payload.decode())
 
             event_type = payload_dict.get("event_type", None)
             if event_type == "state_changed":
@@ -265,7 +265,7 @@ class HassmqttPlugin(PluginBase):
                         elif state is not None:
                             self.state[entity_id] = new_state
                 except Exception as err:
-                    self.logger.warning(str(err))
+                    self.logger.error(str(err))
 
             if self.mqtt_wildcards != [] and list(filter(lambda x: x in topic,
                                                          self.mqtt_wildcards)) != []:  # check if any of the wildcards belong
@@ -309,12 +309,12 @@ class HassmqttPlugin(PluginBase):
             self.loop.create_task(self.send_ad_event(data))
         except UnicodeDecodeError:
             self.logger.info("Unable to decode MQTT message")
-            self.logger.warn('Unable to decode MQTT message, with Traceback: %s',
+            self.logger.debug('Unable to decode MQTT message, with Traceback: %s',
                               traceback.format_exc())
         except Exception as e:
             self.logger.critical(
                 "There was an error while processing an MQTT message: {} {}".format(type(e), e))
-            self.logger.warn(
+            self.logger.debug(
                 'There was an error while processing an MQTT message, with Traceback: %s',
                 traceback.format_exc())
 
@@ -323,7 +323,7 @@ class HassmqttPlugin(PluginBase):
         result = None
         if 'topic' in kwargs:
             if not self.mqtt_connected:  # ensure mqtt plugin is connected
-                self.logger.warning("Attempt to call Mqtt Service while disconnected: %s", service)
+                self.logger.debug("Attempt to call Mqtt Service while disconnected: %s", service)
                 return None
             try:
                 topic = kwargs['topic']
@@ -332,16 +332,16 @@ class HassmqttPlugin(PluginBase):
                 qos = int(kwargs.get('qos', self.mqtt_qos))
 
                 if service == 'publish':
-                    self.logger.warn("Publish Payload: %s to Topic: %s", payload, topic)
+                    self.logger.debug("Publish Payload: %s to Topic: %s", payload, topic)
 
                     result = await utils.run_in_executor(self, self.mqtt_client.publish, topic,
                                                          payload, qos, retain)
 
                     if result[0] == 0:
-                        self.logger.warn("Publishing Payload %s to Topic %s Successful", payload,
+                        self.logger.debug("Publishing Payload %s to Topic %s Successful", payload,
                                           topic)
                     else:
-                        self.logger.warning("Publishing Payload %s to Topic %s was not Successful",
+                        self.logger.debuging("Publishing Payload %s to Topic %s was not Successful",
                                             payload, topic)
 
                 elif service == 'subscribe':
