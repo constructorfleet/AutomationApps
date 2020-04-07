@@ -128,7 +128,7 @@ class Timeout(BaseApp):
     def _handle_pause_when(self, entity, attribute, old, new, kwargs):
         if old == new:
             return
-        self.warning('CHECKING CONDITION FOR {}'.format(str(self._pause_when[entity])))
+
         if self._timeout_handler is not None and self.condition_met(self._pause_when[entity]):
             self.debug("Pause time because {} is {}".format(entity, new))
             self._cancel_timer()
