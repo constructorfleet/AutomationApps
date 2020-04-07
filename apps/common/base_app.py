@@ -73,10 +73,12 @@ class BaseApp(hassmqtt.HassMqtt):
         self.plugin_config = self.get_plugin_config()
 
         if isinstance(self.config_schema, dict):
-            self.config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
+            config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
+        else:
+            config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
 
-        self.config_schema = self.config_schema.extend(self._base_config_schema)
-        self.args = self.config_schema(self.args)
+        config_schema = config_schema.extend(self._base_config_schema)
+        self.args = config_schema(self.args)
         self._log_level = self.args[ARG_LOG_LEVEL]
 
         if APP_NOTIFIERS in self.args.get(ARG_DEPENDENCIES, []):
