@@ -85,6 +85,7 @@ class Timeout(BaseApp):
 
         self._pause_when = {}
         self._when_handlers = set()
+        self._timeout_handler = None
         for when in self.config[ARG_PAUSE_WHEN]:
             self._pause_when[when[ARG_ENTITY_ID]] = when
 

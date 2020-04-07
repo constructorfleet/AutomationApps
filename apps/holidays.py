@@ -130,13 +130,13 @@ class HolidayColors(BaseApp):
     _holidays = {}
 
     def initialize_app(self):
-        self.warn('File %s' % self._persistent_data_file)
-        self.warn('Data {}'.format(str(self.data)))
+        self.warning('File %s' % self._persistent_data_file)
+        self.warning('Data {}'.format(str(self.data)))
         if self._for_year != datetime.now().year:
-            self.warn('Retrieving holidays')
+            self.warning('Retrieving holidays')
             self._retrieve_holidays()
 
-        self.warn(str(self._holidays))
+        self.warning(str(self._holidays))
 
     @property
     def api_url(self):
@@ -158,7 +158,7 @@ class HolidayColors(BaseApp):
             key=lambda x: abs(x - now))
         holiday = [name for name, date in self._holidays.items() if
                    closest.month == date.month and closest.day == date.day][0]
-        self.warn('Holiday %s', holiday)
+        self.warning('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
     def _retrieve_holidays(self):
@@ -176,9 +176,9 @@ class HolidayColors(BaseApp):
 
             for holiday in holidays:
                 name = holiday.get('name', '')
-                self.warn('Got holiday %s', name)
+                self.warning('Got holiday %s', name)
                 if name not in HOLIDAY_COLORS.keys():
-                    self.warn('%s not in colors', name)
+                    self.warning('%s not in colors', name)
                     continue
                 holiday_date = holiday.get('date', {}).get('datetime', {})
                 self.record_data(name, holiday_date)
@@ -188,11 +188,11 @@ class HolidayColors(BaseApp):
             self.error(str(err))
 
     def _on_persistent_data_loaded(self):
-        self.warn('Transforming json data')
+        self.warning('Transforming json data')
 
         self._for_year = self.data[KEY_YEAR]
 
-        self.warn('FOR YEAR {}'.format(self._for_year))
+        self.warning('FOR YEAR {}'.format(self._for_year))
 
         for name, holiday_date in self.data.items():
             if name == KEY_YEAR and name not in HOLIDAY_COLORS.keys():
@@ -200,7 +200,7 @@ class HolidayColors(BaseApp):
 
             self._holidays[name] = self._parse_holiday_date(holiday_date)
 
-        self.warn("Holidays %%s", str(self._holidays))
+        self.warning("Holidays %%s", str(self._holidays))
 
     def _parse_holiday_date(self, holiday_date):
         day = holiday_date.get('day')
