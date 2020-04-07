@@ -140,16 +140,16 @@ class HassmqttPlugin(PluginBase):
         }
 
     def stop(self):
-        self.loggerself.warn("stop() called for %s", self.name)
+        self.logger.warning("stop() called for %s", self.name)
         self.stopping = True
         if self.mqtt_connected:
             self.logger.info("Stopping MQTT Plugin and Unsubscribing from URL %s:%s",
                              self.mqtt_client_host, self.mqtt_client_port)
             for topic in self.mqtt_client_topics:
-                self.loggerself.warn("Unsubscribing from Topic: %s", topic)
+                self.logger.warning("Unsubscribing from Topic: %s", topic)
                 result = self.mqtt_client.unsubscribe(topic)
                 if result[0] == 0:
-                    self.loggerself.warn("Unsubscribing from Topic %s Successful", topic)
+                    self.logger.warning("Unsubscribing from Topic %s Successful", topic)
 
             self.mqtt_client.publish(self.mqtt_will_topic, self.mqtt_shutdown_payload,
                                      self.mqtt_qos, retain=self.mqtt_will_retain)
@@ -178,13 +178,13 @@ class HassmqttPlugin(PluginBase):
                                                   self.call_plugin_service)
 
                 for topic in self.mqtt_client_topics:
-                    self.loggerself.warn("Subscribing to Topic: %s", topic)
+                    self.logger.warn("Subscribing to Topic: %s", topic)
                     result = self.mqtt_client.subscribe(topic, self.mqtt_qos)
                     if result[0] == 0:
-                        self.loggerself.warn("Subscription to Topic %s Successful", topic)
+                        self.logger.warn("Subscription to Topic %s Successful", topic)
                     else:
                         self.mqtt_client_topics.remove(topic)
-                        self.loggerself.warn(
+                        self.logger.warn(
                             "Subscription to Topic %s Unsuccessful, as Client possibly not currently connected",
                             topic)
 
@@ -216,7 +216,7 @@ class HassmqttPlugin(PluginBase):
             self.mqtt_connect_event.set()
         except:
             self.logger.critical("There was an error while trying to setup the Mqtt Service")
-            self.loggerself.warn(
+            self.logger.warn(
                 'There was an error while trying to setup the MQTT Service, with Traceback: %s',
                 traceback.format_exc())
 
@@ -227,8 +227,8 @@ class HassmqttPlugin(PluginBase):
                 self.initialized = False
                 self.mqtt_connected = False
                 self.logger.critical("MQTT Client Disconnected Abruptly. Will attempt reconnection")
-                self.loggerself.warn("Return code: %s", rc)
-                self.loggerself.warn("userdata: %s", userdata)
+                self.logger.warn("Return code: %s", rc)
+                self.logger.warn("userdata: %s", userdata)
 
                 data = {'event_type': self.mqtt_event_name,
                         'data': {'state': 'Disconnected', 'topic': None, 'wildcard': None}}
@@ -236,13 +236,13 @@ class HassmqttPlugin(PluginBase):
             return
         except:
             self.logger.critical("There was an error while disconnecting from the Mqtt Service")
-            self.loggerself.warn(
+            self.logger.warn(
                 'There was an error while disconnecting from the MQTT Service, with Traceback: %s',
                 traceback.format_exc())
 
     def mqtt_on_message(self, client, userdata, msg):
         try:
-            self.loggerself.warn("Message Received: Topic = %s, Payload = %s", msg.topic, msg.payload)
+            self.logger.warn("Message Received: Topic = %s, Payload = %s", msg.topic, msg.payload)
             topic = msg.topic
             payload_dict = {}
             try:
@@ -250,7 +250,7 @@ class HassmqttPlugin(PluginBase):
             except TypeError as err:
                 self.logger.critical("Payload is not JSON")
 
-            self.loggerself.warn("GOT  %s" % msg.payload.decode())
+            self.logger.warn("GOT  %s" % msg.payload.decode())
 
             event_type = payload_dict.get("event_type", None)
             if event_type == "state_changed":
@@ -309,12 +309,12 @@ class HassmqttPlugin(PluginBase):
             self.loop.create_task(self.send_ad_event(data))
         except UnicodeDecodeError:
             self.logger.info("Unable to decode MQTT message")
-            self.loggerself.warn('Unable to decode MQTT message, with Traceback: %s',
+            self.logger.warn('Unable to decode MQTT message, with Traceback: %s',
                               traceback.format_exc())
         except Exception as e:
             self.logger.critical(
                 "There was an error while processing an MQTT message: {} {}".format(type(e), e))
-            self.loggerself.warn(
+            self.logger.warn(
                 'There was an error while processing an MQTT message, with Traceback: %s',
                 traceback.format_exc())
 
@@ -332,27 +332,27 @@ class HassmqttPlugin(PluginBase):
                 qos = int(kwargs.get('qos', self.mqtt_qos))
 
                 if service == 'publish':
-                    self.loggerself.warn("Publish Payload: %s to Topic: %s", payload, topic)
+                    self.logger.warn("Publish Payload: %s to Topic: %s", payload, topic)
 
                     result = await utils.run_in_executor(self, self.mqtt_client.publish, topic,
                                                          payload, qos, retain)
 
                     if result[0] == 0:
-                        self.loggerself.warn("Publishing Payload %s to Topic %s Successful", payload,
+                        self.logger.warn("Publishing Payload %s to Topic %s Successful", payload,
                                           topic)
                     else:
                         self.logger.warning("Publishing Payload %s to Topic %s was not Successful",
                                             payload, topic)
 
                 elif service == 'subscribe':
-                    self.loggerself.warn("Subscribe to Topic: %s", topic)
+                    self.logger.warn("Subscribe to Topic: %s", topic)
 
                     if topic not in self.mqtt_client_topics:
                         result = await utils.run_in_executor(self, self.mqtt_client.subscribe,
                                                              topic, qos)
 
                         if result[0] == 0:
-                            self.loggerself.warn("Subscription to Topic %s Successful", topic)
+                            self.logger.warn("Subscription to Topic %s Successful", topic)
                             self.mqtt_client_topics.append(topic)
                         else:
                             self.logger.warning("Subscription to Topic %s was not Successful",
@@ -361,11 +361,11 @@ class HassmqttPlugin(PluginBase):
                         self.logger.info("Topic %s already subscribed to", topic)
 
                 elif service == 'unsubscribe':
-                    self.loggerself.warn("Unsubscribe from Topic: %s", topic)
+                    self.logger.warn("Unsubscribe from Topic: %s", topic)
 
                     result = await utils.run_in_executor(self, self.mqtt_client.unsubscribe, topic)
                     if result[0] == 0:
-                        self.loggerself.warn("Unsubscription from Topic %s Successful", topic)
+                        self.logger.warn("Unsubscription from Topic %s Successful", topic)
                         if topic in self.mqtt_client_topics:
                             self.mqtt_client_topics.remove(topic)
                     else:
@@ -379,7 +379,7 @@ class HassmqttPlugin(PluginBase):
             except Exception as e:
                 config = self.config
                 if config['type'] == 'mqtt':
-                    self.loggerself.warn(
+                    self.logger.warn(
                         'Got the following Error %s, when trying to retrieve Mqtt Plugin', e)
                     return str(e)
                 else:
@@ -408,7 +408,7 @@ class HassmqttPlugin(PluginBase):
     #
 
     async def get_complete_state(self):
-        self.loggerself.warn("*** Sending Complete State: %s ***", self.state)
+        self.logger.warn("*** Sending Complete State: %s ***", self.state)
         return copy.deepcopy(self.state)
 
     async def get_metadata(self):
@@ -531,10 +531,10 @@ class HassmqttPlugin(PluginBase):
         except Exception as e:
             self.logger.critical(
                 "There was an error while trying to setup the Mqtt Service. Error was: %s", e)
-            self.loggerself.warn(
+            self.logger.warn(
                 "There was an error while trying to setup the MQTT Service. Error: %s, with Traceback: %s",
                 e, traceback.format_exc())
-            self.loggerself.warn(
+            self.logger.warn(
                 'There was an error while trying to setup the MQTT Service, with Traceback: %s',
                 traceback.format_exc())
 
