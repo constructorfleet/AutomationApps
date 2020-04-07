@@ -89,7 +89,7 @@ class Timeout(BaseApp):
                 get_category_by_name(self.args[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
 
         for when in self.args[ARG_PAUSE_WHEN]:
-            self.warning("WHEN {}".format(str(when.schema)))
+            self.warning("WHEN {}".format(str(when)))
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
         trigger = self.args[ARG_TRIGGER]
@@ -135,7 +135,7 @@ class Timeout(BaseApp):
         elif self._timeout_handler is None:
             for entity, condition in self._pause_when.items():
                 self.warning(
-                    'CHECKING CONDITION FOR {}'.format(str(condition.schema)))
+                    'CHECKING CONDITION FOR {}'.format(str(condition)))
                 if self.condition_met(condition):
                     return
             self.debug("Starting timer")
