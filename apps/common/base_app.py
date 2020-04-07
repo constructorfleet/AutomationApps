@@ -75,7 +75,7 @@ class BaseApp(hassmqtt.HassMqtt):
         if isinstance(self.config_schema, dict):
             config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
         else:
-            config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
+            config_schema = self.config_schema
 
         config_schema = config_schema.extend(self._base_config_schema)
         self.args = config_schema(self.args)
