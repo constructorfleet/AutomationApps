@@ -92,12 +92,6 @@ class Timeout(BaseApp):
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
         trigger = self.args[ARG_TRIGGER]
-        if self.get_state(trigger[ARG_ENTITY_ID]) == trigger[ARG_STATE]:
-            self._trigger_met_handler(trigger[ARG_ENTITY_ID],
-                                      None,
-                                      None,
-                                      trigger[ARG_STATE],
-                                      None)
 
         self.listen_state(self._trigger_met_handler,
                           entity=trigger[ARG_ENTITY_ID],
@@ -126,7 +120,7 @@ class Timeout(BaseApp):
                     self.listen_state(self._handle_pause_when,
                                       entity=pause_when[ARG_ENTITY_ID],
                                       immediate=True))
-
+        self.debug('Triggered - resetting timer')
         self._reset_timer()
 
     def _handle_pause_when(self, entity, attribute, old, new, kwargs):
