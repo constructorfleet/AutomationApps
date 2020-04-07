@@ -128,7 +128,7 @@ class BaseApp(hassmqtt.HassMqtt):
             self.data = {}
 
     def save_data(self, kwargs):
-        self.warning("Saving %s" % str(self.data))
+        self.debug("Saving %s" % str(self.data))
         with self._data_lock:
             with open(self._persistent_data_file, 'w') as json_file:
                 json.dump(self.data, json_file)
@@ -139,7 +139,7 @@ class BaseApp(hassmqtt.HassMqtt):
         return DEFAULT_PUBLISH_TOPIC
 
     def publish_service_call(self, domain, service, kwargs):
-        self.warning("Publish Domain %s Service %s with args %s" % (domain, service, str(kwargs)))
+        self.debug("Publish Domain %s Service %s with args %s" % (domain, service, str(kwargs)))
         return self.publish_event(
             EVENT_CALL_SERVICE,
             {
@@ -150,7 +150,7 @@ class BaseApp(hassmqtt.HassMqtt):
         )
 
     def publish_event(self, event, event_data, qos=0, retain=False, namespace='default'):
-        self.warning("Publish Event %s Data %s " % (event, str(event_data)))
+        self.debug("Publish Event %s Data %s " % (event, str(event_data)))
         return self.mqtt_publish(
             self.publish_topic,
             payload=json.dumps({
@@ -184,7 +184,7 @@ class BaseApp(hassmqtt.HassMqtt):
         entity_state, value = converge_types(entity_state, value)
 
         comparator = condition[ARG_COMPARATOR]
-        self.warning(
+        self.debug(
             "[{}] {}{} {} {}{}".format(condition[ARG_ENTITY_ID], entity_state, type(entity_state),
                                        comparator, value, type(value)))
         if comparator == EQUALS:

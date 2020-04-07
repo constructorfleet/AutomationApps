@@ -178,10 +178,10 @@ class HassmqttPlugin(PluginBase):
                                                   self.call_plugin_service)
 
                 for topic in self.mqtt_client_topics:
-                    self.logger.warn("Subscribing to Topic: %s", topic)
+                    self.logger.debug("Subscribing to Topic: %s", topic)
                     result = self.mqtt_client.subscribe(topic, self.mqtt_qos)
                     if result[0] == 0:
-                        self.logger.warn("Subscription to Topic %s Successful", topic)
+                        self.logger.debug("Subscription to Topic %s Successful", topic)
                     else:
                         self.mqtt_client_topics.remove(topic)
                         self.logger.warn(
@@ -341,18 +341,18 @@ class HassmqttPlugin(PluginBase):
                         self.logger.debug("Publishing Payload %s to Topic %s Successful", payload,
                                           topic)
                     else:
-                        self.logger.debuging("Publishing Payload %s to Topic %s was not Successful",
+                        self.logger.warning("Publishing Payload %s to Topic %s was not Successful",
                                             payload, topic)
 
                 elif service == 'subscribe':
-                    self.logger.warn("Subscribe to Topic: %s", topic)
+                    self.logger.debug("Subscribe to Topic: %s", topic)
 
                     if topic not in self.mqtt_client_topics:
                         result = await utils.run_in_executor(self, self.mqtt_client.subscribe,
                                                              topic, qos)
 
                         if result[0] == 0:
-                            self.logger.warn("Subscription to Topic %s Successful", topic)
+                            self.logger.debug("Subscription to Topic %s Successful", topic)
                             self.mqtt_client_topics.append(topic)
                         else:
                             self.logger.warning("Subscription to Topic %s was not Successful",
@@ -361,11 +361,11 @@ class HassmqttPlugin(PluginBase):
                         self.logger.info("Topic %s already subscribed to", topic)
 
                 elif service == 'unsubscribe':
-                    self.logger.warn("Unsubscribe from Topic: %s", topic)
+                    self.logger.debug("Unsubscribe from Topic: %s", topic)
 
                     result = await utils.run_in_executor(self, self.mqtt_client.unsubscribe, topic)
                     if result[0] == 0:
-                        self.logger.warn("Unsubscription from Topic %s Successful", topic)
+                        self.logger.debug("Unsubscription from Topic %s Successful", topic)
                         if topic in self.mqtt_client_topics:
                             self.mqtt_client_topics.remove(topic)
                     else:
@@ -408,7 +408,7 @@ class HassmqttPlugin(PluginBase):
     #
 
     async def get_complete_state(self):
-        self.logger.warn("*** Sending Complete State: %s ***", self.state)
+        self.logger.debug("*** Sending Complete State: %s ***", self.state)
         return copy.deepcopy(self.state)
 
     async def get_metadata(self):

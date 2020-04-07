@@ -151,7 +151,7 @@ class CallBHG(BaseApp):
         self._call_instance = None
 
     def _handle_call_complete(self, status):
-        _LOGGER.warning("Call complete, waiting for transcript")
+        _LOGGER.debug("Call complete, waiting for transcript")
         self.run_in(self._get_transcripts, 45)
 
     def _handle_unknown_call_status(self, status):

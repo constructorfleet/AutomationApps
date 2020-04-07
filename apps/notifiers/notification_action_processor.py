@@ -13,14 +13,14 @@ class NotificationActionProcessor(BaseApp):
     acknowledge_listeners = []
 
     def initialize_app(self):
-        self.warning("Starting listener for iOS")
+        self.debug("Starting listener for iOS")
         self.listen_event(self.handle_event,
                           event="ios.notification_action_fired")
-        self.warning("Starting listener for mobile app")
+        self.debug("Starting listener for mobile app")
         self.listen_event(self.handle_event,
                           event="mobile_app_notification_action")
 
-        self.warning("Starting listener for FCM")
+        self.debug("Starting listener for FCM")
         self.listen_event(self.handle_event,
                           event="html5_notification.clicked")
 
@@ -28,10 +28,10 @@ class NotificationActionProcessor(BaseApp):
         self.acknowledge_listeners.append(listener)
 
     def handle_event(self, event_name, data, kwargs):
-        self.warning("Event Data {} and kwargs {}".format(str(data), str(kwargs)))
-        self.warning("ACTION NAME {} ".format(data.get(ACTION_NAME, data.get(ACTION, "")).lower()))
+        self.debug("Event Data {} and kwargs {}".format(str(data), str(kwargs)))
+        self.debug("ACTION NAME {} ".format(data.get(ACTION_NAME, data.get(ACTION, "")).lower()))
         for name, member in NotificationAction.__members__.items():
-            self.warning("NAME {} VALUE {}".format(name, member))
+            self.debug("NAME {} VALUE {}".format(name, member))
         found_action = [member for name, member in NotificationAction.__members__.items() if
                         name.lower().replace('_', '') == data.get(ACTION_NAME,
                                                                   data.get(ACTION, "")).lower()]

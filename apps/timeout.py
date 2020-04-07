@@ -90,8 +90,6 @@ class Timeout(BaseApp):
         for when in self.config[ARG_PAUSE_WHEN]:
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
-        self.warning('When lenght: {}', len(self._pause_when))
-
         trigger = self.config[ARG_TRIGGER]
 
         self.listen_state(self._trigger_met_handler,
@@ -113,29 +111,29 @@ class Timeout(BaseApp):
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
-        self.warning("Triggered!")
+        self.debug("Triggered!")
         if self._timeout_handler is None:
-            self.warning("Setting up pause handlers")
+            self.debug("Setting up pause handlers")
             for pause_when in self.config[ARG_PAUSE_WHEN]:
                 self._when_handlers.add(
                     self.listen_state(self._handle_pause_when,
                                       entity=pause_when[ARG_ENTITY_ID],
                                       immediate=True))
-        self.warning('Triggered - resetting timer')
+        self.debug('Triggered - resetting timer')
         self._reset_timer()
 
     def _handle_pause_when(self, entity, attribute, old, new, kwargs):
         if old == new:
             return
-        self.warning('When lenght: {}', len(self._pause_when))
+
         if self._timeout_handler is not None and self.condition_met(self._pause_when[entity]):
-            self.warning("Pause time because {} is {}".format(entity, new))
+            self.debug("Pause time because {} is {}".format(entity, new))
             self._cancel_timer()
         elif self._timeout_handler is None:
             for entity, condition in self._pause_when.items():
                 if self.condition_met(condition):
                     return
-            self.warning("Starting timer")
+            self.debug("Starting timer")
             self._reset_timer()
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
@@ -146,7 +144,7 @@ class Timeout(BaseApp):
         self._cancel_timer()
         self._cancel_handlers()
 
-        self.warning("Firing on time out events")
+        self.debug("Firing on time out events")
         events = self.config.get(ARG_ON_TIMEOUT, [])
         for event in events:
             self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
@@ -169,7 +167,7 @@ class Timeout(BaseApp):
         self._timeout_handler = self.cancel_timer(self._timeout_handler)
 
     def _reset_timer(self):
-        self.warning("Resetting timer")
+        self.debug("Resetting timer")
         self._cancel_timer()
         self._timeout_handler = self.run_in(self._handle_timeout,
                                             self.duration * 60)
