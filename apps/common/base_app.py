@@ -128,7 +128,7 @@ class BaseApp(hassmqtt.HassMqtt):
             self.data = {}
 
     def save_data(self, kwargs):
-        self.debug("Saving %s" % str(self.data))
+        selfself.warn("Saving %s" % str(self.data))
         with self._data_lock:
             with open(self._persistent_data_file, 'w') as json_file:
                 json.dump(self.data, json_file)
@@ -139,7 +139,7 @@ class BaseApp(hassmqtt.HassMqtt):
         return DEFAULT_PUBLISH_TOPIC
 
     def publish_service_call(self, domain, service, kwargs):
-        self.debug("Publish Domain %s Service %s with args %s" % (domain, service, str(kwargs)))
+        selfself.warn("Publish Domain %s Service %s with args %s" % (domain, service, str(kwargs)))
         return self.publish_event(
             EVENT_CALL_SERVICE,
             {
@@ -150,7 +150,7 @@ class BaseApp(hassmqtt.HassMqtt):
         )
 
     def publish_event(self, event, event_data, qos=0, retain=False, namespace='default'):
-        self.debug("Publish Event %s Data %s " % (event, str(event_data)))
+        selfself.warn("Publish Event %s Data %s " % (event, str(event_data)))
         return self.mqtt_publish(
             self.publish_topic,
             payload=json.dumps({

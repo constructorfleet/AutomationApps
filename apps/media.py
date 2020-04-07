@@ -178,7 +178,7 @@ class MovieMode(BaseApp):
                     attribute=ATTR_DURATION
                 )
             )
-        self.debug("New state {} {}".format(
+        selfself.warn("New state {} {}".format(
             self.state,
             self.media_type
         ))
@@ -204,7 +204,7 @@ class MovieMode(BaseApp):
         if not self.is_enabled:
             return
         if self.media_type and not is_movie(self.media_type):
-            self.debug("Delaying stop")
+            selfself.warn("Delaying stop")
             self.delay_handle = \
                 self.run_in(self.handle_player_stopped,
                             seconds=self.config[ARG_TV_DELAY])
@@ -212,7 +212,7 @@ class MovieMode(BaseApp):
                 for device in self.config[ARG_ON_BETWEEN_EPISODES]:
                     if self.get_state(device) == "on":
                         continue
-                    self.debug("Turning on {}".format(device))
+                    selfself.warn("Turning on {}".format(device))
                     self.publish_service_call(
                         DOMAIN_HOMEASSISTANT,
                         SERVICE_TURN_OFF,
@@ -239,7 +239,7 @@ class MovieMode(BaseApp):
                         continue
                 if self.get_state(device_id) == "on":
                     continue
-                self.debug("Turning on {}".format(device_id))
+                selfself.warn("Turning on {}".format(device_id))
                 self.publish_service_call(
                     DOMAIN_HOMEASSISTANT,
                     SERVICE_TURN_ON,
@@ -251,7 +251,7 @@ class MovieMode(BaseApp):
     def handle_playing(self):
         if not self.is_enabled:
             return
-        self.debug("Playing")
+        selfself.warn("Playing")
         for device in self.config[ARG_TURN_OFF]:
             if isinstance(device, dict):
                 device_id = device[ARG_TURN_OFF_ENTITY_ID]
@@ -260,7 +260,7 @@ class MovieMode(BaseApp):
                 device_id = device
             if self.get_state(device_id) == "off":
                 continue
-            self.debug("Turning off {}".format(device_id))
+            selfself.warn("Turning off {}".format(device_id))
             self.publish_service_call(
                 DOMAIN_HOMEASSISTANT,
                 SERVICE_TURN_OFF,
@@ -280,7 +280,7 @@ class MovieMode(BaseApp):
             })
 
     def handle_player_stopped(self, kwargs):
-        self.debug("STOPPED")
+        selfself.warn("STOPPED")
         self.cancel_delay_timer()
         self.media_type = None
 
@@ -302,7 +302,7 @@ class MovieMode(BaseApp):
                         continue
                 if self.get_state(device_id) == "on":
                     continue
-                self.debug("Turning on {}".format(device_id))
+                selfself.warn("Turning on {}".format(device_id))
                 self.publish_service_call(
                     DOMAIN_HOMEASSISTANT,
                     SERVICE_TURN_ON,
@@ -314,7 +314,7 @@ class MovieMode(BaseApp):
     def handle_tv_off(self, entity, attribute, old, new, kwargs):
         if new != "off":
             return
-        self.debug("TV off")
+        selfself.warn("TV off")
         self.handle_player_stopped({})
         self.pause_media_player()
 
