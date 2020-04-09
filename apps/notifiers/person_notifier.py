@@ -71,11 +71,10 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
             )
 
     def notify_person(self, name, notification_category, response_entity_id=None, **kwargs):
-        self.log("Notifying {} on channel {} and category {}, args: {}".format(
+        self.log("Notifying {} on channel {} and category {}".format(
             name,
             notification_category.channel.name,
-            notification_category.name,
-            str(self.configs))
+            notification_category.name)
         )
         person = self._get_person(name)
         if person:
@@ -101,7 +100,7 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
             self.log("Not found {}".format(name))
 
     def _get_person(self, name):
-        return next((self.Person(self, person_args) for person_args in self.config[ARG_PEOPLE] if
+        return next((self.Person(self, person_args) for person_args in self.configs[ARG_PEOPLE] if
                      person_args[ARG_PERSON_NAME] == name), None)
 
     class Person(object):
