@@ -91,7 +91,7 @@ class Timeout(BaseApp):
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
         trigger = self.config[ARG_TRIGGER]
-
+        self.warning('%s: %s', trigger[ARG_ENTITY_ID], self.get_state(trigger[ARG_ENTITY_ID]))
         self.listen_state(self._trigger_met_handler,
                           entity=trigger[ARG_ENTITY_ID],
                           new=trigger[ARG_STATE],
