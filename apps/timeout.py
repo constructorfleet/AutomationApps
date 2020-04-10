@@ -59,17 +59,17 @@ SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
 class Timeout(BaseApp):
     def initialize_app(self):
         self._notification_category = None
-        if ARG_NOTIFY in self.config:
+        if ARG_NOTIFY in self.configs:
             self._notification_category = \
-                get_category_by_name(self.config[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
+                get_category_by_name(self.configs[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
 
         self._pause_when = {}
         self._when_handlers = set()
         self._timeout_handler = None
-        for when in self.config[ARG_PAUSE_WHEN]:
+        for when in self.configs[ARG_PAUSE_WHEN]:
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
-        trigger = self.config[ARG_TRIGGER]
+        trigger = self.configs[ARG_TRIGGER]
         self.listen_state(self._trigger_met_handler,
                           entity=trigger[ARG_ENTITY_ID],
                           new=trigger[ARG_STATE],
@@ -104,18 +104,18 @@ class Timeout(BaseApp):
 
     @property
     def duration(self):
-        if isinstance(self.config[ARG_DURATION], str):
-            return self.get_state(self.config[ARG_DURATION])
+        if isinstance(self.configs[ARG_DURATION], str):
+            return self.get_state(self.configs[ARG_DURATION])
         else:
-            return self.config[ARG_DURATION]
+            return self.configs[ARG_DURATION]
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
-        if new == old and new != self.config[ARG_TRIGGER][ARG_STATE]:
+        if new == old and new != self.configs[ARG_TRIGGER][ARG_STATE]:
             return
         self.warning("Triggered!")
         if self._timeout_handler is None:
             self.warning("Setting up pause handlers")
-            for pause_when in self.config[ARG_PAUSE_WHEN]:
+            for pause_when in self.configs[ARG_PAUSE_WHEN]:
                 self._when_handlers.add(
                     self.listen_state(self._handle_pause_when,
                                       entity=pause_when[ARG_ENTITY_ID],
@@ -136,7 +136,7 @@ class Timeout(BaseApp):
             self._reset_timer('Initiating timer')
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
-        if old == new or new == self.config[ARG_TRIGGER][ARG_STATE]:
+        if old == new or new == self.configs[ARG_TRIGGER][ARG_STATE]:
             return
         self._cancel_timer('Trigger no longer met')
         self._cancel_handlers('Trigger no longer met')
@@ -146,7 +146,7 @@ class Timeout(BaseApp):
         self._cancel_handlers('Timed out')
 
         self.warning("Firing on time out events")
-        events = self.config.get(ARG_ON_TIMEOUT, [])
+        events = self.configs.get(ARG_ON_TIMEOUT, [])
         for event in events:
             self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
                                       event[ARG_SERVICE_DATA])
@@ -154,8 +154,8 @@ class Timeout(BaseApp):
         if self._notification_category is not None:
             self.notifier.notify_people(
                 self._notification_category,
-                response_entity_id=self.config[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
-                **self.config[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
+                response_entity_id=self.configs[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
+                **self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
             )
 
     def _cancel_handlers(self, message):

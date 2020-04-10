@@ -49,7 +49,7 @@ class CallWhen(BaseApp):
     _conditions = {}
 
     def initialize_app(self):
-        for trigger in self.config[ARG_TRIGGER]:
+        for trigger in self.configs[ARG_TRIGGER]:
             new_state = self.get_state(entity_id=trigger[ARG_ENTITY_ID])
             if new_state == trigger[ARG_STATE]:
                 self._handle_trigger(
@@ -82,7 +82,7 @@ class CallWhen(BaseApp):
 
     @property
     def conditions_met(self):
-        for condition in self.config[ARG_CONDITION]:
+        for condition in self.configs[ARG_CONDITION]:
             if not self.condition_met(condition):
                 return False
 
@@ -93,7 +93,7 @@ class CallWhen(BaseApp):
             self.debug("Conditions no met")
             return
 
-        events = self.config[ARG_CALL]
+        events = self.configs[ARG_CALL]
         for event in events:
             self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
                                       event[ARG_SERVICE_DATA])

@@ -64,10 +64,10 @@ class CloseEnoughToHome(BaseApp):
 
     def initialize_app(self):
         self._home_gps = {
-            ATTR_LATITUDE: self.config.get(ATTR_LATITUDE, None),
-            ATTR_LONGITUDE: self.config.get(ATTR_LONGITUDE, None)
+            ATTR_LATITUDE: self.configs.get(ATTR_LATITUDE, None),
+            ATTR_LONGITUDE: self.configs.get(ATTR_LONGITUDE, None)
         }
-        for entity in self.config[ARG_ENTITY_ID]:
+        for entity in self.configs[ARG_ENTITY_ID]:
             self._last_states[entity] = self.get_state(
                 entity_id=entity,
                 attribute='all')
@@ -99,9 +99,9 @@ class CloseEnoughToHome(BaseApp):
 
     def _handle_entity_change(self, entity, attribute, old, new, kwargs):
         self._last_states[entity] = new
-        if new[ATTR_STATE] == 'home' or new[ATTR_STATE] not in self.config[ARG_ZONES_ASSUME_HOME]:
+        if new[ATTR_STATE] == 'home' or new[ATTR_STATE] not in self.configs[ARG_ZONES_ASSUME_HOME]:
             self._stop_timer(entity)
-        elif new[ATTR_STATE] in self.config[ARG_ZONES_ASSUME_HOME]:
+        elif new[ATTR_STATE] in self.configs[ARG_ZONES_ASSUME_HOME]:
             self._reset_timer(entity)
 
     def _stop_timer(self, entity):
@@ -112,7 +112,7 @@ class CloseEnoughToHome(BaseApp):
     def _reset_timer(self, entity):
         self._stop_timer(entity)
         self._timer_handlers[entity] = self.run_in(self._handle_assume_home,
-                                                   self.config[ARG_MINUTES_BEFORE_ASSUME] * 60,
+                                                   self.configs[ARG_MINUTES_BEFORE_ASSUME] * 60,
                                                    **{ATTR_ENTITY_ID: entity})
 
     def _handle_assume_home(self, kwargs):
@@ -148,17 +148,17 @@ class TrackerGroup(BaseApp):
 
     def initialize_app(self):
         self._home_gps = (
-            self.config.get(ATTR_LATITUDE, None),
-            self.config.get(ATTR_LONGITUDE, None)
+            self.configs.get(ATTR_LATITUDE, None),
+            self.configs.get(ATTR_LONGITUDE, None)
         )
 
-        for group in self.config[ARG_GROUPS]:
+        for group in self.configs[ARG_GROUPS]:
             group_name = group[ARG_GROUP_NAME]
             self._entity_last_gps[group_name] = {}
             self._group_entities[group_name] = []
             self._group_states[group_name] = None
             max_distance = group.get(ARG_MAX_DISTANCE,
-                                     self.config[ARG_MAX_DISTANCE])
+                                     self.configs[ARG_MAX_DISTANCE])
             callback_args = {
                 ATTR_GROUP_NAME: group_name,
                 ATTR_GROUP_MEMBERS: group[ARG_ENTITY_ID],

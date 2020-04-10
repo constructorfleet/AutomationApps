@@ -77,12 +77,12 @@ class BaseApp(hassmqtt.HassMqtt):
             config_schema = self.app_schema
 
         config_schema = config_schema.extend(self._base_config_schema)
-        self.config = config_schema(self.args)
-        self._log_level = self.config[ARG_LOG_LEVEL]
+        self.configs = config_schema(self.args)
+        self._log_level = self.configs[ARG_LOG_LEVEL]
 
-        if APP_NOTIFIERS in self.config.get(ARG_DEPENDENCIES, []):
+        if APP_NOTIFIERS in self.configs.get(ARG_DEPENDENCIES, []):
             self.notifier = self.get_app(APP_NOTIFIERS)
-        if APP_HOLIDAYS in self.config.get(ARG_DEPENDENCIES, []):
+        if APP_HOLIDAYS in self.configs.get(ARG_DEPENDENCIES, []):
             self.holidays = self.get_app(APP_HOLIDAYS)
 
         if os.path.exists(self._persistent_data_file):
