@@ -140,14 +140,6 @@ class CloseEnoughToHome(BaseApp):
 
 
 class TrackerGroup(BaseApp):
-    config_schema = vol.Schema({
-        vol.Required(ARG_GROUPS): vol.All(
-            ensure_list,
-            [SCHEMA_GROUP]
-        ),
-        vol.Optional(ARG_MAX_DISTANCE, default=ARG_MAX_DISTANCE): vol.Coerce(float)
-    }, extra=vol.ALLOW_EXTRA)
-
     _entity_last_gps = {}
     _group_entities = {}
     _group_states = {}
@@ -181,6 +173,16 @@ class TrackerGroup(BaseApp):
                                   attribute='all',
                                   immediate=True,
                                   **callback_args)
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_GROUPS): vol.All(
+                ensure_list,
+                [SCHEMA_GROUP]
+            ),
+            vol.Optional(ARG_MAX_DISTANCE, default=ARG_MAX_DISTANCE): vol.Coerce(float)
+        }, extra=vol.ALLOW_EXTRA)
 
     def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
         if new[ATTR_STATE] == 'home':

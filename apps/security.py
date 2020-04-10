@@ -251,14 +251,17 @@ class Secure(BaseApp):
 
 
 class DoorLock(Secure):
-    config_schema = vol.Schema({
-        vol.Required(ARG_PEOPLE): vol.All(
-            ensure_list,
-            [entity_id]
-        ),
-        vol.Optional(ARG_GPS_MAX_ACCURACY, default=DEFAULT_ACCURACY): vol.Range(1, 100),
-        vol.Required(ARG_LOCK): entity_id
-    }, extra=vol.ALLOW_EXTRA)
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_PEOPLE): vol.All(
+                ensure_list,
+                [entity_id]
+            ),
+            vol.Optional(ARG_GPS_MAX_ACCURACY, default=DEFAULT_ACCURACY): vol.Range(1, 100),
+            vol.Required(ARG_LOCK): entity_id
+        }, extra=vol.ALLOW_EXTRA)
 
     @property
     def is_secured(self):
@@ -320,14 +323,18 @@ class DoorLock(Secure):
 
 
 class GarageDoor(Secure):
-    config_schema = vol.Schema({
-        vol.Required(ARG_VEHICLES): vol.All(
-            ensure_list,
-            [entity_id]
-        ),
-        vol.Optional(ARG_GPS_MAX_ACCURACY, default=DEFAULT_ACCURACY): vol.Range(1, 100),
-        vol.Required(ARG_COVER): entity_id
-    }, extra=vol.ALLOW_EXTRA)
+
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_VEHICLES): vol.All(
+                ensure_list,
+                [entity_id]
+            ),
+            vol.Optional(ARG_GPS_MAX_ACCURACY, default=DEFAULT_ACCURACY): vol.Range(1, 100),
+            vol.Required(ARG_COVER): entity_id
+        }, extra=vol.ALLOW_EXTRA)
 
     @property
     def _arg_watched_entities(self):
