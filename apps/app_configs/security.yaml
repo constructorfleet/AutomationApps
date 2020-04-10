@@ -85,7 +85,6 @@ garage_door_timeout:
     response_entity_id: cover.garage_door
     replacers:
       entity_name: garage door
-  log_level: DEBUG
 
 front_door_lock_timeout:
   module: timeout
