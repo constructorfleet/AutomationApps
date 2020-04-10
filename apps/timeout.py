@@ -91,7 +91,6 @@ class Timeout(BaseApp):
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
         trigger = self.config[ARG_TRIGGER]
-        self.warning('%s: %s', trigger[ARG_ENTITY_ID], self.get_state(trigger[ARG_ENTITY_ID]))
         self.listen_state(self._trigger_met_handler,
                           entity=trigger[ARG_ENTITY_ID],
                           new=trigger[ARG_STATE],
@@ -135,6 +134,8 @@ class Timeout(BaseApp):
             self._reset_timer('Initiating timer')
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
+        if old == new or new != self.config[ARG_TRIGGER][ARG_STATE]:
+            return
         self._cancel_timer('Trigger no longer met')
         self._cancel_handlers('Trigger no longer met')
 
