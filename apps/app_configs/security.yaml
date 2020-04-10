@@ -74,7 +74,7 @@ garage_door_timeout:
       value: 'on'
     - entity_id: binary_sensor.garage_motion_sensor_2
       value: 'on'
-  duration: 30
+  duration: 5
   on_timeout:
     domain: cover
     service: close_cover
