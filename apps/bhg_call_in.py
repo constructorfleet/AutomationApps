@@ -57,16 +57,6 @@ SCHEMA_CREDENTIALS_CONFIG = vol.Schema({
 class CallBHG(BaseApp):
     """Calls a NGH to determine if Alan needs to go in."""
 
-    config_schema = vol.Schema({
-        vol.Required(ARG_CALL_FROM): vol.Match(r"\+1\d{10}$"),
-        vol.Required(ARG_CALL_TO): vol.Match(r"\+1\d{10}$"),
-        vol.Required(ARG_MESSAGE): str,
-        vol.Required(ARG_FREQUENCY): SCHEMA_DAILY_AT,
-        vol.Required(ARG_CREDENTIALS): SCHEMA_CREDENTIALS_CONFIG,
-        vol.Optional(ARG_TIMEOUT, default=3): vol.Range(1, 5),
-        vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id
-    }, extra=vol.ALLOW_EXTRA)
-
     _client = None
     _twiML = None
     _call_instance = None
@@ -86,6 +76,18 @@ class CallBHG(BaseApp):
         self.run_daily(self._daily_call,
                        "%02d:%02d:00" % (self.config[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
                                          self.config[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_CALL_FROM): vol.Match(r"\+1\d{10}$"),
+            vol.Required(ARG_CALL_TO): vol.Match(r"\+1\d{10}$"),
+            vol.Required(ARG_MESSAGE): str,
+            vol.Required(ARG_FREQUENCY): SCHEMA_DAILY_AT,
+            vol.Required(ARG_CREDENTIALS): SCHEMA_CREDENTIALS_CONFIG,
+            vol.Optional(ARG_TIMEOUT, default=3): vol.Range(1, 5),
+            vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id
+        }, extra=vol.ALLOW_EXTRA)
 
     def _new_day(self, kwargs):
         self._called_today = False

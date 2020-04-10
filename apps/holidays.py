@@ -120,12 +120,6 @@ HOLIDAY_COLORS = {
 
 
 class HolidayColors(BaseApp):
-    config_schema = vol.Schema({
-        vol.Required(ARG_API_KEY): str,
-        vol.Optional(ARG_COUNTRY, default=DEFAULT_COUNTRY):
-            vol.All(vol.Length(min=2, max=2), vol.Upper)
-    }, extra=vol.ALLOW_EXTRA)
-
     _for_year = None
     _holidays = {}
 
@@ -137,6 +131,14 @@ class HolidayColors(BaseApp):
             self._retrieve_holidays()
 
         self.debug(str(self._holidays))
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_API_KEY): str,
+            vol.Optional(ARG_COUNTRY, default=DEFAULT_COUNTRY):
+                vol.All(vol.Length(min=2, max=2), vol.Upper)
+        }, extra=vol.ALLOW_EXTRA)
 
     @property
     def api_url(self):

@@ -92,33 +92,6 @@ def is_movie(media_type):
 class MovieMode(BaseApp):
     """Movie mode app."""
 
-    config_schema = vol.Schema({
-        vol.Required(ARG_MEDIA_PLAYER): entity_id,
-        vol.Optional(ARG_MEDIA_TYPES, default=DEFAULT_MEDIA_TYPES): vol.All(
-            ensure_list,
-            [str]
-        ),
-        vol.Optional(ARG_TV_DELAY, default=DEFAULT_TV_DELAY): int,
-        vol.Optional(ARG_RESET_ON_PAUSE, default=DEFAULT_RESET): vol.Any(
-            str,
-            bool
-        ),
-        vol.Required(ARG_TURN_OFF, default=[]): vol.All(
-            ensure_list,
-            [SCHEMA_TURN_OFF]
-        ),
-        vol.Optional(ARG_TURN_ON, default=[]): vol.All(
-            ensure_list,
-            [entity_id]
-        ),
-        vol.Optional(ARG_ON_BETWEEN_EPISODES, default=[]): vol.All(
-            ensure_list,
-            [entity_id]
-        ),
-        vol.Optional(ARG_CHECK_SUN, default=DEFAULT_SUN_CHECK): bool,
-        vol.Optional(ARG_TV): entity_id
-    }, extra=vol.ALLOW_EXTRA)
-
     delay_handle = None
     media_type = None
     state = None
@@ -145,6 +118,35 @@ class MovieMode(BaseApp):
         if ARG_TV in self.config:
             self.listen_state(self.handle_toggle_changed,
                               entity=self.config[ARG_TV])
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_MEDIA_PLAYER): entity_id,
+            vol.Optional(ARG_MEDIA_TYPES, default=DEFAULT_MEDIA_TYPES): vol.All(
+                ensure_list,
+                [str]
+            ),
+            vol.Optional(ARG_TV_DELAY, default=DEFAULT_TV_DELAY): int,
+            vol.Optional(ARG_RESET_ON_PAUSE, default=DEFAULT_RESET): vol.Any(
+                str,
+                bool
+            ),
+            vol.Required(ARG_TURN_OFF, default=[]): vol.All(
+                ensure_list,
+                [SCHEMA_TURN_OFF]
+            ),
+            vol.Optional(ARG_TURN_ON, default=[]): vol.All(
+                ensure_list,
+                [entity_id]
+            ),
+            vol.Optional(ARG_ON_BETWEEN_EPISODES, default=[]): vol.All(
+                ensure_list,
+                [entity_id]
+            ),
+            vol.Optional(ARG_CHECK_SUN, default=DEFAULT_SUN_CHECK): bool,
+            vol.Optional(ARG_TV): entity_id
+        }, extra=vol.ALLOW_EXTRA)
 
     @property
     def is_playing(self):

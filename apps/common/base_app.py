@@ -52,7 +52,6 @@ DEFAULT_PUBLISH_TOPIC = "events/rules"
 
 
 class BaseApp(hassmqtt.HassMqtt):
-    config_schema = vol.Schema({}, extra=vol.ALLOW_EXTRA)
     notifier = None
     holidays = None
     plugin_config = None
@@ -72,10 +71,10 @@ class BaseApp(hassmqtt.HassMqtt):
                                                   self.name + ".js")
         self.plugin_config = self.get_plugin_config()
 
-        if isinstance(self.config_schema, dict):
-            config_schema = vol.Schema(self.config_schema, extra=vol.ALLOW_EXTRA)
+        if isinstance(self.app_schema, dict):
+            config_schema = vol.Schema(self.app_schema, extra=vol.ALLOW_EXTRA)
         else:
-            config_schema = self.config_schema
+            config_schema = self.app_schema
 
         config_schema = config_schema.extend(self._base_config_schema)
         self.config = config_schema(self.args)
@@ -133,6 +132,10 @@ class BaseApp(hassmqtt.HassMqtt):
             with open(self._persistent_data_file, 'w') as json_file:
                 json.dump(self.data, json_file)
             self._data_save_handle = None
+
+    @property
+    def app_schema(self):
+        return vol.Schema({}, extra=vol.ALLOW_EXTRA)
 
     @property
     def publish_topic(self):

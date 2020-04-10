@@ -46,21 +46,6 @@ SCHEMA_CALL = vol.Schema({
 
 
 class CallWhen(BaseApp):
-    config_schema = vol.Schema({
-        vol.Required(ARG_TRIGGER): vol.All(
-            ensure_list,
-            [SCHEMA_TRIGGER]
-        ),
-        vol.Optional(ARG_CONDITION, default=[]): vol.All(
-            ensure_list,
-            [SCHEMA_CONDITION]
-        ),
-        vol.Required(ARG_CALL): vol.All(
-            ensure_list,
-            [SCHEMA_CALL]
-        )
-    }, extra=vol.ALLOW_EXTRA)
-
     _conditions = {}
 
     def initialize_app(self):
@@ -77,6 +62,23 @@ class CallWhen(BaseApp):
             self.listen_state(self._handle_trigger,
                               entity=trigger[ARG_ENTITY_ID],
                               new=trigger[ARG_STATE])
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_TRIGGER): vol.All(
+                ensure_list,
+                [SCHEMA_TRIGGER]
+            ),
+            vol.Optional(ARG_CONDITION, default=[]): vol.All(
+                ensure_list,
+                [SCHEMA_CONDITION]
+            ),
+            vol.Required(ARG_CALL): vol.All(
+                ensure_list,
+                [SCHEMA_CALL]
+            )
+        }, extra=vol.ALLOW_EXTRA)
 
     @property
     def conditions_met(self):

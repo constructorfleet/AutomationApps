@@ -58,21 +58,6 @@ def get_home_gps(hass_config):
 
 
 class CloseEnoughToHome(BaseApp):
-    config_schema = vol.Schema({
-        vol.Required(ARG_ENTITY_ID): vol.All(
-            ensure_list,
-            [entity_id]
-        ),
-        vol.Required(ARG_ZONES_ASSUME_HOME): vol.All(
-            ensure_list,
-            [str]
-        ),
-        vol.Optional(ARG_MINUTES_BEFORE_ASSUME, default=DEFAULT_MINUTES_BEFORE_ASSUME): vol.All(
-            vol.Coerce(int),
-            vol.Range(30, 60)
-        )
-    }, extra=vol.ALLOW_EXTRA)
-
     _home_gps = None
     _last_states = {}
     _timer_handlers = {}
@@ -94,6 +79,23 @@ class CloseEnoughToHome(BaseApp):
             self.listen_state(self._handle_entity_change,
                               entity=entity,
                               attribute='all')
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_ENTITY_ID): vol.All(
+                ensure_list,
+                [entity_id]
+            ),
+            vol.Required(ARG_ZONES_ASSUME_HOME): vol.All(
+                ensure_list,
+                [str]
+            ),
+            vol.Optional(ARG_MINUTES_BEFORE_ASSUME, default=DEFAULT_MINUTES_BEFORE_ASSUME): vol.All(
+                vol.Coerce(int),
+                vol.Range(30, 60)
+            )
+        }, extra=vol.ALLOW_EXTRA)
 
     def _handle_entity_change(self, entity, attribute, old, new, kwargs):
         self._last_states[entity] = new

@@ -38,15 +38,6 @@ SCHEMA_NOTIFY = vol.Schema({
 
 
 class NotifyWhen(BaseApp):
-    config_schema = vol.Schema({
-        vol.Required(ARG_ENTITY_ID): vol.All(
-            ensure_list,
-            [entity_id]),
-        vol.Required(ARG_FROM): SCHEMA_CONDITION,
-        vol.Required(ARG_TO): SCHEMA_CONDITION,
-        vol.Required(ARG_NOTIFY): SCHEMA_NOTIFY
-    }, extra=vol.ALLOW_EXTRA)
-
     _notification_category = None
 
     def initialize_app(self):
@@ -55,6 +46,17 @@ class NotifyWhen(BaseApp):
         for entity in self.config[ARG_ENTITY_ID]:
             self.listen_state(self._handle_state_change,
                               entity=entity)
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_ENTITY_ID): vol.All(
+                ensure_list,
+                [entity_id]),
+            vol.Required(ARG_FROM): SCHEMA_CONDITION,
+            vol.Required(ARG_TO): SCHEMA_CONDITION,
+            vol.Required(ARG_NOTIFY): SCHEMA_NOTIFY
+        }, extra=vol.ALLOW_EXTRA)
 
     def _condition_to(self, value):
         condition_to = copy.deepcopy(self.config[ARG_TO])

@@ -50,27 +50,6 @@ NIGHT_ENTITY_SCHEMA = ENTITY_SCHEMA.extend({
 class NightLights(BaseApp):
     """Fire events for dawn/dusk."""
 
-    config_schema = vol.Schema({
-        vol.Optional(ARG_DAWN): {
-            vol.Optional(ARG_OFFSET, default=DEFAULT_OFFSET): vol.Coerce(int),
-            vol.Optional(ARG_ENTITIES, default=[]): vol.All(
-                ensure_list,
-                [DAWN_ENTITY_SCHEMA]
-            )
-        },
-        vol.Optional(ARG_DUSK): {
-            vol.Optional(ARG_OFFSET, default=DEFAULT_OFFSET): vol.Coerce(int),
-            vol.Optional(ARG_ENTITIES, default=[]): vol.All(
-                ensure_list,
-                [DUSK_ENTITY_SCHEMA]
-            )
-        },
-        vol.Optional(ARG_NIGHT, default=[]): vol.All(
-            ensure_list,
-            [NIGHT_ENTITY_SCHEMA]
-        )
-    }, extra=vol.ALLOW_EXTRA)
-
     dawn_entities = []
     dusk_entities = []
     night_entities = []
@@ -102,6 +81,29 @@ class NightLights(BaseApp):
             if self.sun_down() and now.hour < 12 and \
                     now > datetime.time():
                 self._handle_night(None)
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Optional(ARG_DAWN): {
+                vol.Optional(ARG_OFFSET, default=DEFAULT_OFFSET): vol.Coerce(int),
+                vol.Optional(ARG_ENTITIES, default=[]): vol.All(
+                    ensure_list,
+                    [DAWN_ENTITY_SCHEMA]
+                )
+            },
+            vol.Optional(ARG_DUSK): {
+                vol.Optional(ARG_OFFSET, default=DEFAULT_OFFSET): vol.Coerce(int),
+                vol.Optional(ARG_ENTITIES, default=[]): vol.All(
+                    ensure_list,
+                    [DUSK_ENTITY_SCHEMA]
+                )
+            },
+            vol.Optional(ARG_NIGHT, default=[]): vol.All(
+                ensure_list,
+                [NIGHT_ENTITY_SCHEMA]
+            )
+        }, extra=vol.ALLOW_EXTRA)
 
     def _handle_dawn(self, kwargs):
         """Handle dawn event."""

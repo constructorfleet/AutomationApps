@@ -57,27 +57,6 @@ SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
 
 
 class Timeout(BaseApp):
-    config_schema = vol.Schema({
-        vol.Required(ARG_TRIGGER): SCHEMA_TRIGGER,
-        vol.Optional(ARG_PAUSE_WHEN, default=[]): vol.All(
-            ensure_list,
-            [SCHEMA_PAUSE_WHEN]
-        ),
-        vol.Required(ARG_DURATION): vol.Any(
-            entity_id,
-            int
-        ),
-        vol.Required(ARG_ON_TIMEOUT): vol.All(
-            ensure_list,
-            [SCHEMA_ON_TIMEOUT]
-        ),
-        vol.Optional(ARG_EXCEPT_IF): SCHEMA_EXCEPT_IF,
-        vol.Optional(ARG_NOTIFY): vol.Schema({
-            vol.Required(ARG_NOTIFY_CATEGORY): vol.In(VALID_NOTIFICATION_CATEGORIES),
-            vol.Optional(ARG_NOTIFY_REPLACERS, default={}): dict
-        }, extra=vol.ALLOW_EXTRA)
-    }, extra=vol.ALLOW_EXTRA)
-
     def initialize_app(self):
         self._notification_category = None
         if ARG_NOTIFY in self.config:
@@ -99,6 +78,29 @@ class Timeout(BaseApp):
                           entity=trigger[ARG_ENTITY_ID],
                           old=trigger[ARG_STATE],
                           immediate=True)
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_TRIGGER): SCHEMA_TRIGGER,
+            vol.Optional(ARG_PAUSE_WHEN, default=[]): vol.All(
+                ensure_list,
+                [SCHEMA_PAUSE_WHEN]
+            ),
+            vol.Required(ARG_DURATION): vol.Any(
+                entity_id,
+                int
+            ),
+            vol.Required(ARG_ON_TIMEOUT): vol.All(
+                ensure_list,
+                [SCHEMA_ON_TIMEOUT]
+            ),
+            vol.Optional(ARG_EXCEPT_IF): SCHEMA_EXCEPT_IF,
+            vol.Optional(ARG_NOTIFY): vol.Schema({
+                vol.Required(ARG_NOTIFY_CATEGORY): vol.In(VALID_NOTIFICATION_CATEGORIES),
+                vol.Optional(ARG_NOTIFY_REPLACERS, default={}): dict
+            }, extra=vol.ALLOW_EXTRA)
+        }, extra=vol.ALLOW_EXTRA)
 
     @property
     def duration(self):

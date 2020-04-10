@@ -73,29 +73,6 @@ def _get_file_path(camera, file_name=None):
 
 
 class Doorbell(BaseApp):
-    config_schema = vol.Schema({
-        vol.Required(ARG_DOORBELL): vol.Schema({
-            vol.Required(ARG_ENTITY_ID): entity_id,
-            vol.Optional(ARG_STATE, default='on'): str
-        }),
-        vol.Optional(ARG_IMAGE_PROCESSING): vol.Schema({
-            vol.Required(ARG_SENSOR): entity_id,
-            vol.Optional(ARG_CONFIDENCE, default=DEFAULT_CONFIDENCE): vol.Coerce(int),
-            vol.Optional(ARG_CLASS, default=DEFAULT_CLASS): vol.All(vol.Coerce(str), vol.Lower),
-            vol.Optional(ARG_CONDITION): vol.All(
-                ensure_list,
-                [SCHEMA_CONDITION]),
-            vol.Optional(ARG_NOTIFY_INTERVAL, default=DEFAULT_NOTIFY_INTERVAL): vol.All(
-                vol.Coerce(int),
-                vol.Range(1, 10)
-            )
-        }),
-        vol.Inclusive(ARG_CAMERA, 'snapshot'): entity_id,
-        vol.Inclusive(ARG_BASE_IMAGE_URL, 'snapshot'): url,
-        vol.Optional(ARG_NOTIFY_CATEGORY,
-                     default=NotificationCategory.PRESENCE_PERSON_DETECTED.name): vol.In(
-            VALID_NOTIFICATION_CATEGORIES)
-    }, extra=vol.ALLOW_EXTRA)
 
     _image_processor_handle = None
     _pause_handle = None
@@ -109,6 +86,32 @@ class Doorbell(BaseApp):
                           new=doorbell[ARG_STATE])
         if ARG_IMAGE_PROCESSING in self.config:
             self._start_image_processing(None)
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_DOORBELL): vol.Schema({
+                vol.Required(ARG_ENTITY_ID): entity_id,
+                vol.Optional(ARG_STATE, default='on'): str
+            }),
+            vol.Optional(ARG_IMAGE_PROCESSING): vol.Schema({
+                vol.Required(ARG_SENSOR): entity_id,
+                vol.Optional(ARG_CONFIDENCE, default=DEFAULT_CONFIDENCE): vol.Coerce(int),
+                vol.Optional(ARG_CLASS, default=DEFAULT_CLASS): vol.All(vol.Coerce(str), vol.Lower),
+                vol.Optional(ARG_CONDITION): vol.All(
+                    ensure_list,
+                    [SCHEMA_CONDITION]),
+                vol.Optional(ARG_NOTIFY_INTERVAL, default=DEFAULT_NOTIFY_INTERVAL): vol.All(
+                    vol.Coerce(int),
+                    vol.Range(1, 10)
+                )
+            }),
+            vol.Inclusive(ARG_CAMERA, 'snapshot'): entity_id,
+            vol.Inclusive(ARG_BASE_IMAGE_URL, 'snapshot'): url,
+            vol.Optional(ARG_NOTIFY_CATEGORY,
+                         default=NotificationCategory.PRESENCE_PERSON_DETECTED.name): vol.In(
+                VALID_NOTIFICATION_CATEGORIES)
+        }, extra=vol.ALLOW_EXTRA)
 
     def _start_image_processing(self, kwargs):
         if self._pause_handle is not None:
