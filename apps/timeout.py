@@ -138,7 +138,7 @@ class Timeout(BaseApp):
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if old == new or new != self.config[ARG_TRIGGER][ARG_STATE]:
             return
-        self.warning('Old %s New %s', old, new)
+        self.warning('Old %s New %s Trigger State %s', old, new, self.config[ARG_TRIGGER][ARG_STATE])
         self._cancel_timer('Trigger no longer met')
         self._cancel_handlers('Trigger no longer met')
 
