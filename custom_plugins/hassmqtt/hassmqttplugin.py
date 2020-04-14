@@ -255,7 +255,7 @@ class HassmqttPlugin(PluginBase):
             event_type = payload_dict.get("event_type", None)
             if event_type == "state_changed":
                 try:
-                    event_data = payload_dict.get("event_data", {})
+                    event_data = payload_dict.get("data", {})
                     new_state = event_data.get("new_state", {}) or {}
                     entity_id = new_state.get("entity_id", None)
                     if entity_id is not None:
@@ -273,7 +273,7 @@ class HassmqttPlugin(PluginBase):
                 if event_type:
                     data = {
                         'event_type': event_type,
-                        'data': payload_dict.get('event_data', {}),
+                        'data': payload_dict.get('data', {}),
                         'topic': msg.topic,
                         'wildcard': wildcard
 
@@ -292,7 +292,7 @@ class HassmqttPlugin(PluginBase):
                 if event_type:
                     data = {
                         'event_type': event_type,
-                        'data': payload_dict.get('event_data', {}),
+                        'data': payload_dict.get('data', {}),
                         'topic': msg.topic,
                         'wildcard': None
                     }
