@@ -38,7 +38,7 @@ APP_NOTIFIERS = "notifiers"
 APP_HOLIDAYS = "holidays"
 
 ATTR_EVENT_TYPE = "event_type"
-ATTR_EVENT_DATA = "event_data"
+ATTR_EVENT_DATA = "data"
 ATTR_DOMAIN = "domain"
 ATTR_PAYLOAD = "payload"
 ATTR_SERVICE = "service"
