@@ -209,7 +209,7 @@ class MovieMode(BaseApp):
             self.debug("Delaying stop")
             self.delay_handle = \
                 self.run_in(self.handle_player_stopped,
-                            seconds=self.configs[ARG_TV_DELAY])
+                            delay=self.configs[ARG_TV_DELAY])
             if self.should_turn_on:
                 for device in self.configs[ARG_ON_BETWEEN_EPISODES]:
                     if self.get_state(device) == "on":
