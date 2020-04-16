@@ -147,7 +147,7 @@ class CallBHG(BaseApp):
 
     def _handle_call_failed(self, status):
         _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
-        self._notify(NotificationCategory.WARNING_BHG_CALL_FAILED)
+        self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
         self._calling = False
         self._called_today = False
         self._call_instance = None
@@ -166,7 +166,7 @@ class CallBHG(BaseApp):
                           recording is not None and recording.sid]
 
         if not recording_sids or len(recording_sids) == 0:
-            self._notify(NotificationCategory.WARNING_BHG_TRANSCRIBE_FAILED)
+            self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIBE_FAILED)
             self._called_today = False
             return
 
@@ -194,7 +194,7 @@ class CallBHG(BaseApp):
                                               {
                                                   ARG_ENTITY_ID: self.configs[ARG_SCHEDULE_TOGGLE]
                                               })
-                self._notify(NotificationCategory.WARNING_BHG_SCHEDULED, transcript=transcript)
+                self._notify(NotificationCategory.IMPORTANT_BHG_SCHEDULED, transcript=transcript)
             elif REGEX_NOT_SCHEDULED.match(transcript):
                 if ARG_SCHEDULE_TOGGLE in self.configs:
                     self.publish_service_call(DOMAIN_FLAG_SERVICE,
@@ -202,4 +202,4 @@ class CallBHG(BaseApp):
                                               {
                                                   ARG_ENTITY_ID: self.configs[ARG_SCHEDULE_TOGGLE]
                                               })
-                self._notify(NotificationCategory.WARNING_BHG_ALL_CLEAR, transcript=transcript)
+                self._notify(NotificationCategory.IMPORTANT_BHG_ALL_CLEAR, transcript=transcript)
