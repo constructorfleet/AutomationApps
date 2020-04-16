@@ -1,5 +1,4 @@
 import os
-
 import voluptuous as vol
 
 from call_when import ARG_CONDITION
@@ -73,7 +72,6 @@ def _get_file_path(camera, file_name=None):
 
 
 class Doorbell(BaseApp):
-
     _image_processor_handle = None
     _pause_handle = None
     _notification_category = None
@@ -127,7 +125,8 @@ class Doorbell(BaseApp):
         if self._image_processor_handle is not None:
             self.cancel_listen_state(self._image_processor_handle)
         self._pause_handle = self.run_in(self._start_image_processing,
-                                         self.configs[ARG_IMAGE_PROCESSING][ARG_NOTIFY_INTERVAL] * 60)
+                                         self.configs[ARG_IMAGE_PROCESSING][
+                                             ARG_NOTIFY_INTERVAL] * 60)
 
     def _handle_image_processor(self, entity, attribute, old, new, kwargs):
         if old == new or self._should_ignore_processor:
@@ -190,7 +189,6 @@ class Doorbell(BaseApp):
 
 
 class Secure(BaseApp):
-
     _security_entity_name = None
     _last_states = {}
 
@@ -206,8 +204,9 @@ class Secure(BaseApp):
                               oneshot=True)
 
     def _handle_entity_change(self, entity, attribute, old, new, kwargs):
-        if old == new or new == self._last_states[entity] or 'unavailable' in [new.lower(),
-                                                                               old.lower()]:
+        if old == new or new == self._last_states[entity] or \
+                'unavailable' in [(new or "").lower(),
+                                  (new or "").lower()]:
             self.listen_state(self._handle_entity_change,
                               entity=entity,
                               oneshot=True)
@@ -323,7 +322,6 @@ class DoorLock(Secure):
 
 
 class GarageDoor(Secure):
-
 
     @property
     def app_schema(self):
