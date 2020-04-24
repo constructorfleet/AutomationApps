@@ -9,7 +9,7 @@ doorbell:
   doorbell:
     entity_id: switch.doorbell
   image_processing:
-    sensor: sensor.front_door
+    sensor: image_processing.doods_front_door
     confidence: 90
     class: person
     condition:
