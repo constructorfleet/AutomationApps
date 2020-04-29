@@ -258,6 +258,7 @@ class MovieMode(BaseApp):
         if not self.is_enabled:
             return
         self.debug("Playing")
+        devices = []
         for device in self.configs[ARG_TURN_OFF]:
             if isinstance(device, dict):
                 device_id = device[ARG_TURN_OFF_ENTITY_ID]
@@ -267,11 +268,13 @@ class MovieMode(BaseApp):
             if self.get_state(device_id) == "off":
                 continue
             self.debug("Turning off {}".format(device_id))
+            devices.append(device_id)
+        if len(devices) > 0:
             self.publish_service_call(
                 DOMAIN_HOMEASSISTANT,
                 SERVICE_TURN_OFF,
                 {
-                    ARG_ENTITY_ID: device_id
+                    ARG_ENTITY_ID: devices
                 }
             )
 
@@ -305,6 +308,7 @@ class MovieMode(BaseApp):
         )
 
         if self.should_turn_on:
+            devices = []
             for device in self.configs[ARG_TURN_OFF]:
                 if isinstance(device, str):
                     device_id = device
@@ -315,6 +319,8 @@ class MovieMode(BaseApp):
                 if self.get_state(device_id) == "on":
                     continue
                 self.debug("Turning on {}".format(device_id))
+                devices.append(device_id)
+            if len(devices) > 0:
                 self.publish_service_call(
                     DOMAIN_HOMEASSISTANT,
                     SERVICE_TURN_ON,
