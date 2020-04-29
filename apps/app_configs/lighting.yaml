@@ -188,12 +188,6 @@ lower_hall_light:
       service_data:
         entity_id:
           - switch.lower_hall_light
-    - domain: homeassistant
-      service: turn_on
-      service_data:
-        entity_id:
-          - switch.lower_hall_switch_1
-          - switch.lower_hall_switch_2
 
 lower_hall_light_timeout:
   module: timeout
@@ -213,8 +207,6 @@ lower_hall_light_timeout:
     service_data:
       entity_id:
         - switch.lower_hall_light
-        - switch.lower_hall_switch_1
-        - switch.lower_hall_switch_2
 
 upper_landing_hall_light:
   module: call_when
@@ -239,12 +231,6 @@ upper_landing_hall_light:
       service_data:
         entity_id:
           - switch.upper_landing
-    - domain: homeassistant
-      service: turn_on
-      service_data:
-        entity_id:
-          - switch.upper_landing_switch_1
-          - switch.upper_landing_switch_2
 
 upper_landing_hall_light_timeout:
   module: timeout
@@ -264,8 +250,6 @@ upper_landing_hall_light_timeout:
     service_data:
       entity_id:
         - switch.upper_landing
-        - switch.upper_landing_switch_1
-        - switch.upper_landing_switch_2
 
 basement_stair_light:
   module: call_when
@@ -286,13 +270,7 @@ basement_stair_light:
       service: turn_on
       service_data:
         entity_id:
-          - switch.basement_stair_light
-    - domain: homeassistant
-      service: turn_on
-      service_data:
-        entity_id:
-          - switch.basement_stair_switch_1
-          - switch.basement_stair_switch_2
+          - switch.basement_stairs_light
 
 basement_stair_light_timeout:
   module: timeout
@@ -301,7 +279,7 @@ basement_stair_light_timeout:
     - base_app
     - validation
   trigger:
-    entity_id: switch.basement_stair_light
+    entity_id: switch.basement_stairs_light
   pause_when:
     - entity_id: binary_sensor.basement_stairs_motion
       value: 'on'
@@ -313,9 +291,7 @@ basement_stair_light_timeout:
     service: turn_off
     service_data:
       entity_id:
-        - switch.basement_stair_light
-        - switch.basement_stair_switch_1
-        - switch.basement_stair_switch_2
+        - switch.basement_stairs_light
 
 lower_bathroom_fan_timeout:
   module: timeout
