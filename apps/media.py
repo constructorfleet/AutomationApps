@@ -99,6 +99,7 @@ class MovieMode(BaseApp):
     memory = {}
 
     def initialize_app(self):
+        self.debug("Configs %s", str(self.configs))
         self.listen_state(
             self.player_state_changed,
             entity=self.configs[ARG_MEDIA_PLAYER]
@@ -133,7 +134,7 @@ class MovieMode(BaseApp):
                 str,
                 bool
             ),
-            vol.Required(ARG_TURN_OFF, default=[]): vol.All(
+            vol.Required(ARG_TURN_OFF): vol.All(
                 ensure_list,
                 [SCHEMA_TURN_OFF]
             ),
