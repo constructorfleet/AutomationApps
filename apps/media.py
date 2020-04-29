@@ -337,7 +337,7 @@ class MovieMode(BaseApp):
                     DOMAIN_HOMEASSISTANT,
                     SERVICE_TURN_ON,
                     {
-                        ARG_ENTITY_ID: device_id
+                        ARG_ENTITY_ID: devices
                     }
                 )
 
