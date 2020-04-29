@@ -159,8 +159,10 @@ class MovieMode(BaseApp):
 
     @property
     def is_enabled(self):
-        return self.configs.get(ARG_ENABLE_TOGGLE, None) is None \
-               or self.get_state(self.configs[ARG_ENABLE_TOGGLE]) == "on"
+        is_enabled = self.configs.get(ARG_ENABLE_TOGGLE, None) is None \
+                     or self.get_state(self.configs[ARG_ENABLE_TOGGLE]) == "on"
+        self.debug('Is enabled? %s', str(is_enabled))
+        return is_enabled
 
     def player_state_changed(self, entity, attribute, old, new, kwargs):
         if not new or new == "" or self.state == new:
@@ -286,6 +288,9 @@ class MovieMode(BaseApp):
         if not self.is_enabled and not (kwargs or {}).get(ATTR_IGNORE_ENABLED, False):
             return
 
+        if (kwargs or {}).get(ATTR_IGNORE_ENABLED, False):
+            self.debug('Ignoring enabled flag')
+
         self.debug("STOPPED")
         self.cancel_delay_timer()
         self.media_type = None
@@ -334,8 +339,10 @@ class MovieMode(BaseApp):
         if new == old:
             return
         if new == "on":
+            self.debug('Enabling movie mode')
             self.process()
         else:
+            self.debug('Disabling movie mode')
             self.handle_player_stopped({
                 ATTR_IGNORE_ENABLED: True
             })
