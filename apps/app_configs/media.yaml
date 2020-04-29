@@ -1,3 +1,33 @@
+set_movie_mode_enabled_from_remote:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    entity_id: light.toggle_movie_mode
+    state: 'on'
+  call:
+    domain: input_boolean
+    service: turn_on
+    service_data:
+      entity_id: input_boolean.enable_movie_mode
+
+set_movie_mode_disabled_from_remote:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    entity_id: light.toggle_movie_mode
+    state: 'off'
+  call:
+    domain: input_boolean
+    service: turn_off
+    service_data:
+      entity_id: input_boolean.enable_movie_mode
+
 living_room_movie_mode:
   module: media
   class: MovieMode
@@ -22,5 +52,5 @@ living_room_movie_mode:
     - switch.lower_hall_switch_1
     - switch.lower_hall_switch_2
   tv: remote.living_room_harmony_hub
-  toggle: light.toggle_movie_mode
+  toggle: input_boolean.enable_movie_mode
   log_level: DEBUG
