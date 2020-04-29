@@ -55,7 +55,6 @@ close_enough_to_home:
     - Garage Radius
     - home
   minutes_before_assume_home: 60
-  log_level: DEBUG
 
 bhg_call_in:
   module: bhg_call_in
