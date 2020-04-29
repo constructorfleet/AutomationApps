@@ -63,8 +63,6 @@ garage_light:
     service_data:
       entity_id:
         - switch.garage_light
-        - switch.garage_light_2
-        - switch.garage_light_switch
 
 garage_light_timeout:
   module: timeout
@@ -86,8 +84,6 @@ garage_light_timeout:
     service_data:
       entity_id:
         - switch.garage_light
-        - switch.garage_light_2
-        - switch.garage_light_switch
 
 laundry_light:
   module: call_when
@@ -270,7 +266,7 @@ basement_stair_light:
       service: turn_on
       service_data:
         entity_id:
-          - switch.basement_stairs_light
+          - switch.basement_stairs
 
 basement_stair_light_timeout:
   module: timeout
@@ -279,7 +275,7 @@ basement_stair_light_timeout:
     - base_app
     - validation
   trigger:
-    entity_id: switch.basement_stairs_light
+    entity_id: switch.basement_stairs
   pause_when:
     - entity_id: binary_sensor.basement_stairs_motion
       value: 'on'
@@ -291,7 +287,7 @@ basement_stair_light_timeout:
     service: turn_off
     service_data:
       entity_id:
-        - switch.basement_stairs_light
+        - switch.basement_stairs
 
 lower_bathroom_fan_timeout:
   module: timeout
