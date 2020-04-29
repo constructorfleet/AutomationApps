@@ -89,6 +89,8 @@ class CallWhen(BaseApp):
         return True
 
     def _handle_trigger(self, entity, attribute, old, new, kwargs):
+        if new == old:
+            return
         if not self.conditions_met:
             self.debug("Conditions no met")
             return
