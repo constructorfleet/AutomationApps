@@ -41,7 +41,7 @@ DEFAULT_TV_DELAY = 60
 MEDIA_TYPE_MUSIC = "music"
 MEDIA_TYPE_MOVIE = "movie"
 MEDIA_TYPE_VIDEO = "video"
-MEDIA_TYPE_TVSHOW = "tvshow"
+MEDIA_TYPE_TV_SHOW = "tvshow"
 
 MOVIE_MEDIA_TYPES = [
     MEDIA_TYPE_MOVIE,
@@ -59,6 +59,7 @@ PLEX_TVSHOW_REGEX = re.compile(r'^S\d+\s.\sE\d+.*$')
 ATTR_MEDIA_TYPE = "media_content_type"
 ATTR_TITLE = "media_title"
 ATTR_DURATION = "media_duration"
+ATTR_IGNORE_ENABLED = "ignore_enabled"
 
 SCHEMA_TURN_OFF = vol.Any(
     entity_id,
@@ -76,7 +77,7 @@ def _plex_media_content_type(
     if media_type == MEDIA_TYPE_MUSIC:
         title = title
         if PLEX_TVSHOW_REGEX.search(title):
-            return MEDIA_TYPE_TVSHOW
+            return MEDIA_TYPE_TV_SHOW
         elif duration and int(duration) > 1000:
             return MEDIA_TYPE_VIDEO
         else:
@@ -282,6 +283,9 @@ class MovieMode(BaseApp):
             })
 
     def handle_player_stopped(self, kwargs):
+        if not self.is_enabled and not (kwargs or {}).get(ATTR_IGNORE_ENABLED, False):
+            return
+
         self.debug("STOPPED")
         self.cancel_delay_timer()
         self.media_type = None
@@ -317,7 +321,7 @@ class MovieMode(BaseApp):
         if new != "off":
             return
         self.debug("TV off")
-        self.handle_player_stopped({})
+        self.handle_player_stopped(None)
         self.pause_media_player()
 
     def cancel_delay_timer(self):
@@ -332,4 +336,6 @@ class MovieMode(BaseApp):
         if new == "on":
             self.process()
         else:
-            self.handle_player_stopped(None)
+            self.handle_player_stopped({
+                ATTR_IGNORE_ENABLED: True
+            })
