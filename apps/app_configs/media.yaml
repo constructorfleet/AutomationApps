@@ -8,10 +8,10 @@ set_movie_mode_enabled_from_remote:
     entity_id: light.toggle_movie_mode
     state: 'on'
   call:
-    domain: input_boolean
+    domain: homeassistant
     service: turn_on
     service_data:
-      entity_id: input_boolean.enable_movie_mode
+      entity_id: switch.enable_movie_mode
 
 set_movie_mode_disabled_from_remote:
   module: call_when
@@ -23,10 +23,10 @@ set_movie_mode_disabled_from_remote:
     entity_id: light.toggle_movie_mode
     state: 'off'
   call:
-    domain: input_boolean
+    domain: homeassistant
     service: turn_off
     service_data:
-      entity_id: input_boolean.enable_movie_mode
+      entity_id: switch.enable_movie_mode
 
 living_room_movie_mode:
   module: media
