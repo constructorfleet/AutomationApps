@@ -215,15 +215,19 @@ class MovieMode(BaseApp):
                 self.run_in(self.handle_player_stopped,
                             delay=self.configs[ARG_TV_DELAY])
             if self.should_turn_on:
+                devices = []
                 for device in self.configs[ARG_ON_BETWEEN_EPISODES]:
                     if self.get_state(device) == "on":
                         continue
                     self.debug("Turning on {}".format(device))
+                    devices.append(device)
+
+                if len(devices) > 0:
                     self.publish_service_call(
                         DOMAIN_HOMEASSISTANT,
                         SERVICE_TURN_OFF,
                         {
-                            ARG_ENTITY_ID: device
+                            ARG_ENTITY_ID: devices
                         }
                     )
         else:
@@ -236,6 +240,7 @@ class MovieMode(BaseApp):
         if isinstance(self.configs[ARG_RESET_ON_PAUSE], bool):
             self.handle_stopped()
         elif self.should_turn_on and self.configs[ARG_RESET_ON_PAUSE] in self.configs:
+            devices = []
             for device in self.configs[self.configs[ARG_RESET_ON_PAUSE]]:
                 if isinstance(device, str):
                     device_id = device
@@ -246,11 +251,14 @@ class MovieMode(BaseApp):
                 if self.get_state(device_id) == "on":
                     continue
                 self.debug("Turning on {}".format(device_id))
+                devices.append(device_id)
+
+            if len(devices) > 0:
                 self.publish_service_call(
                     DOMAIN_HOMEASSISTANT,
                     SERVICE_TURN_ON,
                     {
-                        ARG_ENTITY_ID: device_id
+                        ARG_ENTITY_ID: devices
                     }
                 )
 
@@ -281,12 +289,14 @@ class MovieMode(BaseApp):
         if not self.should_turn_on:
             return
 
-        self.publish_service_call(
-            DOMAIN_HOMEASSISTANT,
-            SERVICE_TURN_ON,
-            {
-                ARG_ENTITY_ID: self.configs.get(ARG_TURN_ON, [])
-            })
+        devices_on = self.configs.get(ARG_TURN_ON, [])
+        if len(devices_on) > 0:
+            self.publish_service_call(
+                DOMAIN_HOMEASSISTANT,
+                SERVICE_TURN_ON,
+                {
+                    ARG_ENTITY_ID: devices_on
+                })
 
     def handle_player_stopped(self, kwargs):
         if not self.is_enabled and not (kwargs or {}).get(ATTR_IGNORE_ENABLED, False):
@@ -299,13 +309,15 @@ class MovieMode(BaseApp):
         self.cancel_delay_timer()
         self.media_type = None
 
-        self.publish_service_call(
-            DOMAIN_HOMEASSISTANT,
-            SERVICE_TURN_OFF,
-            {
-                ARG_ENTITY_ID: self.configs.get(ARG_TURN_ON, [])
-            }
-        )
+        devices_on = self.configs.get(ARG_TURN_ON, [])
+        if len(devices_on) > 0:
+            self.publish_service_call(
+                DOMAIN_HOMEASSISTANT,
+                SERVICE_TURN_OFF,
+                {
+                    ARG_ENTITY_ID: devices_on
+                }
+            )
 
         if self.should_turn_on:
             devices = []
