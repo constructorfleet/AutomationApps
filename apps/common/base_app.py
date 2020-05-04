@@ -56,6 +56,7 @@ class BaseApp(hassmqtt.HassMqtt):
     holidays = None
     plugin_config = None
     data = {}
+    configs = {}
     _persistent_data_file = None
     _data_save_handle = None
     _data_lock = Lock()
@@ -80,9 +81,12 @@ class BaseApp(hassmqtt.HassMqtt):
         self.configs = config_schema(self.args)
         self._log_level = self.configs[ARG_LOG_LEVEL]
 
+        self.log('Dependencies: %s', str(self.configs.get(ARG_DEPENDENCIES, [])))
         if APP_NOTIFIERS in self.configs.get(ARG_DEPENDENCIES, []):
+            self.log('Getting reference to notifiers app')
             self.notifier = self.get_app(APP_NOTIFIERS)
         if APP_HOLIDAYS in self.configs.get(ARG_DEPENDENCIES, []):
+            self.log('Getting reference to holidays app')
             self.holidays = self.get_app(APP_HOLIDAYS)
 
         if os.path.exists(self._persistent_data_file):
