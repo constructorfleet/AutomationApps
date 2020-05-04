@@ -39,7 +39,7 @@ notifiers:
         - name: ios
           service: mobile_app_deviphone
         - name: ios
-            service: mobile_app_dev_ipadpro
+          service: mobile_app_dev_ipadpro
 #    - name: Grace
 #      notifier:
 #        - name: ios
