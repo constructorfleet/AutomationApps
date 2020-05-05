@@ -23,25 +23,25 @@ class iOSNotifier(BaseApp):
             service_data = {
                 "title": str(notification_category.channel.name).title(),
                 "message": KWArgFormatter().format(str(notification_category.body), **kwargs),
-                "data": {
-                    # "push": {
-                    #     "category": str(notification_category),
-                    #     # "thread-id": str(notification_category),
-                    #     # "sound": {
-                    #     #     "name": "default",
-                    #     #     "critical": 1 if critical else 0,
-                    #     #     "volume": 1.0 if critical else 0.1
-                    #     # }
-                    # },
-                    # # "presentation_options": [
-                    # #     'alert'
-                    # #     'sound'
-                    # # ],
-                    # "action_data": {
-                    #     "entity_id": response_entity_id or "",
-                    #     "category": str(notification_category)
-                    # }
-                }
+                # "data": {
+                #     # "push": {
+                #     #     "category": str(notification_category),
+                #     #     # "thread-id": str(notification_category),
+                #     #     # "sound": {
+                #     #     #     "name": "default",
+                #     #     #     "critical": 1 if critical else 0,
+                #     #     #     "volume": 1.0 if critical else 0.1
+                #     #     # }
+                #     # },
+                #     # # "presentation_options": [
+                #     # #     'alert'
+                #     # #     'sound'
+                #     # # ],
+                #     # "action_data": {
+                #     #     "entity_id": response_entity_id or "",
+                #     #     "category": str(notification_category)
+                #     # }
+                # }
             }
             # if ATTR_IMAGE_URL in kwargs:
             #     image_url = kwargs[ATTR_IMAGE_URL]
