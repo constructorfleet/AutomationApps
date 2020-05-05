@@ -26,17 +26,17 @@ class iOSNotifier(BaseApp):
                 "data": {
                     "push": {
                         "category": str(notification_category),
-                        "thread-id": str(notification_category),
-                        "sound": {
-                            "name": "default",
-                            "critical": 1 if critical else 0,
-                            "volume": 1.0 if critical else 0.1
-                        }
+                        # "thread-id": str(notification_category),
+                        # "sound": {
+                        #     "name": "default",
+                        #     "critical": 1 if critical else 0,
+                        #     "volume": 1.0 if critical else 0.1
+                        # }
                     },
-                    "presentation_options": [
-                        'alert'
-                        'sound'
-                    ],
+                    # "presentation_options": [
+                    #     'alert'
+                    #     'sound'
+                    # ],
                     "action_data": {
                         "entity_id": response_entity_id or "",
                         "category": str(notification_category)
