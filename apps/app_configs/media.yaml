@@ -52,5 +52,5 @@ living_room_movie_mode:
     - switch.lower_hall_switch_1
     - switch.lower_hall_switch_2
   tv: remote.living_room_harmony_hub
-  toggle: input_boolean.enable_movie_mode
+  toggle: input_boolean.movie_mode
   log_level: DEBUG
