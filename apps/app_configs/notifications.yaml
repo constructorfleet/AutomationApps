@@ -30,20 +30,20 @@ notifiers:
   people:
     - name: Teagan
       notifier:
-#        - name: ios
-#          service: mobile_app_agrajag
+        - name: ios
+          service: mobile_app_agrajag
         - name: ios
           service: mobile_app_sub_etha_127
-#    - name: Alan
-#      notifier:
-#        - name: ios
-#          service: mobile_app_deviphone
-#        - name: ios
-#          service: mobile_app_dev_ipadpro
-#    - name: Grace
-#      notifier:
-#        - name: ios
-#          service: mobile_app_graces_iphone
+    - name: Alan
+      notifier:
+        - name: ios
+          service: mobile_app_deviphone
+        - name: ios
+          service: mobile_app_dev_ipadpro
+    - name: Grace
+      notifier:
+        - name: ios
+          service: mobile_app_graces_iphone
 
 notification_action_processor:
   module: notification_action_processor
