@@ -484,6 +484,13 @@ class AlarmSystem(BaseApp):
                 "entity_id": self.configs[ARG_ALARM_PANEL]
             }
         )
+        self.publish_service_call(
+            'lock',
+            'unlock',
+            {
+                'entity_id': self.configs[ARG_LOCK]
+            }
+        )
         self._notify(NotificationCategory.SECURITY_ALARM_DISARMED)
 
     def _arm(self):
@@ -494,6 +501,20 @@ class AlarmSystem(BaseApp):
                 "entity_id": self.configs[ARG_ALARM_PANEL]
             }
         )
+        self.publish_service_call(
+            'lock',
+            'unlock',
+            {
+                'entity_id': self.configs[ARG_LOCK]
+            }
+        )
+        self.publish_service_call(
+            'cover',
+            'close_cover',
+            {
+                'entity_id': self.configs[ARG_COVER]
+            }
+        )
         self._notify(NotificationCategory.SECURITY_ALARM_ARM_AWAY)
 
     def _arm_night_mode(self):
@@ -502,6 +523,20 @@ class AlarmSystem(BaseApp):
             'alarm_arm_night',
             {
                 "entity_id": self.configs[ARG_ALARM_PANEL]
+            }
+        )
+        self.publish_service_call(
+            'lock',
+            'unlock',
+            {
+                'entity_id': self.configs[ARG_LOCK]
+            }
+        )
+        self.publish_service_call(
+            'cover',
+            'close_cover',
+            {
+                'entity_id': self.configs[ARG_COVER]
             }
         )
         self._notify(NotificationCategory.SECURITY_ALARM_ARM_HOME)

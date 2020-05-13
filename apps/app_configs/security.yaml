@@ -112,3 +112,19 @@ front_door_lock_timeout:
     replacers:
       entity_name: front door
 
+alarm_system:
+  module: security
+  class: AlarmSystem
+  global_dependencies:
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  people:
+    -
+  lock: lock.front_door
+  cover: cover.garage_door
+  alarm_panel: alarm_control_panel.magrathea_alarm
+  night_mode_events:
+    arm: arm_night_mode
+    disarm: disarm_night_mode
