@@ -418,6 +418,7 @@ class AlarmSystem(BaseApp):
                 self.people_in_house.append(person)
             self.listen_state(self._handle_presence_change,
                               entity_id=person)
+        self.info('PEOPLE AT HOME %s', str(self.people_in_house))
         alarm_status = str(self.alarm_status)
 
         if ARG_NIGHT_MODE_ENTITY in self.configs:
@@ -458,10 +459,12 @@ class AlarmSystem(BaseApp):
                 self._disarm()
 
     def _handle_presence_change(self, entity, attribute, old, new, kwargs):
+        self.info('Presence change %s %s', entity, new)
         if old == new:
             return
 
         alarm_status = str(self.alarm_status)
+        self.info('Current alarm %s', alarm_status)
 
         if new == 'home':
             self.people_in_house.append(entity)
@@ -469,7 +472,7 @@ class AlarmSystem(BaseApp):
                 self._disarm()
         elif entity in self.people_in_house:
             self.people_in_house.remove(entity)
-            if alarm_status.startswith('disarmed'):
+            if alarm_status.startswith('disarmed') and len(self.people_in_house) == 0:
                 self._arm()
 
     @property
