@@ -417,13 +417,13 @@ class AlarmSystem(BaseApp):
             if self.get_state(person) == 'home':
                 self.people_in_house.append(person)
             self.listen_state(self._handle_presence_change,
-                              entity_id=person)
+                              entity=person)
         self.info('PEOPLE AT HOME %s', str(self.people_in_house))
         alarm_status = str(self.alarm_status)
 
         if ARG_NIGHT_MODE_ENTITY in self.configs:
             self.listen_state(self._handle_night_mode_change,
-                              entity_id=self.configs[ARG_NIGHT_MODE_ENTITY])
+                              entity=self.configs[ARG_NIGHT_MODE_ENTITY])
         elif ARG_NIGHT_MODE_EVENT in self.configs:
             self.listen_event(self._handle_night_mode_event,
                               event=self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_ARM])
