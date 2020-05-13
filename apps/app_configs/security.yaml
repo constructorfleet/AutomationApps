@@ -121,7 +121,10 @@ alarm_system:
   dependencies:
     - notifiers
   people:
-    -
+    - device_tracker.alan_icloud
+    - device_tracker.teagan_icloud
+    - device_tracker.grace_icloud
+    - device_tracker.persia_icloud
   lock: lock.front_door
   cover: cover.garage_door
   alarm_panel: alarm_control_panel.magrathea_alarm
