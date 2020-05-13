@@ -94,6 +94,7 @@ class CallBHG(BaseApp):
 
     def _daily_call(self, kwargs):
         if self._called_today:
+            self.info("Already called today.")
             return
         self._call_bhg('call_bhg', {}, {})
 
@@ -151,6 +152,8 @@ class CallBHG(BaseApp):
         self._calling = False
         self._called_today = False
         self._call_instance = None
+        self.run_in(self._daily_call,
+                    10 * 60)
 
     def _handle_call_complete(self, status):
         _LOGGER.debug("Call complete, waiting for transcript")
@@ -177,6 +180,7 @@ class CallBHG(BaseApp):
         self._process_transcriptions(transcription_texts)
         self._call_instance = None
         self._calling = False
+        self._called_today = True
 
     def _notify(self, category, **kwargs):
         self.notifier.notify_people(
