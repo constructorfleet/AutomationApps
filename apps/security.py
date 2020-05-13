@@ -1,4 +1,5 @@
 import os
+
 import voluptuous as vol
 
 from call_when import ARG_CONDITION
@@ -30,6 +31,11 @@ ARG_CONFIDENCE = "confidence"
 ARG_CAMERA = 'camera'
 ARG_BASE_IMAGE_URL = 'base_image_url'
 ARG_NOTIFY_INTERVAL = 'notify_interval'
+ARG_ALARM_PANEL = 'alarm_panel'
+ARG_NIGHT_MODE_ENTITY = 'night_mode_entity'
+ARG_NIGHT_MODE_EVENT = 'night_mode_events'
+ARG_NIGHT_MODE_EVENT_ARM = 'arm'
+ARG_NIGHT_MODE_EVENT_DISARM = 'disarm'
 
 SCHEMA_CONDITION_STATE = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
@@ -384,3 +390,124 @@ class GarageDoor(Secure):
             response_entity_id=response_entity_id,
             vehicle_name=vehicle_name,
             entity_name=self._security_entity_name)
+
+
+class AlarmSystem(BaseApp):
+    people_in_house = []
+
+    @property
+    def app_schema(self):
+        return vol.Schema({
+            vol.Required(ARG_PEOPLE): vol.All(
+                ensure_list,
+                [entity_id]
+            ),
+            vol.Required(ARG_LOCK): entity_id,
+            vol.Required(ARG_COVER): entity_id,
+            vol.Required(ARG_ALARM_PANEL): entity_id,
+            vol.Exclusive(ARG_NIGHT_MODE_ENTITY, 'night_mode'): entity_id,
+            vol.Exclusive(ARG_NIGHT_MODE_EVENT, 'night_mode'): vol.Schema({
+                vol.Required(ARG_NIGHT_MODE_EVENT_ARM): str,
+                vol.Required(ARG_NIGHT_MODE_EVENT_DISARM): str
+            })
+        }, extra=vol.ALLOW_EXTRA)
+
+    def initialize_app(self):
+        for person in self.configs[ARG_PEOPLE]:
+            if self.get_state(person) == 'home':
+                self.people_in_house.append(person)
+            self.listen_state(self._handle_presence_change,
+                              entity_id=person)
+        alarm_status = str(self.alarm_status)
+
+        if ARG_NIGHT_MODE_ENTITY in self.configs:
+            self.listen_state(self._handle_night_mode_change,
+                              entity_id=self.configs[ARG_NIGHT_MODE_ENTITY])
+        elif ARG_NIGHT_MODE_EVENT in self.configs:
+            self.listen_event(self._handle_night_mode_event,
+                              event=self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_ARM])
+            self.listen_event(self._handle_night_mode_event,
+                              event=self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_DISARM])
+
+        if alarm_status.startswith('armed_away') and len(self.people_in_house) > 0:
+            self._disarm()
+        elif alarm_status.startswith('disarmed') and len(self.people_in_house) == 0:
+            self._arm()
+
+    def _handle_night_mode_change(self, entity, attribute, old, new, kwargs):
+        alarm_status = str(self.alarm_status)
+        if old == new or alarm_status.startswith('armed'):
+            return
+
+        if new == 'on' and len(self.people_in_house) > 0:
+            self._arm_night_mode()
+        elif new == 'off' and len(self.people_in_house) > 0:
+            self._disarm()
+
+    def _handle_night_mode_event(self, event, data, kwargs):
+        alarm_status = str(self.alarm_status)
+        if event == self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_ARM]:
+            if alarm_status.startswith('armed'):
+                return
+            else:
+                self._arm_night_mode()
+        if event == self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_DISARM]:
+            if alarm_status.startswith('disarmed'):
+                return
+            else:
+                self._disarm()
+
+    def _handle_presence_change(self, entity, attribute, old, new, kwargs):
+        if old == new:
+            return
+
+        alarm_status = str(self.alarm_status)
+
+        if new == 'home':
+            self.people_in_house.append(entity)
+            if alarm_status.startswith('armed'):
+                self._disarm()
+        elif entity in self.people_in_house:
+            self.people_in_house.remove(entity)
+            if alarm_status.startswith('disarmed'):
+                self._arm()
+
+    @property
+    def alarm_status(self):
+        return self.get_state(entity_id=self.configs[ARG_ALARM_PANEL])
+
+    def _disarm(self):
+        self.publish_service_call(
+            'alarm_control_panel',
+            'alarm_disarm',
+            {
+                "entity_id": self.configs[ARG_ALARM_PANEL]
+            }
+        )
+        self._notify(NotificationCategory.SECURITY_ALARM_DISARMED)
+
+    def _arm(self):
+        self.publish_service_call(
+            'alarm_control_panel',
+            'alarm_arm_away',
+            {
+                "entity_id": self.configs[ARG_ALARM_PANEL]
+            }
+        )
+        self._notify(NotificationCategory.SECURITY_ALARM_ARM_AWAY)
+
+    def _arm_night_mode(self):
+        self.publish_service_call(
+            'alarm_control_panel',
+            'alarm_arm_night',
+            {
+                "entity_id": self.configs[ARG_ALARM_PANEL]
+            }
+        )
+        self._notify(NotificationCategory.SECURITY_ALARM_ARM_HOME)
+
+    def _notify(self, category):
+        self.notifier.notify_people(
+            category,
+            response_entity_id=self.configs[ARG_ALARM_PANEL]
+        )
