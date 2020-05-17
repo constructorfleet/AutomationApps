@@ -26,6 +26,8 @@ DEFAULT_DOMAIN = "homeassistant"
 DEFAULT_DUSK_SERVICE = "turn_on"
 DEFAULT_DAWN_SERVICE = "turn_off"
 
+SCHEDULE_WAIT = 60 * 10  # 10 Minutes
+
 ENTITY_SCHEMA = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
     vol.Optional(ARG_SERVICE_DATA, default={}): dict
@@ -62,15 +64,13 @@ class NightLights(BaseApp):
 
         if conf_dawn:
             self.dawn_entities = conf_dawn[ARG_ENTITIES]
-            self.run_at_sunrise(self._handle_dawn,
-                                offset=minutes_to_seconds(conf_dawn[ARG_OFFSET]))
+            self._schedule_dawn()
             if self.sun_up():
                 self._handle_dawn(None)
 
         if conf_dusk:
             self.dusk_entities = conf_dusk[ARG_ENTITIES]
-            self.run_at_sunset(self._handle_dusk,
-                               offset=-minutes_to_seconds(conf_dusk[ARG_OFFSET]))
+            self._schedule_dusk()
             if self.sun_down():
                 self._handle_dusk(None)
 
@@ -105,13 +105,29 @@ class NightLights(BaseApp):
             )
         }, extra=vol.ALLOW_EXTRA)
 
+    def _schedule_dawn(self, wait_seconds=0):
+        self._schedule(
+            'run_at_sunrise',
+            self._handle_dawn,
+            offset=self.configs[ARG_DAWN][ARG_OFFSET],
+            wait_seconds=wait_seconds)
+
+    def _schedule_dusk(self, wait_seconds=0):
+        self._schedule(
+            'run_at_sunset',
+            self._handle_dusk,
+            offset=-self.configs[ARG_DUSK][ARG_OFFSET],
+            wait_seconds=wait_seconds)
+
     def _handle_dawn(self, kwargs):
         """Handle dawn event."""
         self._handle_entity_services(self.dawn_entities)
+        self._schedule_dawn(SCHEDULE_WAIT)
 
     def _handle_dusk(self, kwargs):
         """Handle dusk event."""
         self._handle_entity_services(self.dusk_entities)
+        self._schedule_dusk(SCHEDULE_WAIT)
 
     def _handle_night(self, kwargs):
         """Handle night event."""
@@ -134,3 +150,8 @@ class NightLights(BaseApp):
                 data
             )
             sleep(1.5)
+
+    def _schedule(self, event, handler, offset, wait_seconds=0):
+        """Schedule handler."""
+        sleep(wait_seconds)
+        self.__getattribute__(event)(handler, offset=offset)
