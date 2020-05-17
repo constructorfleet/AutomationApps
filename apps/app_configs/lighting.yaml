@@ -313,6 +313,7 @@ night_lights:
     - utils
   dependencies:
     - holidays
+  log_level: DEBUG
   dawn:
     offset: 60
     entities:
