@@ -26,7 +26,7 @@ DEFAULT_DOMAIN = "homeassistant"
 DEFAULT_DUSK_SERVICE = "turn_on"
 DEFAULT_DAWN_SERVICE = "turn_off"
 
-SCHEDULE_WAIT = 60 * 10  # 10 Minutes
+SCHEDULE_WAIT = 60 * 5  # 5 Minutes
 
 ENTITY_SCHEMA = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
