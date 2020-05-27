@@ -61,7 +61,7 @@ class NotificationCategory(Enum):
         "{transcript}",
         None,
         "priority",
-        True
+        False
     )
     IMPORTANT_BHG_CALL_FAILED = (
         NotificationChannel.IMPORTANT,
