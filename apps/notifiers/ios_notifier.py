@@ -30,13 +30,10 @@ class iOSNotifier(BaseApp):
                         "sound": {
                             "name": "default",
                             "critical": 1 if critical else 0,
-                            "volume": 1.0 if critical else 0.1
+                            "volume": 1.0 if critical else 0.0
                         }
                     },
-                    "presentation_options": [
-                        'alert'
-                        'sound'
-                    ],
+                    "presentation_options": ['alert', 'sound'] if critical else ['alert'],
                     "action_data": {
                         "entity_id": response_entity_id or "",
                         "category": str(notification_category)
