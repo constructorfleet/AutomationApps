@@ -97,9 +97,9 @@ front_door_lock_timeout:
   trigger:
     entity_id: lock.front_door
     state: 'unlocked'
-  pause_when:
-    - entity_id: binary_sensor.front_door_sensor
-      value: 'on'
+#  pause_when:
+#    - entity_id: binary_sensor.front_door_sensor
+#      value: 'on'
   duration: 5
   on_timeout:
     domain: lock
