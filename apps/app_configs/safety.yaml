@@ -32,7 +32,7 @@ laundry_leak:
       state: 'on'
   condition:
     - entity_id: binary_sensor.laundry_leak_sensor_dry
-      state: 'on'
+      value: 'on'
   call:
     domain: switch
     service: turn_off
@@ -50,7 +50,7 @@ laundry_leak_clear:
       state: 'off'
   condition:
     - entity_id: switch.washer
-      state: 'off'
+      value: 'off'
   call:
     domain: switch
     service: turn_on
