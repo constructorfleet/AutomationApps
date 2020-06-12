@@ -19,6 +19,44 @@ leak_detected:
     replacers:
       entity_name: entity_name
 
+laundry_leak:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    - entity_id: binary_sensor.laundry_leak_sensor_dry
+      state: 'on'
+    - entity_id: switch.washer
+      state: 'on'
+  condition:
+    - entity_id: binary_sensor.laundry_leak_sensor_dry
+      state: 'on'
+  call:
+    domain: switch
+    service: turn_off
+    service_data:
+      entity_id: switch.washer
+
+laundry_leak_clear:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    - entity_id: binary_sensor.laundry_leak_sensor_dry
+      state: 'off'
+  condition:
+    - entity_id: switch.washer
+      state: 'off'
+  call:
+    domain: switch
+    service: turn_on
+    service_data:
+      entity_id: switch.washer
+
 #leak_sensor_battery:
 #  module: notify_when
 #  class: NotifyWhen
