@@ -57,34 +57,34 @@ unlock:
 #    - device_tracker.2015_jeep_cherokee
 #    - device_tracker.2019_jeep_compass
 #  cover: cover.garage_door
-#
-#garage_door_timeout:
-#  module: timeout
-#  class: Timeout
-#  global_dependencies:
-#    - base_app
-#    - validation
-#  dependencies:
-#    - notifiers
-#  trigger:
-#    entity_id: cover.garage_door
-#    state: 'open'
-#  reset_when:
-#    - entity_id: binary_sensor.garage_motion_sensor_1
-#      value: 'on'
-#    - entity_id: binary_sensor.garage_motion_sensor_2
-#      value: 'on'
-#  duration: 5
-#  on_timeout:
-#    domain: cover
-#    service: close_cover
-#    service_data:
-#      entity_id: cover.garage_door
-#  notify:
-#    notify_category: SECURITY_COVER_CLOSED_TIMEOUT
-#    response_entity_id: cover.garage_door
-#    replacers:
-#      entity_name: garage door
+
+garage_door_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  trigger:
+    entity_id: cover.garage_door
+    state: 'open'
+  reset_when:
+    - entity_id: binary_sensor.garage_motion_sensor_1
+      value: 'on'
+    - entity_id: binary_sensor.garage_motion_sensor_2
+      value: 'on'
+  duration: 5
+  on_timeout:
+    domain: cover
+    service: close_cover
+    service_data:
+      entity_id: cover.garage_door
+  notify:
+    notify_category: SECURITY_COVER_CLOSED_TIMEOUT
+    response_entity_id: cover.garage_door
+    replacers:
+      entity_name: garage door
 
 front_door_lock_timeout:
   module: timeout
