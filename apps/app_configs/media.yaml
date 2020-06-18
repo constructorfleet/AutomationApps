@@ -44,8 +44,7 @@ living_room_movie_mode:
   turn_on_between_episodes:
     - light.couch_lights
   turn_off:
-    - entity_id: light.couch_lights
-      stay_off: False
+    - light.couch_lights
     - switch.lower_hall_light
     - switch.living_room_ceiling_light
     - switch.lower_hall_switch_1
