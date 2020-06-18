@@ -288,6 +288,25 @@ basement_stair_light_timeout:
     service_data:
       entity_id:
         - switch.basement_stairs
+        
+couch_lights_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    entity_id: light.couch_lights
+  pause_when:
+    - entity_id: media_player.living_room_apple_tv
+      value: 'playing'
+  duration: 120
+  on_timeout:
+    domain: homeassistant
+    service: turn_off
+    service_data:
+      entity_id:
+        - light.couch_lights
 
 lower_bathroom_fan_timeout:
   module: timeout
