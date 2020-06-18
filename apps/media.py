@@ -35,6 +35,7 @@ ARG_ENABLE_TOGGLE = "toggle"
 
 DEFAULT_RESET = False
 DEFAULT_REMEMBER = False
+DEFAULT_STAY_OFF = True
 DEFAULT_SUN_CHECK = False
 DEFAULT_MEDIA_TYPES = ["movie"]
 DEFAULT_TV_DELAY = 60
@@ -67,7 +68,7 @@ SCHEMA_TURN_OFF = vol.Any(
     vol.Schema({
         vol.Required(ARG_TURN_OFF_ENTITY_ID): entity_id,
         vol.Optional(ARG_REMEMBER, default=DEFAULT_REMEMBER): vol.Coerce(bool),
-        vol.Optional(ARG_STAY_OFF, default=False): vol.Coerce(bool)
+        vol.Optional(ARG_STAY_OFF, default=DEFAULT_STAY_OFF): vol.Coerce(bool)
     }))
 
 
