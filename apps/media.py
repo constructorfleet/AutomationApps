@@ -326,7 +326,9 @@ class MovieMode(BaseApp):
         if self.should_turn_on:
             devices = []
             for device in self.configs[ARG_TURN_OFF]:
-                if isinstance(device, str) and not DEFAULT_STAY_OFF:
+                if isinstance(device, str):
+                    if DEFAULT_STAY_OFF:
+                        continue
                     device_id = device
                 else:
                     device_id = device[ARG_TURN_OFF_ENTITY_ID]
