@@ -28,6 +28,7 @@ ARG_TURN_OFF_RESET = "reset"
 ARG_ON_BETWEEN_EPISODES = "turn_on_between_episodes"
 ARG_TURN_ON = "turn_on"
 ARG_REMEMBER = "remember"
+ARG_STAY_OFF = "stay_off"
 ARG_CHECK_SUN = "check_sun"
 ARG_TV = "tv"
 ARG_ENABLE_TOGGLE = "toggle"
@@ -65,7 +66,9 @@ SCHEMA_TURN_OFF = vol.Any(
     entity_id,
     vol.Schema({
         vol.Required(ARG_TURN_OFF_ENTITY_ID): entity_id,
-        vol.Optional(ARG_REMEMBER, default=DEFAULT_REMEMBER): vol.Coerce(bool)}))
+        vol.Optional(ARG_REMEMBER, default=DEFAULT_REMEMBER): vol.Coerce(bool),
+        vol.Optional(ARG_STAY_OFF, default=False): vol.Coerce(bool)
+    }))
 
 
 def _plex_media_content_type(
@@ -225,7 +228,7 @@ class MovieMode(BaseApp):
                 if len(devices) > 0:
                     self.publish_service_call(
                         DOMAIN_HOMEASSISTANT,
-                        SERVICE_TURN_OFF,
+                        SERVICE_TURN_ON,
                         {
                             ARG_ENTITY_ID: devices
                         }
@@ -326,7 +329,7 @@ class MovieMode(BaseApp):
                     device_id = device
                 else:
                     device_id = device[ARG_TURN_OFF_ENTITY_ID]
-                    if device_id not in self.memory:
+                    if device_id not in self.memory or device[ARG_STAY_OFF]:
                         continue
                 if self.get_state(device_id) == "on":
                     continue

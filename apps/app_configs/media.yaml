@@ -42,13 +42,11 @@ living_room_movie_mode:
   check_sun: True
   tv_delay: 30
   turn_on_between_episodes:
-    - switch.lower_hall_light
-    - switch.lower_hall_switch_1
-    - switch.lower_hall_switch_2
+    - light.couch_lights
   turn_off:
     - switch.lower_hall_light
-    - entity_id: switch.living_room_ceiling_light
-      remember: True
+    - light.couch_lights
+    - switch.living_room_ceiling_light
     - switch.lower_hall_switch_1
     - switch.lower_hall_switch_2
   tv: remote.living_room_harmony_hub
