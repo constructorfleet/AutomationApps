@@ -29,6 +29,7 @@ ARG_ON_BETWEEN_EPISODES = "turn_on_between_episodes"
 ARG_TURN_ON = "turn_on"
 ARG_REMEMBER = "remember"
 ARG_STAY_OFF = "stay_off"
+ARG_ON_BRIGHTNESS = "on_brightness"
 ARG_CHECK_SUN = "check_sun"
 ARG_TV = "tv"
 ARG_ENABLE_TOGGLE = "toggle"
@@ -62,13 +63,16 @@ ATTR_MEDIA_TYPE = "media_content_type"
 ATTR_TITLE = "media_title"
 ATTR_DURATION = "media_duration"
 ATTR_IGNORE_ENABLED = "ignore_enabled"
+ATTR_SERVICE_DATA = "service_data"
+ATTR_BRIGHTNESS_PCT = "brightness_pct"
 
 SCHEMA_TURN_OFF = vol.Any(
     entity_id,
     vol.Schema({
         vol.Required(ARG_TURN_OFF_ENTITY_ID): entity_id,
         vol.Optional(ARG_REMEMBER, default=DEFAULT_REMEMBER): vol.Coerce(bool),
-        vol.Optional(ARG_STAY_OFF, default=DEFAULT_STAY_OFF): vol.Coerce(bool)
+        vol.Optional(ARG_STAY_OFF, default=DEFAULT_STAY_OFF): vol.Coerce(bool),
+        vol.Optional(ARG_ON_BRIGHTNESS): vol.All(vol.Coerce(int), vol.Range(0, 100))
     }))
 
 
@@ -325,6 +329,8 @@ class MovieMode(BaseApp):
 
         if self.should_turn_on:
             devices = []
+            brightness = None
+            service_data = {}
             for device in self.configs[ARG_TURN_OFF]:
                 if isinstance(device, str):
                     if DEFAULT_STAY_OFF:
@@ -334,10 +340,25 @@ class MovieMode(BaseApp):
                     device_id = device[ARG_TURN_OFF_ENTITY_ID]
                     if device_id not in self.memory or device[ARG_STAY_OFF]:
                         continue
+                    if device.get(ARG_ON_BRIGHTNESS):
+                        brightness = ARG_ON_BRIGHTNESS
                 if self.get_state(device_id) == "on":
                     continue
                 self.debug("Turning on {}".format(device_id))
+                service_data[device_id] = {
+                    ARG_ENTITY_ID: device_id
+                }
+                if brightness:
+                    service_data[device_id][ATTR_BRIGHTNESS_PCT] = brightness
+                    self.publish_service_call(
+                        DOMAIN_HOMEASSISTANT,
+                        SERVICE_TURN_ON,
+                        service_data
+                    )
+                    continue
+
                 devices.append(device_id)
+
             if len(devices) > 0:
                 self.publish_service_call(
                     DOMAIN_HOMEASSISTANT,
