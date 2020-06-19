@@ -279,17 +279,17 @@ class MovieMode(BaseApp):
                     if device_id not in self.memory or device[ARG_STAY_OFF]:
                         continue
                     brightness = device.get(ARG_ON_BRIGHTNESS, None)
-                self.debug("Turning on {}".format(device_id))
-                if brightness is not None:
-                    self.publish_service_call(
-                        DOMAIN_LIGHT,
-                        SERVICE_TURN_ON,
-                        {
-                            ARG_ENTITY_ID: device_id,
-                            ATTR_BRIGHTNESS_PCT: brightness
-                        }
-                    )
-                    continue
+                    self.debug("Turning on {}".format(device_id))
+                    if brightness is not None:
+                        self.publish_service_call(
+                            DOMAIN_LIGHT,
+                            SERVICE_TURN_ON,
+                            {
+                                ARG_ENTITY_ID: device_id,
+                                ATTR_BRIGHTNESS_PCT: brightness
+                            }
+                        )
+                        continue
 
                 if self.get_state(device_id) == "on":
                     continue
