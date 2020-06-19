@@ -351,7 +351,7 @@ class MovieMode(BaseApp):
                 if brightness:
                     service_data[device_id][ATTR_BRIGHTNESS_PCT] = brightness
                     self.publish_service_call(
-                        DOMAIN_HOMEASSISTANT,
+                        DOMAIN_LIGHT,
                         SERVICE_TURN_ON,
                         service_data
                     )
