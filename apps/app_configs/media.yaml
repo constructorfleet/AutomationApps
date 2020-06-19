@@ -47,8 +47,10 @@ living_room_movie_mode:
     - light.couch_lights
     - entity_id: light.hue_play_1
       on_brightness: 20
+      stay_off: False
     - entity_id: light.hue_play_2
       on_brightness: 20
+      stay_off: Falsego
     - switch.lower_hall_light
     - switch.living_room_ceiling_light
     - switch.lower_hall_switch_1
