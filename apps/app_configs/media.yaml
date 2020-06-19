@@ -44,13 +44,10 @@ living_room_movie_mode:
   turn_on_between_episodes:
     - entity_id: light.couch_lights
       on_brightness: 100
-      stay_off: False
     - entity_id: light.hue_play_1
       on_brightness: 20
-      stay_off: False
     - entity_id: light.hue_play_2
       on_brightness: 20
-      stay_off: False
   turn_off:
     - entity_id: light.couch_lights
       on_brightness: 100
