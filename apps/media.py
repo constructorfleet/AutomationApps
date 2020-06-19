@@ -331,7 +331,6 @@ class MovieMode(BaseApp):
 
         if self.should_turn_on:
             devices = []
-            service_data = {}
             for device in self.configs[ARG_TURN_OFF]:
                 brightness = None
                 if isinstance(device, str):
@@ -344,18 +343,15 @@ class MovieMode(BaseApp):
                         continue
                     if device.get(ARG_ON_BRIGHTNESS):
                         brightness = ARG_ON_BRIGHTNESS
-                if self.get_state(device_id) == "on":
-                    continue
                 self.debug("Turning on {}".format(device_id))
-                service_data[device_id] = {
-                    ARG_ENTITY_ID: device_id
-                }
-                if brightness:
-                    service_data[device_id][ATTR_BRIGHTNESS_PCT] = brightness
+                if brightness is not None:
                     self.publish_service_call(
                         DOMAIN_LIGHT,
                         SERVICE_TURN_ON,
-                        service_data
+                        {
+                            ARG_ENTITY_ID: device_id,
+                            ATTR_BRIGHTNESS_PCT: brightness
+                        }
                     )
                     continue
 
