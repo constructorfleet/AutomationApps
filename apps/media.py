@@ -329,40 +329,40 @@ class MovieMode(BaseApp):
                 }
             )
 
-            devices = []
-            for device in self.configs[ARG_TURN_OFF]:
-                brightness = None
-                if isinstance(device, str):
-                    if DEFAULT_STAY_OFF:
-                        continue
-                    device_id = device
-                else:
-                    device_id = device[ARG_TURN_OFF_ENTITY_ID]
-                    if device_id not in self.memory or device[ARG_STAY_OFF]:
-                        continue
-                    brightness = device.get(ARG_ON_BRIGHTNESS, None)
-                self.debug("Turning on {}".format(device_id))
-                if brightness is not None:
-                    self.publish_service_call(
-                        DOMAIN_LIGHT,
-                        SERVICE_TURN_ON,
-                        {
-                            ARG_ENTITY_ID: device_id,
-                            ATTR_BRIGHTNESS_PCT: brightness
-                        }
-                    )
+        devices = []
+        for device in self.configs[ARG_TURN_OFF]:
+            brightness = None
+            if isinstance(device, str):
+                if DEFAULT_STAY_OFF:
                     continue
-
-                devices.append(device_id)
-
-            if len(devices) > 0:
+                device_id = device
+            else:
+                device_id = device[ARG_TURN_OFF_ENTITY_ID]
+                if device_id not in self.memory or device[ARG_STAY_OFF]:
+                    continue
+                brightness = device.get(ARG_ON_BRIGHTNESS, None)
+            self.debug("Turning on {}".format(device_id))
+            if brightness is not None:
                 self.publish_service_call(
-                    DOMAIN_HOMEASSISTANT,
+                    DOMAIN_LIGHT,
                     SERVICE_TURN_ON,
                     {
-                        ARG_ENTITY_ID: devices
+                        ARG_ENTITY_ID: device_id,
+                        ATTR_BRIGHTNESS_PCT: brightness
                     }
                 )
+                continue
+
+            devices.append(device_id)
+
+        if len(devices) > 0:
+            self.publish_service_call(
+                DOMAIN_HOMEASSISTANT,
+                SERVICE_TURN_ON,
+                {
+                    ARG_ENTITY_ID: devices
+                }
+            )
 
     def handle_tv_off(self, entity, attribute, old, new, kwargs):
         if new != "off":
