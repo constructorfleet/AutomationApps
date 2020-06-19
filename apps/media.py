@@ -329,7 +329,6 @@ class MovieMode(BaseApp):
                 }
             )
 
-        if self.should_turn_on:
             devices = []
             for device in self.configs[ARG_TURN_OFF]:
                 brightness = None
