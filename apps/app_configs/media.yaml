@@ -45,7 +45,7 @@ living_room_movie_mode:
     - light.couch_lights
   turn_off:
     - light.couch_lights
-      brightness: 100
+      on_brightness: 100
       stay_off: False
     - entity_id: light.hue_play_1
       on_brightness: 20
