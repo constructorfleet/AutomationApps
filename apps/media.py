@@ -34,6 +34,8 @@ ARG_CHECK_SUN = "check_sun"
 ARG_TV = "tv"
 ARG_ENABLE_TOGGLE = "toggle"
 
+DOMAIN_LIGHT = "light"
+
 DEFAULT_RESET = False
 DEFAULT_REMEMBER = False
 DEFAULT_STAY_OFF = True
@@ -329,9 +331,9 @@ class MovieMode(BaseApp):
 
         if self.should_turn_on:
             devices = []
-            brightness = None
             service_data = {}
             for device in self.configs[ARG_TURN_OFF]:
+                brightness = None
                 if isinstance(device, str):
                     if DEFAULT_STAY_OFF:
                         continue
