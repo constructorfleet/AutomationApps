@@ -19,6 +19,7 @@ from common.validation import (
 ARG_TRIGGER = 'trigger'
 ARG_CONDITION = 'condition'
 ARG_CALL = 'call'
+ARG_OR = 'or'
 
 SCHEMA_TRIGGER = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
@@ -31,12 +32,18 @@ SCHEMA_CONDITION_STATE = vol.Schema({
     vol.Required(ARG_VALUE): any_value
 })
 
+SCHEMA_CONDITION_OR = vol.Schema({
+    vol.Required(ARG_OR): vol.All(
+        ensure_list,
+        [SCHEMA_CONDITION_STATE])
+}
+
 # SCHEMA_CONDITION_TIME = vol.Schema({
 #     vol.Exclusive(ARG_BEFORE, 'time_condition'): time,
 #     vol.Exclusive(ARG_AFTER, 'time_condition'): time
 # })
 
-SCHEMA_CONDITION = vol.Any(SCHEMA_CONDITION_STATE)  # , SCHEMA_CONDITION_TIME)
+SCHEMA_CONDITION = vol.Any(SCHEMA_CONDITION_STATE, SCHEMA_CONDITION_OR)  # , SCHEMA_CONDITION_TIME)
 
 SCHEMA_CALL = vol.Schema({
     vol.Required(ARG_DOMAIN): str,

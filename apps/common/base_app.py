@@ -175,6 +175,13 @@ class BaseApp(hassmqtt.HassMqtt):
         if condition is None:
             return
         return self._state_condition_met(condition)
+        
+    # noinspection PyTypeChecker
+    def _or_condition_met(self, comditions):
+        for condition in conditions:
+            if self._state_condition_met(condition):
+                return True
+        return False
 
     # noinspection PyTypeChecker
     def _state_condition_met(self, condition):

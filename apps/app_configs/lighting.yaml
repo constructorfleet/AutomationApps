@@ -171,10 +171,16 @@ lower_hall_light:
     entity_id: binary_sensor.lower_stairs_motion
     state: 'on'
   condition:
-    - entity_id: light.entry_light
-      value: 'off'
+    - or:
+      - entity_id: media_player.living_room_apple_tv
+        value: 'paused'
+      - entity_id: light.entry_light
+        value: 'off'
+      - entity_id: light.hue_play_1
+        value: 'off'
+      - entity_id: light.hue_play_2
+        value: 'off'
     - entity_id: media_player.living_room_apple_tv
-      value: 'paused'
     - entity_id: switch.lower_hall_light
       value: 'off'
     - entity_id: sensor.lower_stairs_luminance
@@ -309,44 +315,6 @@ couch_lights_timeout:
     service_data:
       entity_id:
         - light.couch_lights
-
-play_bar_1_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - base_app
-    - validation
-  trigger:
-    entity_id: light.hue_play_1
-  pause_when:
-    - entity_id: media_player.living_room_apple_tv
-      value: 'playing'
-  duration: 120
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id:
-        - light.hue_play_1
-
-play_bar_2_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - base_app
-    - validation
-  trigger:
-    entity_id: light.hue_play_2
-  pause_when:
-    - entity_id: media_player.living_room_apple_tv
-      value: 'playing'
-  duration: 120
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id:
-        - light.hue_play_2
 
 lower_bathroom_fan_timeout:
   module: timeout
