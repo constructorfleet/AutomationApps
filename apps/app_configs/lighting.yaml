@@ -173,6 +173,8 @@ lower_hall_light:
   condition:
     - entity_id: light.entry_light
       value: 'off'
+    - entity_id: media_player.living_room_apple_tv
+      value: 'paused'
     - entity_id: switch.lower_hall_light
       value: 'off'
     - entity_id: sensor.lower_stairs_luminance
