@@ -36,7 +36,7 @@ SCHEMA_CONDITION_OR = vol.Schema({
     vol.Required(ARG_OR): vol.All(
         ensure_list,
         [SCHEMA_CONDITION_STATE])
-}
+})
 
 # SCHEMA_CONDITION_TIME = vol.Schema({
 #     vol.Exclusive(ARG_BEFORE, 'time_condition'): time,
