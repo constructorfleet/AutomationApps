@@ -19,7 +19,7 @@ appdaemon:
   plugins:
     MQTT_States:
       type: hassmqtt
-      client_host: automation_mqtt
+      client_host: homebridge-iot.home.prettybaked.com
       client_id: rules
       verbose: false
       delay: 60
