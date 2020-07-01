@@ -64,23 +64,23 @@ class NightLights(BaseApp):
 
         if conf_dawn:
             self.dawn_entities = conf_dawn[ARG_ENTITIES]
-            self._schedule_dawn()
             if self.sun_up():
                 self._handle_dawn(None)
+            self._schedule_dawn()
 
         if conf_dusk:
             self.dusk_entities = conf_dusk[ARG_ENTITIES]
-            self._schedule_dusk()
             if self.sun_down():
                 self._handle_dusk(None)
+            self._schedule_dusk()
 
         if self.night_entities:
-            self.run_daily(self._handle_night,
-                           datetime.time())
             now = datetime.datetime.now().time()
             if self.sun_down() and now.hour < 12 and \
                     now > datetime.time():
                 self._handle_night(None)
+            self.run_daily(self._handle_night,
+                           datetime.time())
 
     @property
     def app_schema(self):
@@ -105,29 +105,25 @@ class NightLights(BaseApp):
             )
         }, extra=vol.ALLOW_EXTRA)
 
-    def _schedule_dawn(self, wait_seconds=0):
-        self._schedule(
-            'run_at_sunrise',
+    def _schedule_dawn(self):
+        self.run_at_sunrise(
             self._handle_dawn,
-            offset=self.configs[ARG_DAWN][ARG_OFFSET],
-            wait_seconds=wait_seconds)
+            offset=self.configs[ARG_DAWN][ARG_OFFSET])
 
-    def _schedule_dusk(self, wait_seconds=0):
-        self._schedule(
-            'run_at_sunset',
+    def _schedule_dusk(self):
+        self.run_at_sunset(
             self._handle_dusk,
-            offset=-self.configs[ARG_DUSK][ARG_OFFSET],
-            wait_seconds=wait_seconds)
+            offset=-self.configs[ARG_DUSK][ARG_OFFSET])
 
     def _handle_dawn(self, kwargs):
         """Handle dawn event."""
         self._handle_entity_services(self.dawn_entities)
-        self._schedule_dawn(SCHEDULE_WAIT)
+        self._schedule_dawn()
 
     def _handle_dusk(self, kwargs):
         """Handle dusk event."""
         self._handle_entity_services(self.dusk_entities)
-        self._schedule_dusk(SCHEDULE_WAIT)
+        self._schedule_dusk()
 
     def _handle_night(self, kwargs):
         """Handle night event."""
