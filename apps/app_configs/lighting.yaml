@@ -271,14 +271,14 @@ basement_stair_light:
     - entity_id: binary_sensor.bottom_basement_stairs_motion
       state: 'on'
   condition:
-    - entity_id: switch.basement_stair_light
+    - entity_id: switch.basement_stairs_light
       value: 'off'
   call:
     - domain: homeassistant
       service: turn_on
       service_data:
         entity_id:
-          - switch.basement_stairs
+          - switch.basement_stairs_light
 
 basement_stair_light_timeout:
   module: timeout
@@ -287,7 +287,7 @@ basement_stair_light_timeout:
     - base_app
     - validation
   trigger:
-    entity_id: switch.basement_stairs
+    entity_id: switch.basements_stairs_light
   pause_when:
     - entity_id: binary_sensor.basement_stairs_motion
       value: 'on'
@@ -299,7 +299,7 @@ basement_stair_light_timeout:
     service: turn_off
     service_data:
       entity_id:
-        - switch.basement_stairs
+        - switch.basement_stairs_light
         
 couch_lights_timeout:
   module: timeout
