@@ -22,7 +22,7 @@ appdaemon:
       client_host: homebridge-iot.home.prettybaked.com
       client_id: rules
       verbose: false
-      delay: 60
+      delay: 30
       client_topics:
         - events/#
         - states/#
