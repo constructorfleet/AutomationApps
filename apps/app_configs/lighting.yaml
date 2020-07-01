@@ -171,21 +171,20 @@ lower_hall_light:
     entity_id: binary_sensor.lower_stairs_motion
     state: 'on'
   condition:
-    - or:
-      - entity_id: media_player.living_room_apple_tv
-        value: 'paused'
-      - entity_id: media_player.living_room_apple_tv
-        value: 'stopped'
-      - entity_id: media_player.living_room_apple_tv
-        value: 'off'
-      - entity_id: media_player.living_room_apple_tv
-        value: 'idle'
-      - entity_id: light.entry_light
-        value: 'off'
-      - entity_id: light.hue_play_1
-        value: 'off'
-      - entity_id: light.hue_play_2
-        value: 'off'
+    - entity_id: media_player.living_room_apple_tv
+      value: 'paused'
+    - entity_id: media_player.living_room_apple_tv
+      value: 'stopped'
+    - entity_id: media_player.living_room_apple_tv
+      value: 'off'
+    - entity_id: media_player.living_room_apple_tv
+      value: 'idle'
+    - entity_id: light.entry_light
+      value: 'off'
+    - entity_id: light.hue_play_1
+      value: 'off'
+    - entity_id: light.hue_play_2
+      value: 'off'
     - entity_id: switch.lower_hall_light
       value: 'off'
     - entity_id: sensor.lower_stairs_luminance
