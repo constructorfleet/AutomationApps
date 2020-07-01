@@ -287,7 +287,7 @@ basement_stair_light_timeout:
     - base_app
     - validation
   trigger:
-    entity_id: switch.basements_stairs_light
+    entity_id: switch.basement_stairs_light
   pause_when:
     - entity_id: binary_sensor.basement_stairs_motion
       value: 'on'
