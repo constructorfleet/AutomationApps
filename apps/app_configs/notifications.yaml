@@ -33,7 +33,7 @@ notifiers:
         - name: ios
           service: mobile_app_agrajag
         - name: ios
-          service: mobile_app_sub_etha_127
+          service: mobile_app_sub_etha
     - name: Alan
       notifier:
         - name: ios
