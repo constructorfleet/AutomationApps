@@ -1,6 +1,7 @@
 import logging
 
 import voluptuous as vol
+from datetime import datetime
 
 from common.const import (
     EQUALS,
@@ -15,7 +16,12 @@ from common.const import (
     ARG_OR,
     ARG_ATTRIBUTE,
     ARG_EXISTS,
-    NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL_TO, GREATER_THAN, GREATER_THAN_EQUAL_TO)
+    NOT_EQUAL,
+    LESS_THAN,
+    LESS_THAN_EQUAL_TO,
+    GREATER_THAN,
+    GREATER_THAN_EQUAL_TO
+)
 from common.validation import (
     entity_id,
     any_value,
@@ -92,6 +98,13 @@ def are_conditions_met(app, condition_schema):
             if are_conditions_met(app, condition):
                 return True
         return False
+
+    if len({ARG_HOUR, ARG_MINUTE, ARG_SECOND}.intersection(condition_schema.keys())) > 0:
+        now = datetime.utcnow()
+        hour = condition_schema.get(ARG_HOUR, now.hour)
+        minute = condition_schema.get(ARG_MINUTE, now.minute)
+        second = condition_schema.get(ARG_SECOND, now.second)
+        return now.hour == hour and now.minute == minute and now.second == second
 
     if ARG_EXISTS in condition_schema:
         full_state = app.get_state(entity_id=condition_schema[ARG_ENTITY_ID],
