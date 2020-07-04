@@ -1,241 +1,131 @@
 import logging
-from datetime import datetime
 
 import voluptuous as vol
 
 from common.const import (
     EQUALS,
-    NOT_EQUAL,
-    LESS_THAN,
-    LESS_THAN_EQUAL_TO,
-    GREATER_THAN,
-    GREATER_THAN_EQUAL_TO,
     ARG_ENTITY_ID,
     ARG_COMPARATOR,
     ARG_VALUE,
     VALID_COMPARATORS,
-    ARG_BEFORE, ARG_AFTER, ARG_AT)
+    ARG_HOUR,
+    ARG_MINUTE,
+    ARG_SECOND,
+    ARG_AND,
+    ARG_OR,
+    ARG_ATTRIBUTE,
+    ARG_EXISTS,
+    NOT_EQUAL, LESS_THAN, LESS_THAN_EQUAL_TO, GREATER_THAN, GREATER_THAN_EQUAL_TO)
 from common.validation import (
     entity_id,
     any_value,
-    time, valid_entity_id)
+    ensure_list,
+    slugified,
+    valid_entity_id
+)
+from common.utils import converge_types
 
 _LOGGER = logging.getLogger(__name__)
 
 SCHEMA_STATE_CONDITION = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Optional(ARG_ATTRIBUTE): slugified,
     vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
-    vol.Optional(ARG_VALUE, None): any_value
+    vol.Optional(ARG_VALUE): any_value
+})
+
+SCHEMA_HAS_ATTRIBUTE_CONDITION = vol.Schema({
+    vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Required(ARG_ATTRIBUTE): slugified,
+    vol.Required(ARG_EXISTS): vol.Coerce(bool)
 })
 
 SCHEMA_TIME_CONDITION = vol.Schema({
-    vol.Optional(ARG_BEFORE, default=None): time,
-    vol.Optional(ARG_AFTER, default=None): time,
-    vol.Optional(ARG_AT, default=None): time
+    vol.Required(
+        vol.Any(
+            vol.Schema({
+                vol.Required(ARG_HOUR): vol.All(vol.Coerce(int), vol.Range(0, 23))
+            }, extra=vol.ALLOW_EXTRA),
+            vol.Schema({
+                vol.Required(ARG_MINUTE): vol.All(vol.Coerce(int), vol.Range(0, 59))
+            }, extra=vol.ALLOW_EXTRA),
+            vol.Schema({
+                vol.Required(ARG_SECOND): vol.All(vol.Coerce(int), vol.Range(0, 59))
+            }, extra=vol.ALLOW_EXTRA)
+        )
+    )
 })
 
-
-def _convert_to_state_condition(
-        app,
-        condition_args,
-        callback=None,
-        logger=None):
-    value = condition_args[ARG_VALUE]
-    if isinstance(value, str) and valid_entity_id(value):
-        value = app.get_state(value)
-    return StateCondition(
-        args=condition_args,
-        initial_state=app.get_state(condition_args[ARG_ENTITY_ID]),
-        value=value,
-        comparator=condition_args.get(ARG_COMPARATOR, EQUALS),
-        callback=callback,
-        logger=logger
+SCHEMA_LOGIC_CONDITION = vol.Schema({
+    vol.Required(vol.Any(ARG_OR, ARG_AND)): vol.All(
+        ensure_list,
+        [vol.Any(
+            SCHEMA_STATE_CONDITION,
+            SCHEMA_TIME_CONDITION,
+            SCHEMA_HAS_ATTRIBUTE_CONDITION,
+            vol.Self
+        )]
     )
+})
+
+SCHEMA_CONDITION = vol.All(
+    ensure_list,
+    [vol.Any(
+        SCHEMA_LOGIC_CONDITION,
+        SCHEMA_HAS_ATTRIBUTE_CONDITION,
+        SCHEMA_TIME_CONDITION,
+        SCHEMA_TIME_CONDITION
+    )]
+)
 
 
-def _convert_to_time_condition(
-        app,
-        condition_args,
-        callback=None,
-        logger=None):
-    return TimeCondition(
-        condition_args,
-        before=condition_args.get(ARG_BEFORE, None),
-        after=condition_args.get(ARG_AFTER, None),
-        at=condition_args.get(ARG_AT, None),
-        callback=callback,
-        logger=logger
-    )
-
-
-def convert_to_condition(
-        app,
-        condition_args,
-        callback=None,
-        logger=None):
-    if ARG_ENTITY_ID in condition_args:
-        return _convert_to_state_condition(
-            app,
-            condition_args,
-            callback,
-            logger
-        )
-    elif ARG_BEFORE in condition_args or ARG_AFTER in condition_args or ARG_AT in condition_args:
-        return _convert_to_time_condition(
-            app,
-            condition_args,
-            callback,
-            logger
-        )
-
-
-def state_schema(app, callback=None, logger=None):
-    def _validate(value):
-        try:
-            validated = SCHEMA_STATE_CONDITION(value)
-            return _convert_to_state_condition(
-                app,
-                validated,
-                callback,
-                logger
-            )
-        except vol.Invalid as err:
-            raise err
-
-    return _validate
-
-
-def time_schema(app, callback=None, logger=None):
-    def _validate(value):
-        try:
-            validated = SCHEMA_TIME_CONDITION(value)
-            return _convert_to_time_condition(
-                app,
-                validated,
-                callback,
-                logger
-            )
-        except vol.Invalid as err:
-            raise err
-
-    return _validate
-
-
-def condition(app, callback=None, logger=None):
-    def _validate(value):
-        return vol.Any(
-            state_schema(app, callback, logger),
-            time_schema(app, callback, logger)
-        )(value)
-
-    return _validate
-
-
-class Condition(dict):
-    _args = {}
-
-    def __init__(self, args):
-        super().__init__()
-        self._args = args
-
-    @property
-    def is_met(self):
+def are_conditions_met(app, condition_schema):
+    """Verifies if condition is met."""
+    if ARG_AND in condition_schema:
+        for condition in condition_schema:
+            if not are_conditions_met(app, condition):
+                return False
         return True
 
-    def __getitem__(self, k):
-        return self._args.get(k)
+    if ARG_OR in condition_schema:
+        for condition in condition_schema:
+            if are_conditions_met(app, condition):
+                return True
+        return False
 
-    def __setitem__(self, k, v):
-        return
+    if ARG_EXISTS in condition_schema:
+        full_state = app.get_state(entity_id=condition_schema[ARG_ENTITY_ID],
+                                   attribute='all')
+        return condition_schema[ARG_ATTRIBUTE] in full_state == condition_schema[ARG_EXISTS]
 
-
-class StateCondition(Condition):
-    _state = None
-    _comparator = EQUALS
-    _value = None
-    _callback = None
-    _logger = None
-
-    def __init__(self, args, initial_state, value, comparator=EQUALS, callback=None, logger=None):
-        super().__init__(args)
-        self._state = initial_state
-        self._value = value
-        self._comparator = comparator
-        self._callback = callback
-        self._logger = logger
-
-    def handle_event(self, event_name, data, kwargs):
-        if self._callback and self.is_met:
-            self._callback(event_name, data, kwargs)
-
-    def handle_state_change(self, entity, attribute, old, new, kwargs):
-        self._state = new
-        if self._callback and self.is_met:
-            self._callback(entity, attribute, old, new, kwargs)
-
-    def handle_value_change(self, entity, attribute, old, new, kwargs):
-        self._value = new
-        if self._callback and self.is_met:
-            self._callback(entity, attribute, old, new, kwargs)
-
-    # noinspection PyTypeChecker
-    @property
-    def is_met(self):
-        if self._value is None:
-            return True
-        # self._logger("{} {} {}".format(self._state, self._comparator, self._value))
-        if self._comparator == EQUALS:
-            return self._state == self._value
-        elif self._comparator == NOT_EQUAL:
-            return self._state != self._value
+    if ARG_ENTITY_ID in condition_schema:
+        entity_value = app.get_state(entity_id=condition_schema[ARG_ENTITY_ID],
+                                     attribute=condition_schema[ARG_ATTRIBUTE])
+        if valid_entity_id(condition_schema[ARG_VALUE]):
+            check_value = app.get_state(entity_id=condition_schema[ARG_VALUE])
         else:
-            state = float(self._state)
-            value = float(self._value)
-            if self._comparator == LESS_THAN:
-                return state < value
-            elif self._comparator == LESS_THAN_EQUAL_TO:
-                return state <= value
-            elif self._comparator == GREATER_THAN:
-                return state > value
-            elif self._comparator == GREATER_THAN_EQUAL_TO:
-                return state >= value
-            else:
-                _LOGGER.error('Invalid comparator %s' % self._comparator)
+            check_value = condition_schema.get(ARG_VALUE)
+
+        entity_state, value = converge_types(entity_value, check_value)
+
+        comparator = condition_schema[ARG_COMPARATOR]
+
+        if comparator == EQUALS:
+            if entity_state is None and value is None:
+                return True
+            return entity_state == value
+        elif comparator == NOT_EQUAL:
+            if entity_state is None and value is None:
                 return False
-
-
-class TimeCondition(Condition):
-    _before = None
-    _after = None
-    _at = None
-    _callback = None
-    _logger = None
-
-    def __init__(self, args, before=None, after=None, at=None, callback=None, logger=None):
-        super().__init__(args)
-        self._before = before
-        self._after = after
-        self._at = at
-        self._callback = callback
-        self._logger = logger
-
-    def handle_time_change(self, kwargs):
-        if self._callback is not None and self.is_met:
-            self._callback(kwargs)
-
-    @property
-    def is_met(self):
-        now = datetime.now().time()
-        if self._at:
-            hour = now.hour
-            minute = now.minute
-            return hour == self._at.time().hour and minute == self._at.time().minute
-
-        is_before = True
-        if self._before:
-            is_before = now < self._before
-        is_after = True
-        if self._after:
-            is_after = now > self._after
-
-        return is_after and is_before
+            return entity_state != value
+        else:
+            if comparator == LESS_THAN:
+                return entity_state < value
+            elif comparator == LESS_THAN_EQUAL_TO:
+                return entity_state <= value
+            elif comparator == GREATER_THAN:
+                return entity_state > value
+            elif comparator == GREATER_THAN_EQUAL_TO:
+                return entity_state >= value
+            else:
+                return False
