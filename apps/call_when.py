@@ -66,27 +66,17 @@ class CallWhen(BaseApp):
                     and trigger[ARG_ENTITY_ID].split('.')[0].lower() in ['binary_sensor', 'switch',
                                                                          'light']:
                 trigger[ARG_STATE] = 'on'  # Default to on for these domains
-
-            new_state = self.get_state(
-                entity_id=trigger[ARG_ENTITY_ID],
-                attribute=trigger.get(ARG_ATTRIBUTE))
-            if ARG_STATE not in trigger or new_state == trigger[ARG_STATE]:
-                self._handle_trigger(
-                    trigger[ARG_ENTITY_ID],
-                    trigger.get(ARG_ATTRIBUTE),
-                    None,
-                    new_state,
-                    {}
-                )
             if ARG_STATE not in trigger:
                 self.listen_state(self._handle_trigger,
                                   entity=trigger[ARG_ENTITY_ID],
-                                  attribute=trigger.get(ARG_ATTRIBUTE))
+                                  attribute=trigger.get(ARG_ATTRIBUTE),
+                                  immediate=True)
             else:
                 self.listen_state(self._handle_trigger,
                                   entity=trigger[ARG_ENTITY_ID],
                                   attribute=trigger.get(ARG_ATTRIBUTE),
-                                  new=trigger[ARG_STATE])
+                                  new=trigger[ARG_STATE],
+                                  immediate=True)
 
     @property
     def app_schema(self):
