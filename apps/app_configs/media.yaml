@@ -73,10 +73,6 @@ set_hue_sync_music:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
-      state: 'playing'
-    - entity_id: media_player.living_room_apple_tv
-      attribute: media_title
-      state: No Title
   condition:
     - entity_id: media_player.living_room_apple_tv
       attribute: media_title
@@ -97,10 +93,6 @@ set_hue_sync_video:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
-      state: 'playing'
-    - entity_id: media_player.living_room_apple_tv
-      attribute: media_content_type
-      state: video
   condition:
     - entity_id: media_player.living_room_apple_tv
       attribute: media_content_type
@@ -122,10 +114,6 @@ set_hue_sync_video_plex:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
-      state: 'playing'
-    - entity_id: media_player.living_room_apple_tv
-      attribute: media_content_type
-      state: music
   condition:
     - entity_id: media_player.living_room_apple_tv
       attribute: media_content_type
