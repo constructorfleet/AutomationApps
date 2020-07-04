@@ -38,13 +38,13 @@ SCHEMA_STATE_CONDITION = vol.Schema({
     vol.Optional(ARG_ATTRIBUTE): slugified,
     vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
     vol.Optional(ARG_VALUE): any_value
-})
+}, extra=vol.ALLOW_EXTRA)
 
 SCHEMA_HAS_ATTRIBUTE_CONDITION = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
     vol.Required(ARG_ATTRIBUTE): slugified,
     vol.Required(ARG_EXISTS): vol.Coerce(bool)
-})
+}, extra=vol.ALLOW_EXTRA)
 
 SCHEMA_TIME_CONDITION = vol.Schema({
     vol.Required(
@@ -60,7 +60,7 @@ SCHEMA_TIME_CONDITION = vol.Schema({
             }, extra=vol.ALLOW_EXTRA)
         )
     )
-})
+}, extra=vol.ALLOW_EXTRA)
 
 SCHEMA_LOGIC_CONDITION = vol.Schema({
     vol.Required(vol.Any(ARG_OR, ARG_AND)): vol.All(
@@ -72,7 +72,7 @@ SCHEMA_LOGIC_CONDITION = vol.Schema({
             vol.Self
         )]
     )
-})
+}, extra=vol.ALLOW_EXTRA)
 
 SCHEMA_CONDITION = vol.All(
     ensure_list,
