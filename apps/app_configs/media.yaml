@@ -64,7 +64,6 @@ living_room_movie_mode:
     - switch.lower_hall_switch_2
   tv: remote.living_room_harmony_hub
   toggle: input_boolean.movie_mode
-  log_level: DEBUG
 
 set_hue_sync_music:
   module: call_when
@@ -89,6 +88,7 @@ set_hue_sync_music:
     service_data:
       entity_id: remote.hue_sync_box
       sync_mode: Music
+  log_level: DEBUG
 
 set_hue_sync_video:
   module: call_when
@@ -113,6 +113,8 @@ set_hue_sync_video:
     service_data:
       entity_id: remote.hue_sync_box
       sync_mode: Video
+
+  log_level: DEBUG
 
 set_hue_sync_video_plex:
   module: call_when
@@ -141,3 +143,4 @@ set_hue_sync_video_plex:
     service_data:
       entity_id: remote.hue_sync_box
       sync_mode: Video
+  log_level: DEBUG
