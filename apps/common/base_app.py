@@ -177,7 +177,7 @@ class BaseApp(hassmqtt.HassMqtt):
         return self._state_condition_met(condition)
         
     # noinspection PyTypeChecker
-    def _or_condition_met(self, comditions):
+    def _or_condition_met(self, conditions):
         for condition in conditions:
             if self._state_condition_met(condition):
                 return True
@@ -186,6 +186,12 @@ class BaseApp(hassmqtt.HassMqtt):
     # noinspection PyTypeChecker
     def _state_condition_met(self, condition):
         if valid_entity_id(condition[ARG_ENTITY_ID]):
+            if ARG_ATTRIBUTE in condition and ARG_VALUE not in condition:
+                attributes = self.get_state(
+                    condition[ARG_ENTITY_ID],
+                    attribute='all'
+                )
+                return condition[ARG_ATTRIBUTE] in attributes
             entity_state = self.get_state(
                 condition[ARG_ENTITY_ID],
                 attribute=condition.get(ARG_ATTRIBUTE))

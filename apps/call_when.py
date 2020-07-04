@@ -32,9 +32,9 @@ SCHEMA_TRIGGER = vol.Schema({
 
 SCHEMA_CONDITION_STATE = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
-    vol.Optional(ARG_ATTRIBUTE): slugified,
+    vol.Optional(ARG_ATTRIBUTE): vol.Any(None, slugified),
     vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
-    vol.Required(ARG_VALUE): any_value
+    vol.Optional(ARG_VALUE): any_value
 })
 
 SCHEMA_CONDITION_OR = vol.Schema({

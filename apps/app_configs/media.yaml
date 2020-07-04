@@ -65,3 +65,48 @@ living_room_movie_mode:
   tv: remote.living_room_harmony_hub
   toggle: input_boolean.movie_mode
   log_level: DEBUG
+
+set_hue_sync_music:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    - entity_id: media_player.living_room_apple_tv
+      state: 'playing'
+  condition:
+    - entity_id: media_player.living_room_apple_tv
+      attribute: media_title
+      value: No title
+  call:
+    domain: hue_sync_box
+    service: set_sync_mode
+    service_data:
+      entity_id: remote.hue_sync_box
+      sync_mode: Music
+
+set_hue_sync_video_plex:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    - entity_id: media_player.media_player.living_room_apple_tv
+      state: 'playing'
+  condition:
+    - entity_id: media_player.media_player.living_room_apple_tv
+      attribute: media_content_type
+      comparator: music
+      value: No title
+    - entity_id: media_player.media_player.living_room_apple_tv
+      attribute: media_title
+      comparator: '!='
+      value: No title
+  call:
+    domain: hue_sync_box
+    service: set_sync_mode
+    service_data:
+      entity_id: remote.hue_sync_box
+      sync_mode: Video
