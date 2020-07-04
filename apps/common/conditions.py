@@ -136,7 +136,7 @@ def are_conditions_met(app, condition_spec):
 
         if comparator == EQUALS:
             if entity_state is None and value is None:
-                return True
+                return False
             return entity_state == value
         elif comparator == NOT_EQUAL:
             if entity_state is None and value is None:
