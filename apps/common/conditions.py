@@ -46,7 +46,7 @@ SCHEMA_HAS_ATTRIBUTE_CONDITION = vol.Schema({
     ARG_EXISTS: vol.Coerce(bool)
 }, extra=vol.ALLOW_EXTRA)
 
-SCHEMA_TIME_CONDITION = vol.Schema({
+SCHEMA_TIME_CONDITION = vol.Schema(
     vol.Any(
         vol.Schema({
             ARG_HOUR: vol.All(vol.Coerce(int), vol.Range(0, 23))
@@ -57,11 +57,10 @@ SCHEMA_TIME_CONDITION = vol.Schema({
         vol.Schema({
             ARG_SECOND: vol.All(vol.Coerce(int), vol.Range(0, 59))
         }, extra=vol.ALLOW_EXTRA)
-    )
-}, extra=vol.ALLOW_EXTRA)
+    ), extra=vol.ALLOW_EXTRA)
 
 SCHEMA_LOGIC_CONDITION = vol.Schema({
-    vol.Any(ARG_OR, ARG_AND): vol.All(
+    vol.In([ARG_OR, ARG_AND]): vol.All(
         ensure_list,
         [vol.Any(
             SCHEMA_STATE_CONDITION,
