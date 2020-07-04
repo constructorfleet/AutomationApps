@@ -126,32 +126,26 @@ living_room_movie_mode:
 #      sync_mode: Video
 #  log_level: DEBUG
 #
-#set_hue_sync_video_plex:
-#  module: call_when
-#  class: CallWhen
-#  global_dependencies:
-#    - base_app
-#    - const
-#    - conditions
-#    - validation
-#  trigger:
-#    - entity_id: media_player.living_room_apple_tv
-#  condition:
-#    - and:
-#      - entity_id: media_player.living_room_apple_tv
-#        attribute: media_content_type
-#        value: music
-#      - entity_id: media_player.living_room_apple_tv
-#        attribute: media_duration
-#        comparator: '>'
-#        value: 600
-#      - entity_id: media_player.living_room_apple_tv
-#        comparator: '='
-#        value: 'playing'
-#  call:
-#    domain: hue_sync_box
-#    service: set_sync_mode
-#    service_data:
-#      entity_id: remote.hue_sync_box
-#      sync_mode: Video
-#  log_level: DEBUG
+set_hue_sync_video_plex:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - const
+    - conditions
+    - validation
+  trigger:
+    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
+      state: playing
+  condition:
+    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
+      attribute: media_content_type
+      comparator: '!='
+      value: music
+  call:
+    domain: hue_sync_box
+    service: set_sync_mode
+    service_data:
+      entity_id: remote.hue_sync_box
+      sync_mode: Video
+  log_level: DEBUG
