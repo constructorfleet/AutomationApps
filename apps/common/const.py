@@ -1,4 +1,5 @@
 ARG_ENTITY_ID = 'entity_id'
+ARG_ATTRIBUTE = 'attribute'
 ARG_STATE = 'state'
 ARG_VALUE = 'value'
 ARG_BEFORE = 'before'

@@ -177,6 +177,11 @@ def valid_service(value):
             value == value.replace(' ', '_'))
 
 
+def slugified(value):
+    """Test if value is sluggified."""
+    return re.match(OLD_SLUG_VALIDATION, value) is not None
+
+
 def service(value):
     """Validate service."""
 

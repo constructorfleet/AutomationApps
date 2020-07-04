@@ -19,7 +19,7 @@ from common.const import (
     GREATER_THAN,
     GREATER_THAN_EQUAL_TO,
     ARG_DEPENDENCIES,
-)
+    ARG_ATTRIBUTE)
 from common.utils import converge_types
 from common.validation import valid_entity_id, valid_log_level
 
@@ -186,7 +186,9 @@ class BaseApp(hassmqtt.HassMqtt):
     # noinspection PyTypeChecker
     def _state_condition_met(self, condition):
         if valid_entity_id(condition[ARG_ENTITY_ID]):
-            entity_state = self.get_state(condition[ARG_ENTITY_ID])
+            entity_state = self.get_state(
+                condition[ARG_ENTITY_ID],
+                attribute=condition.get(ARG_ATTRIBUTE))
         else:
             entity_state = condition[ARG_ENTITY_ID]
 

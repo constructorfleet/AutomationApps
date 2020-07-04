@@ -3,17 +3,20 @@ import voluptuous as vol
 from common.base_app import BaseApp
 from common.const import (
     ARG_ENTITY_ID,
+    ARG_ATTRIBUTE,
     ARG_COMPARATOR,
     ARG_STATE,
     ARG_VALUE,
     ARG_DOMAIN,
     ARG_SERVICE,
     ARG_SERVICE_DATA,
-    EQUALS, VALID_COMPARATORS)
+    EQUALS,
+    VALID_COMPARATORS)
 from common.validation import (
     entity_id,
     ensure_list,
-    any_value
+    any_value,
+    slugified
 )
 
 ARG_TRIGGER = 'trigger'
@@ -23,11 +26,13 @@ ARG_OR = 'or'
 
 SCHEMA_TRIGGER = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Optional(ARG_ATTRIBUTE): slugified,
     vol.Optional(ARG_STATE, default='on'): any_value
 })
 
 SCHEMA_CONDITION_STATE = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
+    vol.Optional(ARG_ATTRIBUTE): slugified,
     vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
     vol.Required(ARG_VALUE): any_value
 })
@@ -57,17 +62,20 @@ class CallWhen(BaseApp):
 
     def initialize_app(self):
         for trigger in self.configs[ARG_TRIGGER]:
-            new_state = self.get_state(entity_id=trigger[ARG_ENTITY_ID])
+            new_state = self.get_state(
+                entity_id=trigger[ARG_ENTITY_ID],
+                attribute=trigger.get(ARG_ATTRIBUTE))
             if new_state == trigger[ARG_STATE]:
                 self._handle_trigger(
                     trigger[ARG_ENTITY_ID],
-                    None,
+                    trigger.get(ARG_ATTRIBUTE),
                     None,
                     new_state,
                     {}
                 )
             self.listen_state(self._handle_trigger,
                               entity=trigger[ARG_ENTITY_ID],
+                              attribute=trigger.get(ARG_ATTRIBUTE),
                               new=trigger[ARG_STATE])
 
     @property
