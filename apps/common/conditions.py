@@ -34,28 +34,28 @@ from common.validation import (
 _LOGGER = logging.getLogger(__name__)
 
 SCHEMA_STATE_CONDITION = vol.Schema({
-    vol.Required(ARG_ENTITY_ID): entity_id,
+    ARG_ENTITY_ID: entity_id,
     vol.Optional(ARG_ATTRIBUTE): slugified,
     vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
     vol.Optional(ARG_VALUE): any_value
 }, extra=vol.ALLOW_EXTRA)
 
 SCHEMA_HAS_ATTRIBUTE_CONDITION = vol.Schema({
-    vol.Required(ARG_ENTITY_ID): entity_id,
-    vol.Required(ARG_ATTRIBUTE): slugified,
-    vol.Required(ARG_EXISTS): vol.Coerce(bool)
+    ARG_ENTITY_ID: entity_id,
+    ARG_ATTRIBUTE: slugified,
+    ARG_EXISTS: vol.Coerce(bool)
 }, extra=vol.ALLOW_EXTRA)
 
 SCHEMA_TIME_CONDITION = vol.Schema({
     vol.Any(
         vol.Schema({
-            vol.Required(ARG_HOUR): vol.All(vol.Coerce(int), vol.Range(0, 23))
+            ARG_HOUR: vol.All(vol.Coerce(int), vol.Range(0, 23))
         }, extra=vol.ALLOW_EXTRA),
         vol.Schema({
-            vol.Required(ARG_MINUTE): vol.All(vol.Coerce(int), vol.Range(0, 59))
+            ARG_MINUTE: vol.All(vol.Coerce(int), vol.Range(0, 59))
         }, extra=vol.ALLOW_EXTRA),
         vol.Schema({
-            vol.Required(ARG_SECOND): vol.All(vol.Coerce(int), vol.Range(0, 59))
+            ARG_SECOND: vol.All(vol.Coerce(int), vol.Range(0, 59))
         }, extra=vol.ALLOW_EXTRA)
     )
 }, extra=vol.ALLOW_EXTRA)
