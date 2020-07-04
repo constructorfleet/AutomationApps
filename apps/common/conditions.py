@@ -79,7 +79,7 @@ SCHEMA_CONDITION = vol.All(
     [vol.All(
         vol.Exclusive(SCHEMA_LOGIC_CONDITION, 'cond'),
         vol.Exclusive(SCHEMA_HAS_ATTRIBUTE_CONDITION, 'cond'),
-        vol.Exclusive(SCHEMA_TIME_CONDITION, 'cond'),
+        vol.Exclusive(SCHEMA_STATE_CONDITION, 'cond'),
         vol.Exclusive(SCHEMA_TIME_CONDITION, 'cond'),
     )]
 )
