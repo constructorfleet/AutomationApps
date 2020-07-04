@@ -3,6 +3,7 @@ global_modules:
   - const
   - utils
   - helpers
+  - condittions
   - validation
   - notification_action
   - notification_category

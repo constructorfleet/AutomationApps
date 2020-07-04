@@ -3,6 +3,7 @@ doorbell:
   class: Doorbell
   global_dependencies:
     - base_app
+    - const
     - validation
   dependencies:
     - notifiers
@@ -24,6 +25,7 @@ unlock:
   class: DoorLock
   global_dependencies:
     - base_app
+    - const
     - validation
   dependencies:
     - notifiers
@@ -64,6 +66,7 @@ garage_door_timeout:
   global_dependencies:
     - base_app
     - validation
+    - const
   dependencies:
     - notifiers
   trigger:
@@ -91,6 +94,7 @@ front_door_lock_timeout:
   class: Timeout
   global_dependencies:
     - base_app
+    - const
     - validation
   dependencies:
     - notifiers
@@ -117,6 +121,7 @@ alarm_system:
   class: AlarmSystem
   global_dependencies:
     - base_app
+    - const
     - validation
   dependencies:
     - notifiers

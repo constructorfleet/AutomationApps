@@ -3,6 +3,7 @@ leak_detected:
   class: NotifyWhen
   global_dependencies:
     - base_app
+    - const
     - validation
   dependencies:
     - notifiers
@@ -24,6 +25,7 @@ laundry_leak:
   class: CallWhen
   global_dependencies:
     - base_app
+    - const
     - validation
   trigger:
     - entity_id: binary_sensor.laundry_room_leak_sensor_dry
