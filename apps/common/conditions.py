@@ -1,7 +1,7 @@
 import logging
+from datetime import datetime
 
 import voluptuous as vol
-from datetime import datetime
 
 from common.const import (
     EQUALS,
@@ -22,6 +22,7 @@ from common.const import (
     GREATER_THAN,
     GREATER_THAN_EQUAL_TO
 )
+from common.utils import converge_types
 from common.validation import (
     entity_id,
     any_value,
@@ -29,7 +30,6 @@ from common.validation import (
     slugified,
     valid_entity_id
 )
-from common.utils import converge_types
 
 _LOGGER = logging.getLogger(__name__)
 
