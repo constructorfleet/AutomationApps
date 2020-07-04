@@ -76,7 +76,7 @@ set_hue_sync_music:
       state: 'playing'
     - entity_id: media_player.living_room_apple_tv
       attribute: media_title
-      value: No Title
+      state: No Title
   condition:
     - entity_id: media_player.living_room_apple_tv
       attribute: media_title
@@ -100,7 +100,7 @@ set_hue_sync_video:
       state: 'playing'
     - entity_id: media_player.living_room_apple_tv
       attribute: media_content_type
-      value: video
+      state: video
   condition:
     - entity_id: media_player.living_room_apple_tv
       attribute: media_content_type
