@@ -87,12 +87,14 @@ def are_conditions_met(app, condition_spec):
     if ARG_AND in condition_spec:
         for condition in condition_spec[ARG_AND]:
             if not are_conditions_met(app, condition):
+                app.debug(f'Condition not met: {str(condition)}')
                 return False
         return True
 
     if ARG_OR in condition_spec:
         for condition in condition_spec[ARG_OR]:
             if are_conditions_met(app, condition):
+                app.debug(f'Condition met: {str(condition)}')
                 return True
         return False
 
@@ -111,14 +113,26 @@ def are_conditions_met(app, condition_spec):
     if ARG_ENTITY_ID in condition_spec:
         entity_value = app.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
                                      attribute=condition_spec.get(ARG_ATTRIBUTE))
+        app.debug(
+            f'Entity {condition_spec[ARG_ENTITY_ID]}[{condition_spec.get(ARG_ATTRIBUTE)}]'
+            f' {entity_value}: {str(condition_spec)}')
         if valid_entity_id(condition_spec[ARG_VALUE]):
             check_value = app.get_state(entity_id=condition_spec[ARG_VALUE])
         else:
             check_value = condition_spec.get(ARG_VALUE)
 
+        app.debug(
+            f'Check value {check_value}'
+        )
+
         entity_state, value = converge_types(entity_value, check_value)
 
+        app.debug(
+            f'Converged Type {entity_state} {value}'
+        )
+
         comparator = condition_spec[ARG_COMPARATOR]
+        app.debug(f'Comparator {comparator}')
 
         if comparator == EQUALS:
             if entity_state is None and value is None:
