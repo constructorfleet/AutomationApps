@@ -70,16 +70,19 @@ set_hue_sync_music:
   class: CallWhen
   global_dependencies:
     - base_app
+    - const
+    - conditions
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
   condition:
-    - entity_id: media_player.living_room_apple_tv
-      attribute: media_content_type
-      exists: false
-    - entity_id: media_player.living_room_apple_tv
-      attribute: media_title
-      value: No title
+    - and:
+      - entity_id: media_player.living_room_apple_tv
+        attribute: media_content_type
+        exists: false
+      - entity_id: media_player.living_room_apple_tv
+        attribute: media_title
+        value: No title
   call:
     domain: hue_sync_box
     service: set_sync_mode
@@ -93,6 +96,8 @@ set_hue_sync_video:
   class: CallWhen
   global_dependencies:
     - base_app
+    - const
+    - conditions
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
@@ -114,17 +119,20 @@ set_hue_sync_video_plex:
   class: CallWhen
   global_dependencies:
     - base_app
+    - const
+    - conditions
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
   condition:
-    - entity_id: media_player.living_room_apple_tv
-      attribute: media_content_type
-      value: music
-    - entity_id: media_player.living_room_apple_tv
-      attribute: media_title
-      comparator: '!='
-      value: No title
+    - and:
+      - entity_id: media_player.living_room_apple_tv
+        attribute: media_content_type
+        value: music
+      - entity_id: media_player.living_room_apple_tv
+        attribute: media_title
+        comparator: '!='
+        value: No title
   call:
     domain: hue_sync_box
     service: set_sync_mode
