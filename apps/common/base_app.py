@@ -7,6 +7,7 @@ from threading import Lock
 import voluptuous as vol
 
 import hassmqttapi as hassmqtt
+from common.conditions import are_conditions_met
 from common.const import (
     ARG_ENTITY_ID,
     ARG_VALUE,
@@ -171,60 +172,7 @@ class BaseApp(hassmqtt.HassMqtt):
         )
 
     def condition_met(self, condition):
-        # TODO : Other conditions
-        if condition is None:
-            return
-        return self._state_condition_met(condition)
-        
-    # noinspection PyTypeChecker
-    def _or_condition_met(self, conditions):
-        for condition in conditions:
-            if self._state_condition_met(condition):
-                return True
-        return False
-
-    # noinspection PyTypeChecker
-    def _state_condition_met(self, condition):
-        if valid_entity_id(condition[ARG_ENTITY_ID]):
-            if ARG_ATTRIBUTE in condition and ARG_VALUE not in condition:
-                attributes = self.get_state(
-                    condition[ARG_ENTITY_ID],
-                    attribute='all'
-                )
-                return condition[ARG_ATTRIBUTE] in attributes
-            entity_state = self.get_state(
-                condition[ARG_ENTITY_ID],
-                attribute=condition.get(ARG_ATTRIBUTE))
-        else:
-            entity_state = condition[ARG_ENTITY_ID]
-
-        value = condition.get(ARG_VALUE, None)
-        if value is not None and valid_entity_id(value):
-            value = self.get_state(value)
-        if value is None or entity_state is None:
-            return True
-        entity_state, value = converge_types(entity_state, value)
-
-        comparator = condition[ARG_COMPARATOR]
-        self.debug(
-            "[{}] {}{} {} {}{}".format(condition[ARG_ENTITY_ID], entity_state, type(entity_state),
-                                       comparator, value, type(value)))
-        if comparator == EQUALS:
-            return entity_state == value
-        elif comparator == NOT_EQUAL:
-            return entity_state != value
-        else:
-            if comparator == LESS_THAN:
-                return entity_state < value
-            elif comparator == LESS_THAN_EQUAL_TO:
-                return entity_state <= value
-            elif comparator == GREATER_THAN:
-                return entity_state > value
-            elif comparator == GREATER_THAN_EQUAL_TO:
-                return entity_state >= value
-            else:
-                self.error('Invalid comparator %s' % comparator)
-                return False
+        return are_conditions_met(self, condition)
 
     def debug(self, msg, *args, **kwargs):
         if self._log_level >= logging.DEBUG:

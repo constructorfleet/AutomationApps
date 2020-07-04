@@ -85,43 +85,43 @@ SCHEMA_CONDITION = vol.All(
 )
 
 
-def are_conditions_met(app, condition_schema):
+def are_conditions_met(app, condition_spec):
     """Verifies if condition is met."""
-    if ARG_AND in condition_schema:
-        for condition in condition_schema:
+    if ARG_AND in condition_spec:
+        for condition in condition_spec[ARG_AND]:
             if not are_conditions_met(app, condition):
                 return False
         return True
 
-    if ARG_OR in condition_schema:
-        for condition in condition_schema:
+    if ARG_OR in condition_spec:
+        for condition in condition_spec[ARG_OR]:
             if are_conditions_met(app, condition):
                 return True
         return False
 
-    if len({ARG_HOUR, ARG_MINUTE, ARG_SECOND}.intersection(condition_schema.keys())) > 0:
+    if len({ARG_HOUR, ARG_MINUTE, ARG_SECOND}.intersection(condition_spec.keys())) > 0:
         now = datetime.utcnow()
-        hour = condition_schema.get(ARG_HOUR, now.hour)
-        minute = condition_schema.get(ARG_MINUTE, now.minute)
-        second = condition_schema.get(ARG_SECOND, now.second)
+        hour = condition_spec.get(ARG_HOUR, now.hour)
+        minute = condition_spec.get(ARG_MINUTE, now.minute)
+        second = condition_spec.get(ARG_SECOND, now.second)
         return now.hour == hour and now.minute == minute and now.second == second
 
-    if ARG_EXISTS in condition_schema:
-        full_state = app.get_state(entity_id=condition_schema[ARG_ENTITY_ID],
+    if ARG_EXISTS in condition_spec:
+        full_state = app.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
                                    attribute='all')
-        return condition_schema[ARG_ATTRIBUTE] in full_state == condition_schema[ARG_EXISTS]
+        return condition_spec[ARG_ATTRIBUTE] in full_state == condition_spec[ARG_EXISTS]
 
-    if ARG_ENTITY_ID in condition_schema:
-        entity_value = app.get_state(entity_id=condition_schema[ARG_ENTITY_ID],
-                                     attribute=condition_schema[ARG_ATTRIBUTE])
-        if valid_entity_id(condition_schema[ARG_VALUE]):
-            check_value = app.get_state(entity_id=condition_schema[ARG_VALUE])
+    if ARG_ENTITY_ID in condition_spec:
+        entity_value = app.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
+                                     attribute=condition_spec[ARG_ATTRIBUTE])
+        if valid_entity_id(condition_spec[ARG_VALUE]):
+            check_value = app.get_state(entity_id=condition_spec[ARG_VALUE])
         else:
-            check_value = condition_schema.get(ARG_VALUE)
+            check_value = condition_spec.get(ARG_VALUE)
 
         entity_state, value = converge_types(entity_value, check_value)
 
-        comparator = condition_schema[ARG_COMPARATOR]
+        comparator = condition_spec[ARG_COMPARATOR]
 
         if comparator == EQUALS:
             if entity_state is None and value is None:
