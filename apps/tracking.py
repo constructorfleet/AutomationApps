@@ -99,9 +99,11 @@ class CloseEnoughToHome(BaseApp):
 
     def _handle_entity_change(self, entity, attribute, old, new, kwargs):
         self._last_states[entity] = new
-        if new[ATTR_STATE] == 'home' or new[ATTR_STATE] not in self.configs[ARG_ZONES_ASSUME_HOME]:
+        if new.get(ATTR_STATE) == 'home' or (
+                new.get(ATTR_STATE) is not None
+                and new.get(ATTR_STATE) not in self.configs[ARG_ZONES_ASSUME_HOME]):
             self._stop_timer(entity)
-        elif new[ATTR_STATE] in self.configs[ARG_ZONES_ASSUME_HOME]:
+        elif new.get(ATTR_STATE) in self.configs[ARG_ZONES_ASSUME_HOME]:
             self._reset_timer(entity)
 
     def _stop_timer(self, entity):
