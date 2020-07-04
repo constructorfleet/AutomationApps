@@ -131,7 +131,7 @@ def are_conditions_met(app, condition_spec):
             f'Converged Type {entity_state} {value}'
         )
 
-        comparator = condition_spec[ARG_COMPARATOR]
+        comparator = condition_spec.get(ARG_COMPARATOR, EQUALS)
         app.debug(f'Comparator {comparator}')
 
         if comparator == EQUALS:
