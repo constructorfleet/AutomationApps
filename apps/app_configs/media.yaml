@@ -113,13 +113,13 @@ set_hue_sync_video_plex:
     - base_app
     - validation
   trigger:
-    - entity_id: media_player.media_player.living_room_apple_tv
+    - entity_id: media_player.living_room_apple_tv
       state: 'playing'
   condition:
-    - entity_id: media_player.media_player.living_room_apple_tv
+    - entity_id: media_player.living_room_apple_tv
       attribute: media_content_type
       value: music
-    - entity_id: media_player.media_player.living_room_apple_tv
+    - entity_id: media_player.living_room_apple_tv
       attribute: media_title
       comparator: '!='
       value: No title
