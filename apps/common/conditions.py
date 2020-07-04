@@ -35,7 +35,7 @@ _LOGGER = logging.getLogger(__name__)
 
 SCHEMA_STATE_CONDITION = vol.Schema({
     ARG_ENTITY_ID: entity_id,
-    vol.Optional(ARG_ATTRIBUTE): slugified,
+    vol.Optional(ARG_ATTRIBUTE): vol.All(vol.Coerce(str), slugified),
     vol.Optional(ARG_COMPARATOR, default=EQUALS): vol.In(VALID_COMPARATORS),
     vol.Optional(ARG_VALUE): any_value
 }, extra=vol.ALLOW_EXTRA)
