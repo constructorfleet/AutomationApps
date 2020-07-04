@@ -179,6 +179,10 @@ def valid_service(value):
 
 def slugified(value):
     """Test if value is sluggified."""
+    if OLD_SLUG_VALIDATION is None:
+        raise ValueError('SLUG VALIDATION IS NONE')
+    if value is None:
+        return False
     return re.match(OLD_SLUG_VALIDATION, value) is not None
 
 
