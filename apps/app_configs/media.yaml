@@ -77,10 +77,14 @@ set_hue_sync_music:
     - entity_id: media_player.living_room_apple_tv
   condition:
     - or:
-      - entity_id: media_player.living_room_apple_tv
-        attribute: media_duration
-        comparator: '<'
-        exists: 600
+      - and:
+        - entity_id: media_player.living_room_apple_tv
+          attribute: media_content_type
+          value: music
+        - entity_id: media_player.living_room_apple_tv
+          attribute: media_duration
+          comparator: '<'
+          value: 600
       - entity_id: media_player.living_room_apple_tv
         attribute: media_content_type
         exists: false
