@@ -76,13 +76,14 @@ set_hue_sync_music:
   trigger:
     - entity_id: media_player.living_room_apple_tv
   condition:
-    - and:
+    - or:
+      - entity_id: media_player.living_room_apple_tv
+        attribute: media_duration
+        comparator: '<'
+        exists: 600
       - entity_id: media_player.living_room_apple_tv
         attribute: media_content_type
         exists: false
-      - entity_id: media_player.living_room_apple_tv
-        attribute: media_title
-        value: No title
   call:
     domain: hue_sync_box
     service: set_sync_mode
@@ -111,7 +112,6 @@ set_hue_sync_video:
     service_data:
       entity_id: remote.hue_sync_box
       sync_mode: Video
-
   log_level: DEBUG
 
 set_hue_sync_video_plex:
@@ -130,9 +130,9 @@ set_hue_sync_video_plex:
         attribute: media_content_type
         value: music
       - entity_id: media_player.living_room_apple_tv
-        attribute: media_title
-        comparator: '!='
-        value: No title
+        attribute: media_duration
+        comparator: '>'
+        value: 600
   call:
     domain: hue_sync_box
     service: set_sync_mode
