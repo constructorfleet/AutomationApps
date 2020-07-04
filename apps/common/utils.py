@@ -10,11 +10,15 @@ def minutes_to_seconds(minutes):
 
 
 def converge_types(v1, v2):
+    _LOGGER.warning(f'converge types {v1} {v2}')
     if v1 is None and v2 is None:
+        _LOGGER.warning(f'converge types both NONE')
         return None, None
-    if v1 is not None:
+    if v1 is not None and v2 is None:
+        _LOGGER.warning(f'converge types {v1} NONE')
         return None, v2
-    if v2 is not None:
+    if v2 is not None and v1 is None:
+        _LOGGER.warning(f'converge types NONE {v2}')
         return v1, None
 
     v1_type = type(v1)

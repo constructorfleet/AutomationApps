@@ -42,7 +42,7 @@ SCHEMA_STATE_CONDITION = vol.Schema({
 
 SCHEMA_HAS_ATTRIBUTE_CONDITION = vol.Schema({
     ARG_ENTITY_ID: entity_id,
-    ARG_ATTRIBUTE: slugified,
+    ARG_ATTRIBUTE: vol.All(vol.Coerce(str), slugified),
     ARG_EXISTS: vol.Coerce(bool)
 }, extra=vol.ALLOW_EXTRA)
 
