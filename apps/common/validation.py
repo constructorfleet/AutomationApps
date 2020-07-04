@@ -182,8 +182,10 @@ def slugified(value):
     if OLD_SLUG_VALIDATION is None:
         raise ValueError('SLUG VALIDATION IS NONE')
     if value is None:
-        return False
-    return re.match(OLD_SLUG_VALIDATION, value) is not None
+        raise ValueError('VALUE IS NONE')
+    if re.match(OLD_SLUG_VALIDATION, value) is None:
+        raise ValueError(f'{value} is not a slug')
+    return value
 
 
 def service(value):
