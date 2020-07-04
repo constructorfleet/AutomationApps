@@ -75,7 +75,7 @@ set_hue_sync_music:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
-      state: playing
+    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
   condition:
     - and:
       - entity_id: media_player.living_room_apple_tv
@@ -103,12 +103,11 @@ set_hue_sync_video:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
-      state: playing
+    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
   condition:
-    - and:
-      - entity_id: media_player.living_room_apple_tv
-        attribute: media_content_type
-        value: video
+    - entity_id: media_player.living_room_apple_tv
+      attribute: media_content_type
+      value: video
   call:
     domain: hue_sync_box
     service: set_sync_mode
@@ -126,8 +125,8 @@ set_hue_sync_video_plex:
     - conditions
     - validation
   trigger:
+    - entity_id: media_player.living_room_apple_tv
     - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
-      state: playing
   condition:
     - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
       attribute: media_content_type
