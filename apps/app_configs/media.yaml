@@ -86,6 +86,26 @@ set_hue_sync_music:
       entity_id: remote.hue_sync_box
       sync_mode: Music
 
+set_hue_sync_video:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    - entity_id: media_player.living_room_apple_tv
+      state: 'playing'
+  condition:
+    - entity_id: media_player.living_room_apple_tv
+      attribute: media_content_type
+      value: video
+  call:
+    domain: hue_sync_box
+    service: set_sync_mode
+    service_data:
+      entity_id: remote.hue_sync_box
+      sync_mode: Video
+
 set_hue_sync_video_plex:
   module: call_when
   class: CallWhen
@@ -98,8 +118,7 @@ set_hue_sync_video_plex:
   condition:
     - entity_id: media_player.media_player.living_room_apple_tv
       attribute: media_content_type
-      comparator: music
-      value: No title
+      value: music
     - entity_id: media_player.media_player.living_room_apple_tv
       attribute: media_title
       comparator: '!='
