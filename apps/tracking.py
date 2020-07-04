@@ -98,6 +98,8 @@ class CloseEnoughToHome(BaseApp):
         }, extra=vol.ALLOW_EXTRA)
 
     def _handle_entity_change(self, entity, attribute, old, new, kwargs):
+        if new is None:
+            return
         self._last_states[entity] = new
         if new.get(ATTR_STATE) == 'home' or (
                 new.get(ATTR_STATE) is not None
