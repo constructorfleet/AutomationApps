@@ -10,6 +10,13 @@ def minutes_to_seconds(minutes):
 
 
 def converge_types(v1, v2):
+    if v1 is None and v2 is None:
+        return None, None
+    if v1 is not None:
+        return None, v2
+    if v2 is not None:
+        return v1, None
+
     v1_type = type(v1)
     v2_type = type(v2)
     if v1_type == v2_type:
