@@ -109,11 +109,11 @@ def are_conditions_met(app, condition_spec):
     if ARG_EXISTS in condition_spec:
         full_state = app.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
                                    attribute='all')
-        return condition_spec[ARG_ATTRIBUTE] in full_state == condition_spec[ARG_EXISTS]
+        return (condition_spec.get(ARG_ATTRIBUTE) in full_state) == condition_spec[ARG_EXISTS]
 
     if ARG_ENTITY_ID in condition_spec:
         entity_value = app.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
-                                     attribute=condition_spec[ARG_ATTRIBUTE])
+                                     attribute=condition_spec.get(ARG_ATTRIBUTE))
         if valid_entity_id(condition_spec[ARG_VALUE]):
             check_value = app.get_state(entity_id=condition_spec[ARG_VALUE])
         else:
