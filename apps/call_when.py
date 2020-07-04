@@ -27,7 +27,7 @@ ARG_OR = 'or'
 SCHEMA_TRIGGER = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
     vol.Optional(ARG_ATTRIBUTE): slugified,
-    vol.Optional(ARG_STATE, default='on'): any_value
+    vol.Optional(ARG_STATE): any_value
 })
 
 SCHEMA_CONDITION_STATE = vol.Schema({
@@ -62,10 +62,15 @@ class CallWhen(BaseApp):
 
     def initialize_app(self):
         for trigger in self.configs[ARG_TRIGGER]:
+            if ARG_STATE not in trigger \
+                    and trigger[ARG_ENTITY_ID].split('.')[0].lower() in ['binary_sensor', 'switch',
+                                                                         'light']:
+                trigger[ARG_STATE] = 'on'  # Default to on for these domains
+
             new_state = self.get_state(
                 entity_id=trigger[ARG_ENTITY_ID],
                 attribute=trigger.get(ARG_ATTRIBUTE))
-            if new_state == trigger[ARG_STATE]:
+            if ARG_STATE not in trigger or new_state == trigger[ARG_STATE]:
                 self._handle_trigger(
                     trigger[ARG_ENTITY_ID],
                     trigger.get(ARG_ATTRIBUTE),
@@ -73,10 +78,15 @@ class CallWhen(BaseApp):
                     new_state,
                     {}
                 )
-            self.listen_state(self._handle_trigger,
-                              entity=trigger[ARG_ENTITY_ID],
-                              attribute=trigger.get(ARG_ATTRIBUTE),
-                              new=trigger[ARG_STATE])
+            if ARG_STATE not in trigger:
+                self.listen_state(self._handle_trigger,
+                                  entity=trigger[ARG_ENTITY_ID],
+                                  attribute=trigger.get(ARG_ATTRIBUTE))
+            else:
+                self.listen_state(self._handle_trigger,
+                                  entity=trigger[ARG_ENTITY_ID],
+                                  attribute=trigger.get(ARG_ATTRIBUTE),
+                                  new=trigger[ARG_STATE])
 
     @property
     def app_schema(self):
