@@ -127,7 +127,8 @@ class Timeout(BaseApp):
             self._cancel_timer('Automation disabled')
             self._cancel_handlers('Automation disabled')
         else:
-            self._trigger_met_handler(self.configs[ARG_TRIGGER][ARG_ENTITY_ID],
+            self._trigger_met_handler(entity=self.configs[ARG_TRIGGER][ARG_ENTITY_ID],
+                                      attribute=None,
                                       old=None,
                                       new=self.get_state(self.configs[ARG_TRIGGER][ARG_ENTITY_ID]),
                                       kwargs={})
