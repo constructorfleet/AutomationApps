@@ -55,17 +55,25 @@ SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
     vol.Optional(ARG_SERVICE_DATA, default={}): dict
 })
 
+ENABLED_FLAG_ENTITY_ID = 'input_boolean.{}'
+
 
 class Timeout(BaseApp):
+    _notification_category = None
+    _pause_when = {}
+    _when_handlers = set()
+    _timeout_handler = None
+    _enabled_flag = True
+
     def initialize_app(self):
-        self._notification_category = None
+        self.listen_state(self._flag_handler,
+                          entity_id=ENABLED_FLAG_ENTITY_ID.format(self.name),
+                          immediate=True)
+
         if ARG_NOTIFY in self.configs:
             self._notification_category = \
                 get_category_by_name(self.configs[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
 
-        self._pause_when = {}
-        self._when_handlers = set()
-        self._timeout_handler = None
         for when in self.configs[ARG_PAUSE_WHEN]:
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
@@ -108,6 +116,21 @@ class Timeout(BaseApp):
             return self.get_state(self.configs[ARG_DURATION])
         else:
             return self.configs[ARG_DURATION]
+
+    def _flag_handler(self, entity, atribute, old, new, kwargs):
+        old_flag = self._enabled_flag
+        self._enabled_flag = new is None or new
+        if self._enabled_flag == old_flag:
+            return
+
+        if not self._enabled_flag:
+            self._cancel_timer('Automation disabled')
+            self._cancel_handlers('Automation disabled')
+        else:
+            self._trigger_met_handler(self.configs[ARG_TRIGGER][ARG_ENTITY_ID],
+                                      old=None,
+                                      new=self.get_state(self.configs[ARG_TRIGGER][ARG_ENTITY_ID]),
+                                      kwargs={})
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old and new != self.configs[ARG_TRIGGER][ARG_STATE]:
