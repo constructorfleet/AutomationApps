@@ -191,12 +191,14 @@ class Timeout(BaseApp):
         self.debug('Cancelling when handlers %s', message)
         handlers = self._when_handlers.copy()
         self._when_handlers = set()
-        for handler in handlers:
+        for handler in [handler for handler in handlers if handler is not None]:
             self.cancel_listen_state(handler)
+        del handlers
 
     def _cancel_timer(self, message):
         self.debug('Canceling Timer %s', message)
-        self.cancel_timer(self._timeout_handler)
+        if self._timeout_handler is not None:
+            self.cancel_timer(self._timeout_handler)
         self._timeout_handler = None
 
     def _reset_timer(self, message):
