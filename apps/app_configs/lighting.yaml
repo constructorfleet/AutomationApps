@@ -169,7 +169,7 @@ kitchen_light_timeout:
   pause_when:
     - entity_id: binary_sensor.kitchen_motion
       value: 'on'
-  duration: 20
+  duration: 5
   on_timeout:
     domain: homeassistant
     service: turn_off
