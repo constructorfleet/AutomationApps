@@ -190,13 +190,14 @@ class Timeout(BaseApp):
     def _cancel_handlers(self, message):
         self.debug('Cancelling when handlers %s', message)
         handlers = self._when_handlers.copy()
-        self._when_handlers.clear()
+        self._when_handlers = set()
         for handler in handlers:
             self.cancel_listen_state(handler)
 
     def _cancel_timer(self, message):
         self.debug('Canceling Timer %s', message)
-        self._timeout_handler = self.cancel_timer(self._timeout_handler)
+        self.cancel_timer(self._timeout_handler)
+        self._timeout_handler = None
 
     def _reset_timer(self, message):
         self._cancel_timer('Resetting')
