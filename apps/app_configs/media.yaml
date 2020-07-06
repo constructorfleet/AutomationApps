@@ -164,4 +164,22 @@ set_hue_sync_off:
     service_data:
       entity_id: remote.hue_sync_box
       sync_mode: passthrough
-  log_level: DEBUG
+
+hue_sync_paused_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - base_app
+    - const
+    - conditions
+    - validation
+  trigger:
+    entity_id: media_player.living_room_apple_tv
+    value: paused
+  duration: 5
+  on_timeout:
+    domain: hue_sync_box
+    service: set_sync_mode
+    service_data:
+      entity_id: remote.hue_sync_box
+      sync_mode: passthrough
