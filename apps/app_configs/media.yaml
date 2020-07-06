@@ -175,7 +175,7 @@ hue_sync_paused_timeout:
     - validation
   trigger:
     entity_id: media_player.living_room_apple_tv
-    value: paused
+    state: paused
   duration: 5
   on_timeout:
     domain: hue_sync_box
