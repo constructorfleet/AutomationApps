@@ -140,41 +140,41 @@ laundry_light_timeout:
     service_data:
       entity_id: switch.laundry_room_lights
 
-#kitchen_light:
-#  module: call_when
-#  class: CallWhen
-#  global_dependencies:
-#    - base_app
-#    - validation
-#  trigger:
-#    entity_id: binary_sensor.kitchen_motion
-#    state: 'on'
-#  condition:
-#    entity_id: switch.kitchen_light
-#    value: 'off'
-#  call:
-#    domain: homeassistant
-#    service: turn_on
-#    service_data:
-#      entity_id: switch.kitchen_light
-#
-#kitchen_light_timeout:
-#  module: timeout
-#  class: Timeout
-#  global_dependencies:
-#    - base_app
-#    - validation
-#  trigger:
-#    entity_id: switch.kitchen_light
-#  pause_when:
-#    - entity_id: binary_sensor.kitchen_motion
-#      value: 'on'
-#  duration: 20
-#  on_timeout:
-#    domain: homeassistant
-#    service: turn_off
-#    service_data:
-#      entity_id: switch.kitchen_light
+kitchen_light:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    entity_id: binary_sensor.kitchen_motion
+    state: 'on'
+  condition:
+    entity_id: switch.kitchen_light
+    value: 'off'
+  call:
+    domain: homeassistant
+    service: turn_on
+    service_data:
+      entity_id: switch.kitchen_light
+
+kitchen_light_timeout:
+  module: timeout
+  class: Timeout
+  global_dependencies:
+    - base_app
+    - validation
+  trigger:
+    entity_id: switch.kitchen_light
+  pause_when:
+    - entity_id: binary_sensor.kitchen_motion
+      value: 'on'
+  duration: 20
+  on_timeout:
+    domain: homeassistant
+    service: turn_off
+    service_data:
+      entity_id: switch.kitchen_light
 
 lower_hall_light:
   module: call_when
