@@ -90,8 +90,7 @@ set_hue_sync_music:
     service: set_sync_mode
     service_data:
       entity_id: remote.hue_sync_box
-      sync_mode: Music
-  log_level: DEBUG
+      sync_mode: music
 
 set_hue_sync_video:
   module: call_when
@@ -113,8 +112,7 @@ set_hue_sync_video:
     service: set_sync_mode
     service_data:
       entity_id: remote.hue_sync_box
-      sync_mode: Video
-  log_level: DEBUG
+      sync_mode: video
 
 set_hue_sync_video_plex:
   module: call_when
@@ -137,5 +135,24 @@ set_hue_sync_video_plex:
     service: set_sync_mode
     service_data:
       entity_id: remote.hue_sync_box
-      sync_mode: Video
-  log_level: DEBUG
+      sync_mode: video
+
+set_hue_sync_off:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - base_app
+    - const
+    - conditions
+    - validation
+  trigger:
+    - entity_id: media_player.living_room_apple_tv
+  condition:
+    - entity_id: media_player.living_room_apple_tv
+      value: idle
+  call:
+    domain: hue_sync_box
+    service: set_sync_mode
+    service_data:
+      entity_id: remote.hue_sync_box
+      sync_mode: passthrough
