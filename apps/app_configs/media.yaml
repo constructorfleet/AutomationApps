@@ -164,3 +164,4 @@ set_hue_sync_off:
     service_data:
       entity_id: remote.hue_sync_box
       sync_mode: passthrough
+  log_level: DEBUG
