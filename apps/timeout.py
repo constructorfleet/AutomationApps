@@ -58,6 +58,7 @@ class Timeout(BaseApp):
     _when_handlers = set()
     _timeout_handler = None
     _enabled_flag = True
+    _busy = False
 
     def initialize_app(self):
         if ARG_ENABLED_FLAG in self.configs:
@@ -116,8 +117,10 @@ class Timeout(BaseApp):
         self._enabled_flag = new is None or new
 
         if not self._enabled_flag:
+            self._busy = True
             self._cancel_timer('Automation disabled')
             self._cancel_handlers('Automation disabled')
+            self._busy = False
         else:
             trigger = self.configs[ARG_TRIGGER]
             state = self.get_state(trigger[ARG_ENTITY_ID])
@@ -139,7 +142,7 @@ class Timeout(BaseApp):
                 )
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
-        if new == old and new != self.configs[ARG_TRIGGER][ARG_STATE]:
+        if new == old and new != self.configs[ARG_TRIGGER][ARG_STATE] or self._busy:
             return
         self.warning("Triggered!")
         if self._timeout_handler is None:
@@ -152,7 +155,7 @@ class Timeout(BaseApp):
         self._reset_timer('Triggered')
 
     def _handle_pause_when(self, entity, attribute, old, new, kwargs):
-        if old == new:
+        if old == new or self._busy:
             return
 
         if self._timeout_handler is not None and self.condition_met(self._pause_when[entity]):
@@ -165,7 +168,7 @@ class Timeout(BaseApp):
             self._reset_timer('Initiating timer')
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
-        if old == new or new == self.configs[ARG_TRIGGER][ARG_STATE]:
+        if old == new or new == self.configs[ARG_TRIGGER][ARG_STATE] or self._busy:
             return
         self._cancel_timer('Trigger no longer met')
         self._cancel_handlers('Trigger no longer met')
@@ -188,11 +191,14 @@ class Timeout(BaseApp):
             )
 
     def _cancel_handlers(self, message):
+        self._busy = True
         self.warning('Cancelling when handlers %s', message)
         handlers = self._when_handlers.copy()
         self._when_handlers = set()
         for handler in [handler for handler in handlers if handler is not None]:
             self.cancel_listen_state(handler)
+
+        self._busy = False
 
     def _cancel_timer(self, message):
         self.warning('Canceling Timer %s', message)
