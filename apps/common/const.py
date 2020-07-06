@@ -24,6 +24,7 @@ ARG_NOTIFY_ENTITY_ID = 'response_entity_id'
 ARG_SENSOR = 'sensor'
 ARG_FILENAME = 'filename'
 ARG_LOG_LEVEL = 'log_level'
+ARG_ENABLED_FLAG = 'enabled_flag'
 
 ATTR_SCORE = 'score'
 ATTR_FILENAME = 'filename'
