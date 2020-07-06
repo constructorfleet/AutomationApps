@@ -141,9 +141,9 @@ class Timeout(BaseApp):
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old and new != self.configs[ARG_TRIGGER][ARG_STATE]:
             return
-        self.debug("Triggered!")
+        self.warning("Triggered!")
         if self._timeout_handler is None:
-            self.debug("Setting up pause handlers")
+            self.warning("Setting up pause handlers")
             for pause_when in self.configs[ARG_PAUSE_WHEN]:
                 self._when_handlers.add(
                     self.listen_state(self._handle_pause_when,
@@ -156,7 +156,7 @@ class Timeout(BaseApp):
             return
 
         if self._timeout_handler is not None and self.condition_met(self._pause_when[entity]):
-            self.debug("Pause time because {} is {}".format(entity, new))
+            self.warning("Pause time because {} is {}".format(entity, new))
             self._cancel_timer('Pause condition met')
         elif self._timeout_handler is None:
             for entity, condition in self._pause_when.items():
@@ -174,7 +174,7 @@ class Timeout(BaseApp):
         self._cancel_timer('Timed out')
         self._cancel_handlers('Timed out')
 
-        self.debug("Firing on time out events")
+        self.warning("Firing on time out events")
         events = self.configs.get(ARG_ON_TIMEOUT, [])
         for event in events:
             self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
@@ -188,14 +188,14 @@ class Timeout(BaseApp):
             )
 
     def _cancel_handlers(self, message):
-        self.debug('Cancelling when handlers %s', message)
+        self.warning('Cancelling when handlers %s', message)
         handlers = self._when_handlers.copy()
         self._when_handlers = set()
         for handler in [handler for handler in handlers if handler is not None]:
             self.cancel_listen_state(handler)
 
     def _cancel_timer(self, message):
-        self.debug('Canceling Timer %s', message)
+        self.warning('Canceling Timer %s', message)
         if self._timeout_handler is not None:
             self.cancel_timer(self._timeout_handler)
         self._timeout_handler = None
