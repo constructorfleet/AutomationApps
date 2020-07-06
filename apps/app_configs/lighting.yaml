@@ -34,6 +34,7 @@ dining_room_light_timeout:
   pause_when:
     - entity_id: binary_sensor.dining_room_motion
       value: 'on'
+  enabled_flag: input_boolean.dining_room_light_timeout
   duration: 20
   on_timeout:
     domain: homeassistant
@@ -85,6 +86,7 @@ garage_light_timeout:
       value: 'on'
     - entity_id: binary_sensor.garage_motion_sensor_2
       value: 'on'
+  enabled_flag: input_boolean.garage_light_timeout
   duration: 5
   on_timeout:
     domain: homeassistant
@@ -131,47 +133,48 @@ laundry_light_timeout:
     - entity_id: binary_sensor.laundry_room_motion
       value: 'on'
   duration: 5
+  enabled_flag: input_boolean.laundry_light_timeout
   on_timeout:
     domain: homeassistant
     service: turn_off
     service_data:
       entity_id: switch.laundry_room_lights
 
-kitchen_light:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - base_app
-    - validation
-  trigger:
-    entity_id: binary_sensor.kitchen_motion
-    state: 'on'
-  condition:
-    entity_id: switch.kitchen_light
-    value: 'off'
-  call:
-    domain: homeassistant
-    service: turn_on
-    service_data:
-      entity_id: switch.kitchen_light
-
-kitchen_light_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - base_app
-    - validation
-  trigger:
-    entity_id: switch.kitchen_light
-  pause_when:
-    - entity_id: binary_sensor.kitchen_motion
-      value: 'on'
-  duration: 20
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id: switch.kitchen_light
+#kitchen_light:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - base_app
+#    - validation
+#  trigger:
+#    entity_id: binary_sensor.kitchen_motion
+#    state: 'on'
+#  condition:
+#    entity_id: switch.kitchen_light
+#    value: 'off'
+#  call:
+#    domain: homeassistant
+#    service: turn_on
+#    service_data:
+#      entity_id: switch.kitchen_light
+#
+#kitchen_light_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - base_app
+#    - validation
+#  trigger:
+#    entity_id: switch.kitchen_light
+#  pause_when:
+#    - entity_id: binary_sensor.kitchen_motion
+#      value: 'on'
+#  duration: 20
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id: switch.kitchen_light
 
 lower_hall_light:
   module: call_when
@@ -222,6 +225,7 @@ lower_hall_light_timeout:
   pause_when:
     - entity_id: binary_sensor.lower_stairs_motion
       value: 'on'
+  enabled_flag: input_boolean.lower_hall_light_timeout
   duration: 1
   on_timeout:
     domain: homeassistant
@@ -269,6 +273,7 @@ upper_landing_hall_light_timeout:
   pause_when:
     - entity_id: binary_sensor.upper_landing_motion
       value: 'on'
+  enabled_flag: input_boolean.upper_landing_hall_timeout
   duration: 1
   on_timeout:
     domain: homeassistant
@@ -315,6 +320,7 @@ basement_stair_light_timeout:
       value: 'on'
     - entity_id: binary_sensor.bottom_basement_stairs_motion
       value: 'on'
+  enabled_flag: input_boolean.basement_stair_light_timeout
   duration: 1
   on_timeout:
     domain: homeassistant
@@ -355,6 +361,7 @@ lower_bathroom_fan_timeout:
   trigger:
     entity_id: switch.lower_bathroom_fan
   duration: 20
+  enabled_flag: input_boolean.lower_bathroom_fan_timeout
   on_timeout:
     domain: homeassistant
     service: turn_off

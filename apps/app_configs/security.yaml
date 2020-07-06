@@ -105,6 +105,7 @@ front_door_lock_timeout:
 #  pause_when:
 #    - entity_id: binary_sensor.front_door_sensor
 #      value: 'on'
+  enabled_flag: input_boolean.front_door_lock_timeout
   duration: 5
   on_timeout:
     domain: lock
