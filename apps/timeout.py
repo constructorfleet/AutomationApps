@@ -121,8 +121,9 @@ class Timeout(BaseApp):
         self._enabled_flag = new is None or new
 
         if not self._enabled_flag:
-            self._stop('Automation disabled')
+            self._stop('Automation disabled %s' % entity)
         else:
+            self.warning('Automation enabled %s' % entity)
             trigger = self.configs[ARG_TRIGGER]
             state = self.get_state(trigger[ARG_ENTITY_ID])
             if state == trigger[ARG_STATE]:
