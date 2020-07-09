@@ -123,7 +123,7 @@ class Timeout(BaseApp):
         if not self._enabled_flag:
             self._stop('Automation disabled %s' % entity)
         else:
-            self.warning('Automation enabled %s' % entity)
+            self.debug('Automation enabled %s' % entity)
             trigger = self.configs[ARG_TRIGGER]
             state = self.get_state(trigger[ARG_ENTITY_ID])
             if state == trigger[ARG_STATE]:
@@ -145,20 +145,19 @@ class Timeout(BaseApp):
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old or new != self.configs[ARG_TRIGGER][ARG_STATE] \
-                or self._paused or self._running:
+                or self._paused or self._running or not self._enabled_flag:
             return
 
-        self.warning('MET old %s new %s' % (old, new))
-
+        self.debug('MET old %s new %s' % (old, new))
         self._run()
 
     def _handle_pause_when(self, entity, attribute, old, new, kwargs):
-        if old == new or not self._running:
+        if old == new or not self._running or not self._enabled_flag:
             return
 
         if self._timeout_handler is not None \
                 and self.condition_met(self._pause_when[entity]) and not self._paused:
-            self.warning("Pause time because {} is {}".format(entity, new))
+            self.debug("Pause time because {} is {}".format(entity, new))
             self._pause()
         elif self._timeout_handler is None and self._paused:
             for entity, condition in self._pause_when.items():
@@ -168,7 +167,7 @@ class Timeout(BaseApp):
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if old == new or new == self.configs[ARG_TRIGGER][ARG_STATE] \
-                or not self._running:
+                or not self._running or not self._enabled_flag:
             return
         self._stop('No longer met')
 
@@ -183,7 +182,7 @@ class Timeout(BaseApp):
     def _run(self):
         self._running = True
         if self._timeout_handler is None:
-            self.warning("Setting up pause handlers")
+            self.debug("Setting up pause handlers")
             for pause_when in self.configs[ARG_PAUSE_WHEN]:
                 self._when_handlers.add(
                     self.listen_state(self._handle_pause_when,
@@ -200,7 +199,7 @@ class Timeout(BaseApp):
     def _handle_timeout(self, kwargs):
         self._stop()
 
-        self.warning("Firing on time out events")
+        self.debug("Firing on time out events")
         events = self.configs.get(ARG_ON_TIMEOUT, [])
         for event in events:
             self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
@@ -214,20 +213,20 @@ class Timeout(BaseApp):
             )
 
     def _cancel_handlers(self, message):
-        self.warning('Cancelling when handlers %s', message)
+        self.debug('Cancelling when handlers %s', message)
         handlers = self._when_handlers.copy()
         self._when_handlers = set()
         for handler in [handler for handler in handlers if handler is not None]:
             self.cancel_listen_state(handler)
 
     def _cancel_timer(self, message):
-        self.warning('Canceling Timer %s', message)
+        self.debug('Canceling Timer %s', message)
         if self._timeout_handler is not None:
             self.cancel_timer(self._timeout_handler)
         self._timeout_handler = None
 
     def _reset_timer(self, message):
         self._cancel_timer(message)
-        self.warning('Scheduling timer')
+        self.debug('Scheduling timer')
         self._timeout_handler = self.run_in(self._handle_timeout,
                                             self.duration * 60)
