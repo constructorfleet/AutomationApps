@@ -143,6 +143,8 @@ class Timeout(BaseApp):
         if new == old or new != self.configs[ARG_TRIGGER][ARG_STATE] or self._paused:
             return
 
+        self.warning('MET old %s new %s' % (old, new))
+
         self._run()
 
     def _handle_pause_when(self, entity, attribute, old, new, kwargs):
