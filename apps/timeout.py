@@ -220,6 +220,6 @@ class Timeout(BaseApp):
         self._timeout_handler = None
 
     def _reset_timer(self, message):
-        self._cancel_timer('Resetting')
+        self._cancel_timer('message')
         self._timeout_handler = self.run_in(self._handle_timeout,
                                             self.duration * 60)
