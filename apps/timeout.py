@@ -140,7 +140,7 @@ class Timeout(BaseApp):
                 )
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
-        if new == old and new != self.configs[ARG_TRIGGER][ARG_STATE] or self._paused:
+        if new == old or new != self.configs[ARG_TRIGGER][ARG_STATE] or self._paused:
             return
 
         self._run()
