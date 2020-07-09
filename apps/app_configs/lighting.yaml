@@ -164,6 +164,7 @@ kitchen_light:
     service: turn_on
     service_data:
       entity_id: switch.kitchen_light
+  log_level: DEBUG
 
 kitchen_light_timeout:
   module: timeout
@@ -183,6 +184,7 @@ kitchen_light_timeout:
     service: turn_off
     service_data:
       entity_id: switch.kitchen_light
+  log_level: DEBUG
 
 lower_hall_light:
   module: call_when
