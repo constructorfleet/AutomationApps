@@ -118,7 +118,7 @@ class Timeout(BaseApp):
         if self._enabled_flag == new:
             return
 
-        self._enabled_flag = new
+        self._enabled_flag = new if isinstance(new, bool) else new == 'on'
 
         if not self._enabled_flag:
             self._stop('Automation disabled %s' % entity)
