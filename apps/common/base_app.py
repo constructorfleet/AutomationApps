@@ -5,24 +5,15 @@ import sys
 from threading import Lock
 
 import voluptuous as vol
+from appdaemon import utils
 
 import hassmqttapi as hassmqtt
 from common.conditions import are_conditions_met
 from common.const import (
-    ARG_ENTITY_ID,
-    ARG_VALUE,
-    ARG_COMPARATOR,
     ARG_LOG_LEVEL,
-    EQUALS,
-    NOT_EQUAL,
-    LESS_THAN,
-    LESS_THAN_EQUAL_TO,
-    GREATER_THAN,
-    GREATER_THAN_EQUAL_TO,
-    ARG_DEPENDENCIES,
-    ARG_ATTRIBUTE)
-from common.utils import converge_types
-from common.validation import valid_entity_id, valid_log_level
+    ARG_DEPENDENCIES)
+from common.listen_handle import ListenHandle, TimerHandle, StateListenHandle, EventListenHandle
+from common.validation import valid_log_level
 
 # _srcfile is used when walking the stack to check when we've got the first
 # caller stack frame.
@@ -104,6 +95,76 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def initialize_app(self):
         pass
+
+    @utils.sync_wrapper
+    async def run_in(self, callback, delay, **kwargs):
+        handle = await super().run_in(callback, delay, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def run_every(self, callback, start, interval, **kwargs):
+        handle = await super().run_every(callback, start, interval, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def run_at(self, callback, start, **kwargs):
+        handle = await super().run_at(callback, start, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def run_at_sunset(self, callback, **kwargs):
+        handle = await super().run_at_sunset(callback, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def run_at_sunrise(self, callback, **kwargs):
+        handle = await super().run_at_sunrise(callback, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def run_once(self, callback, start, **kwargs):
+        handle = await super().run_once(callback, start, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def run_daily(self, callback, start, **kwargs):
+        handle = await super().run_daily(callback, start, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def run_hourly(self, callback, start, **kwargs):
+        handle = await super().run_hourly(callback, start, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def run_minutely(self, callback, start, **kwargs):
+        handle = await super().run_minutely(callback, start, **kwargs)
+        return TimerHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def listen_state(self, callback, entity=None, **kwargs):
+        handle = await super().listen_state(callback, entity, **kwargs)
+        return StateListenHandle(handle, self)
+
+    @utils.sync_wrapper
+    async def listen_event(self, callback, event=None, **kwargs):
+        handle = await super().listen_event(callback, event, **kwargs)
+        return EventListenHandle(handle, self)
+
+    async def cancel_timer(self, handle):
+        if isinstance(handle, ListenHandle):
+            return await handle.cancel()
+        return await super().cancel_timer(handle)
+
+    async def cancel_listen_event(self, handle):
+        if isinstance(handle, ListenHandle):
+            return await handle.cancel()
+        return await super().cancel_listen_event(handle)
+
+    async def cancel_listen_state(self, handle):
+        if isinstance(handle, ListenHandle):
+            return await handle.cancel()
+        return await super().cancel_listen_state(handle)
 
     def _on_persistent_data_loaded(self):
         return
