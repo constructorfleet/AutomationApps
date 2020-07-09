@@ -56,7 +56,6 @@ class Timeout(BaseApp):
     _notification_category = None
     _pause_when = {}
     _when_handlers = set()
-    _enabled_handler = None
     _timeout_handler = None
     _enabled_flag = True
     _paused = False
@@ -65,9 +64,8 @@ class Timeout(BaseApp):
     def initialize_app(self):
         if ARG_ENABLED_FLAG in self.configs:
             self._enabled_flag = self.get_state(self.configs[ARG_ENABLED_FLAG])
-            self.warning(self.configs[ARG_ENABLED_FLAG])
-            self._enabled_handler = self.listen_state(self._flag_handler,
-                                                      entity_id=self.configs[ARG_ENABLED_FLAG])
+            self.listen_state(self._flag_handler,
+                              entity=self.configs[ARG_ENABLED_FLAG])
 
         if ARG_NOTIFY in self.configs:
             self._notification_category = \
@@ -117,9 +115,6 @@ class Timeout(BaseApp):
             return self.configs[ARG_DURATION]
 
     def _flag_handler(self, entity, attribute, old, new, kwargs):
-        self.warning('flag handler %s %s %s', entity, old, new)
-        if self.configs[ARG_ENABLED_FLAG] != entity:
-            return
         if self._enabled_flag == new:
             return
 
