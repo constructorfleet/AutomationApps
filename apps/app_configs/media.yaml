@@ -91,6 +91,9 @@ set_hue_sync_music:
     - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
       comparator: '!='
       value: playing
+    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
+      comparator: '!='
+      value: paused
   call:
     domain: hue_sync_box
     service: set_sync_mode
