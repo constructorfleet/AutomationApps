@@ -2,6 +2,7 @@ doorbell:
   module: security
   class: Doorbell
   global_dependencies:
+    - handle
     - base_app
     - const
     - validation
@@ -24,6 +25,7 @@ unlock:
   module: security
   class: DoorLock
   global_dependencies:
+    - handle
     - base_app
     - const
     - validation
@@ -65,6 +67,7 @@ garage_door_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
+    - handle
     - base_app
     - validation
     - const
@@ -94,6 +97,7 @@ front_door_lock_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
+    - handle
     - base_app
     - const
     - validation
@@ -122,6 +126,7 @@ alarm_system:
   module: security
   class: AlarmSystem
   global_dependencies:
+    - handle
     - base_app
     - const
     - validation

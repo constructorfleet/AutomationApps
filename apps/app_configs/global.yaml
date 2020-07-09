@@ -1,4 +1,5 @@
 global_modules:
+  - handle
   - base_app
   - const
   - utils

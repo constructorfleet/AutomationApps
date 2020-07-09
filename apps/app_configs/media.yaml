@@ -2,6 +2,7 @@ set_movie_mode_enabled_from_remote:
   module: call_when
   class: CallWhen
   global_dependencies:
+    - handle
     - base_app
     - validation
   trigger:
@@ -17,6 +18,7 @@ set_movie_mode_disabled_from_remote:
   module: call_when
   class: CallWhen
   global_dependencies:
+    - handle
     - base_app
     - validation
   trigger:
@@ -32,6 +34,8 @@ living_room_movie_mode:
   module: media
   class: MovieMode
   global_dependencies:
+    - handle
+    - base_app
     - validation
     - base_app
   media_player: media_player.living_room_apple_tv
@@ -69,6 +73,7 @@ set_hue_sync_music:
   module: call_when
   class: CallWhen
   global_dependencies:
+    - handle
     - base_app
     - const
     - conditions
@@ -97,6 +102,7 @@ set_hue_sync_video:
   module: call_when
   class: CallWhen
   global_dependencies:
+    - handle
     - base_app
     - const
     - conditions
@@ -121,6 +127,7 @@ set_hue_sync_video_plex:
   module: call_when
   class: CallWhen
   global_dependencies:
+    - handle
     - base_app
     - const
     - conditions
@@ -146,6 +153,7 @@ set_hue_sync_off:
   module: call_when
   class: CallWhen
   global_dependencies:
+    - handle
     - base_app
     - const
     - conditions
@@ -169,6 +177,7 @@ hue_sync_paused_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
+    - handle
     - base_app
     - const
     - conditions
