@@ -140,7 +140,8 @@ class Timeout(BaseApp):
                 )
 
     def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
-        if new == old or new != self.configs[ARG_TRIGGER][ARG_STATE] or self._paused:
+        if new == old or new != self.configs[ARG_TRIGGER][ARG_STATE] \
+                or self._paused or self._running:
             return
 
         self.warning('MET old %s new %s' % (old, new))
@@ -148,7 +149,7 @@ class Timeout(BaseApp):
         self._run()
 
     def _handle_pause_when(self, entity, attribute, old, new, kwargs):
-        if old == new or self._paused or not self._running:
+        if old == new or not self._running:
             return
 
         if self._timeout_handler is not None \
@@ -163,7 +164,7 @@ class Timeout(BaseApp):
 
     def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if old == new or new == self.configs[ARG_TRIGGER][ARG_STATE] \
-                or not self._running or self._paused:
+                or not self._running:
             return
         self._stop('No longer met')
 
