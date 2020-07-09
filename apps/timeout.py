@@ -64,6 +64,7 @@ class Timeout(BaseApp):
     def initialize_app(self):
         if ARG_ENABLED_FLAG in self.configs:
             self._enabled_flag = self.get_state(self.configs[ARG_ENABLED_FLAG])
+            self.warning(self.configs[ARG_ENABLED_FLAG])
             self.listen_state(self._flag_handler,
                               entity_id=self.configs[ARG_ENABLED_FLAG])
 
