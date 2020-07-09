@@ -117,6 +117,7 @@ class Timeout(BaseApp):
             return self.configs[ARG_DURATION]
 
     def _flag_handler(self, entity, attribute, old, new, kwargs):
+        self.warning('flag handler %s %s %s', entity, old, new)
         if self.configs[ARG_ENABLED_FLAG] != entity:
             return
         if self._enabled_flag == new:
