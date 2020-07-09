@@ -32,25 +32,16 @@ class ListenHandle:
         """Perform handle cancel."""
         pass
 
-    def __eq__(self, o):
-        if o is None:
-            if self._handle is None:
-                return True
-            return False
-
-        if isinstance(o, ListenHandle):
-            return o._handle == self._handle
-
-        return self._handle == o
-
     def __str__(self):
-        return str(self._handle)
+        return self._handle
+
+    def __eq__(self, o):
+        if self._handle is None:
+            return False
+        return self._handle.__eq__(o)
 
     def __hash__(self):
-        if self._handle is None:
-            return None
-
-        return self._handle.__hash__()
+        return hash(self._handle)
 
 
 class StateListenHandle(ListenHandle):
