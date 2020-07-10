@@ -69,7 +69,7 @@ class BaseApp(hassmqtt.HassMqtt):
     configs = {}
     _persistent_data_file = None
     _data_save_handle = None
-    _data_lock = Lock()
+    _data_lock = None
     _log_level = None
 
     _base_config_schema = {
@@ -78,6 +78,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     async def initialize(self):
         """Initialization of Base App class."""
+        self._data_lock = Lock()
         self._persistent_data_file = os.path.join(self.config_dir, self.namespace,
                                                   self.name + ".js")
         self.plugin_config = self.get_plugin_config()

@@ -62,9 +62,10 @@ class Timeout(BaseApp):
     _paused = False
     _running = False
     _canceling_when_handlers = False
-    _when_handlers_lock = Lock()
+    _when_handlers_lock = None
 
     async def initialize_app(self):
+        self._when_handlers_lock = Lock()
         if ARG_ENABLED_FLAG in self.configs:
             self._enabled_flag = await self.get_state(self.configs[ARG_ENABLED_FLAG])
             await self.listen_state(self._flag_handler,
