@@ -56,27 +56,27 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
     _service = None
     configs = {}
 
-    def initialize(self):
+    async def initialize(self):
         self.configs = get_arg_schema(self.args)
 
-    def notify_people(self, notification_category, response_entity_id=None, **kwargs):
+    async def notify_people(self, notification_category, response_entity_id=None, **kwargs):
         for person_args in self.configs.get(ARG_PEOPLE, []):
             self.log(
                 "Notifying {} on {}".format(person_args[ARG_PERSON_NAME], notification_category))
-            self.notify_person(
+            await self.notify_person(
                 person_args[ARG_PERSON_NAME],
                 notification_category,
                 response_entity_id,
                 **kwargs
             )
 
-    def notify_person(self, name, notification_category, response_entity_id=None, **kwargs):
+    async def notify_person(self, name, notification_category, response_entity_id=None, **kwargs):
         self.log("Notifying {} on channel {} and category {}".format(
             name,
             notification_category.channel.name,
             notification_category.name)
         )
-        person = self._get_person(name)
+        person = await self._get_person(name)
         if person:
             self.log("Checking {} is in {}".format(notification_category.channel.name,
                                                    str(person.notification_channels)))
@@ -99,17 +99,26 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
         else:
             self.log("Not found {}".format(name))
 
-    def _get_person(self, name):
-        return next((self.Person(self, person_args) for person_args in self.configs[ARG_PEOPLE] if
-                     person_args[ARG_PERSON_NAME] == name), None)
+    async def _get_person(self, name):
+        return next((await self._init_person(person_args)
+                     for person_args
+                     in self.configs[ARG_PEOPLE]
+                     if person_args[ARG_PERSON_NAME] == name), None)
+
+    async def _init_person(self, args):
+        notifiers = []
+        for notifier in args[ARG_NOTIFIER]:
+            notifiers.append({
+                "app": await self.get_app(str(notifier[ARG_NAME]).lower() + "_notifier"),
+                ARG_SERVICE: notifier[ARG_SERVICE]
+            })
+        return self.Person(
+            args[ARG_PERSON_NAME],
+            notifiers,
+            args.get(ARG_CHANNELS, DEFAULT_CHANNELS))
 
     class Person(object):
-        def __init__(self, app, args):
-            self.name = args[ARG_PERSON_NAME]
-            self.notifiers = []
-            for notifer in args[ARG_NOTIFIER]:
-                self.notifiers.append({
-                    "app": app.get_app(str(notifer[ARG_NAME]).lower() + "_notifier"),
-                    ARG_SERVICE: notifer[ARG_SERVICE]
-                })
-            self.notification_channels = args.get(ARG_CHANNELS, DEFAULT_CHANNELS)
+        def __init__(self, name, notifiers, channels):
+            self.name = name
+            self.notifiers = notifiers
+            self.notification_channels = channels
