@@ -248,6 +248,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     async def condition_met(self, condition_spec):
         """Verifies if condition is met."""
+        self.debug(f'CHECKING CONDITION {str(condition_spec)}')
         if ARG_AND in condition_spec:
             self.debug('AND')
             for condition in condition_spec[ARG_AND]:
@@ -286,6 +287,7 @@ class BaseApp(hassmqtt.HassMqtt):
                 f'Entity {condition_spec[ARG_ENTITY_ID]}[{condition_spec.get(ARG_ATTRIBUTE)}]'
                 f' {entity_value}: {str(condition_spec)}')
             if valid_entity_id(condition_spec[ARG_VALUE]):
+                self.debug(f'Check value is entity {condition_spec[ARG_VALUE]}')
                 check_value = await self.get_state(entity_id=condition_spec[ARG_VALUE])
             else:
                 check_value = condition_spec.get(ARG_VALUE)
