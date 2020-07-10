@@ -281,7 +281,8 @@ class DoorLock(Secure):
         }, extra=vol.ALLOW_EXTRA)
 
     @property
-    def is_secured(self):
+    @utils.sync_wrapper
+    async def is_secured(self):
         return (await self.get_state(self.configs[ARG_LOCK])) == 'locked'
 
     @property
@@ -292,8 +293,9 @@ class DoorLock(Secure):
     def _arg_security_entity(self):
         return ARG_LOCK
 
-    def _handle_arrive(self, entity_name):
-        if not self.is_secured:
+    @utils.sync_wrapper
+    async def _handle_arrive(self, entity_name):
+        if not await self.is_secured:
             self._notify(
                 NotificationCategory.PRESENCE_PERSON_ARRIVED,
                 response_entity_id=None,
@@ -311,8 +313,9 @@ class DoorLock(Secure):
             response_entity_id=self.configs[ARG_LOCK],
             person_name=entity_name)
 
-    def _handle_left(self, entity_name):
-        if self.is_secured:
+    @utils.sync_wrapper
+    async def _handle_left(self, entity_name):
+        if await self.is_secured:
             self._notify(
                 NotificationCategory.PRESENCE_PERSON_DEPARTED,
                 response_entity_id=None,
