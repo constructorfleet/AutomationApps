@@ -95,7 +95,7 @@ async def are_conditions_met(app, condition_spec):
 
     if ARG_OR in condition_spec:
         for condition in condition_spec[ARG_OR]:
-            if are_conditions_met(app, condition):
+            if await are_conditions_met(app, condition):
                 app.debug(f'Condition met: {str(condition)}')
                 return True
         return False

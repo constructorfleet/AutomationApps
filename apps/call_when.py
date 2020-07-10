@@ -58,15 +58,15 @@ class CallWhen(BaseApp):
                 )
             if ARG_STATE not in trigger:
                 await self.listen_state(self._handle_trigger,
-                                  entity=trigger[ARG_ENTITY_ID],
-                                  attribute=trigger.get(ARG_ATTRIBUTE),
-                                  immediate=True)
+                                        entity=trigger[ARG_ENTITY_ID],
+                                        attribute=trigger.get(ARG_ATTRIBUTE),
+                                        immediate=True)
             else:
                 await self.listen_state(self._handle_trigger,
-                                  entity=trigger[ARG_ENTITY_ID],
-                                  attribute=trigger.get(ARG_ATTRIBUTE),
-                                  new=trigger[ARG_STATE],
-                                  immediate=True)
+                                        entity=trigger[ARG_ENTITY_ID],
+                                        attribute=trigger.get(ARG_ATTRIBUTE),
+                                        new=trigger[ARG_STATE],
+                                        immediate=True)
 
     @property
     def app_schema(self):
@@ -83,17 +83,20 @@ class CallWhen(BaseApp):
         }, extra=vol.ALLOW_EXTRA)
 
     @property
+    @utils.sync_wrapper
     async def conditions_met(self):
         for condition in self.configs[ARG_CONDITION]:
-            if not self.condition_met(condition):
+            if not await self.condition_met(condition):
                 return False
 
         return True
 
+    @utils
+    @utils.sync_wrapper
     async def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
-        if not self.conditions_met:
+        if not await self.conditions_met:
             self.debug("Conditions no met")
             return
 
