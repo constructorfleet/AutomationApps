@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 import voluptuous as vol
+from appdaemon import utils
 
 from common.const import (
     EQUALS,
@@ -82,7 +83,8 @@ SCHEMA_CONDITION = vol.All(
 )
 
 
-def are_conditions_met(app, condition_spec):
+@utils.sync_wrapper
+async def are_conditions_met(app, condition_spec):
     """Verifies if condition is met."""
     if ARG_AND in condition_spec:
         for condition in condition_spec[ARG_AND]:
@@ -106,18 +108,19 @@ def are_conditions_met(app, condition_spec):
         return now.hour == hour and now.minute == minute and now.second == second
 
     if ARG_EXISTS in condition_spec:
-        full_state = app.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
-                                   attribute='all')
+        full_state = await app.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
+                                         attribute='all')
         return (condition_spec.get(ARG_ATTRIBUTE) in full_state) == condition_spec[ARG_EXISTS]
 
     if ARG_ENTITY_ID in condition_spec:
-        entity_value = app.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
-                                     attribute=condition_spec.get(ARG_ATTRIBUTE))
+        entity_value = await app.get_state(
+            entity_id=condition_spec[ARG_ENTITY_ID],
+            attribute=condition_spec.get(ARG_ATTRIBUTE))
         app.debug(
             f'Entity {condition_spec[ARG_ENTITY_ID]}[{condition_spec.get(ARG_ATTRIBUTE)}]'
             f' {entity_value}: {str(condition_spec)}')
         if valid_entity_id(condition_spec[ARG_VALUE]):
-            check_value = app.get_state(entity_id=condition_spec[ARG_VALUE])
+            check_value = await app.get_state(entity_id=condition_spec[ARG_VALUE])
         else:
             check_value = condition_spec.get(ARG_VALUE)
 

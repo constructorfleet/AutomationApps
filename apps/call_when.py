@@ -1,4 +1,5 @@
 import voluptuous as vol
+from appdaemon import utils
 
 from common.base_app import BaseApp
 from common.conditions import SCHEMA_CONDITION
@@ -36,18 +37,19 @@ SCHEMA_CALL = vol.Schema({
 class CallWhen(BaseApp):
     _conditions = {}
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         for trigger in self.configs[ARG_TRIGGER]:
             if ARG_STATE not in trigger \
                     and trigger[ARG_ENTITY_ID].split('.')[0].lower() in ['binary_sensor', 'switch',
                                                                          'light']:
                 trigger[ARG_STATE] = 'on'  # Default to on for these domains
 
-            new_state = self.get_state(
+            new_state = await self.get_state(
                 entity_id=trigger[ARG_ENTITY_ID],
                 attribute=trigger.get(ARG_ATTRIBUTE))
             if ARG_STATE not in trigger or new_state == trigger[ARG_STATE]:
-                self._handle_trigger(
+                await self._handle_trigger(
                     trigger[ARG_ENTITY_ID],
                     trigger.get(ARG_ATTRIBUTE),
                     None,
@@ -55,12 +57,12 @@ class CallWhen(BaseApp):
                     {}
                 )
             if ARG_STATE not in trigger:
-                self.listen_state(self._handle_trigger,
+                await self.listen_state(self._handle_trigger,
                                   entity=trigger[ARG_ENTITY_ID],
                                   attribute=trigger.get(ARG_ATTRIBUTE),
                                   immediate=True)
             else:
-                self.listen_state(self._handle_trigger,
+                await self.listen_state(self._handle_trigger,
                                   entity=trigger[ARG_ENTITY_ID],
                                   attribute=trigger.get(ARG_ATTRIBUTE),
                                   new=trigger[ARG_STATE],
@@ -81,14 +83,14 @@ class CallWhen(BaseApp):
         }, extra=vol.ALLOW_EXTRA)
 
     @property
-    def conditions_met(self):
+    async def conditions_met(self):
         for condition in self.configs[ARG_CONDITION]:
             if not self.condition_met(condition):
                 return False
 
         return True
 
-    def _handle_trigger(self, entity, attribute, old, new, kwargs):
+    async def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if new == old:
             return
         if not self.conditions_met:

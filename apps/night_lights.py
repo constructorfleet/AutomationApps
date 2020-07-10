@@ -3,6 +3,7 @@ from builtins import int
 from time import sleep
 
 import voluptuous as vol
+from appdaemon import utils
 
 from common.base_app import BaseApp
 from common.const import (
@@ -10,7 +11,6 @@ from common.const import (
     ARG_ENTITY_ID,
     ARG_SERVICE,
     ARG_SERVICE_DATA)
-from common.utils import minutes_to_seconds
 from common.validation import ensure_list, entity_id
 
 ARG_DUSK = "dusk"
@@ -56,7 +56,8 @@ class NightLights(BaseApp):
     dusk_entities = []
     night_entities = []
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         """Initalize the application."""
         conf_dawn = self.configs.get(ARG_DAWN)
         conf_dusk = self.configs.get(ARG_DUSK)
@@ -64,23 +65,23 @@ class NightLights(BaseApp):
 
         if conf_dawn:
             self.dawn_entities = conf_dawn[ARG_ENTITIES]
-            if self.sun_up():
-                self._handle_dawn(None)
-            self._schedule_dawn()
+            if await self.sun_up():
+                await self._handle_dawn(None)
+            await self._schedule_dawn()
 
         if conf_dusk:
             self.dusk_entities = conf_dusk[ARG_ENTITIES]
-            if self.sun_down():
-                self._handle_dusk(None)
-            self._schedule_dusk()
+            if await self.sun_down():
+                await self._handle_dusk(None)
+            await self._schedule_dusk()
 
         if self.night_entities:
             now = datetime.datetime.now().time()
-            if self.sun_down() and now.hour < 12 and \
+            if await self.sun_down() and now.hour < 12 and \
                     now > datetime.time():
-                self._handle_night(None)
-            self.run_daily(self._handle_night,
-                           datetime.time())
+                await self._handle_night(None)
+            await self.run_daily(self._handle_night,
+                                 datetime.time())
 
     @property
     def app_schema(self):
@@ -105,27 +106,31 @@ class NightLights(BaseApp):
             )
         }, extra=vol.ALLOW_EXTRA)
 
-    def _schedule_dawn(self):
-        self.run_at_sunrise(
+    @utils.sync_wrapper
+    async def _schedule_dawn(self):
+        await self.run_at_sunrise(
             self._handle_dawn,
             offset=self.configs[ARG_DAWN][ARG_OFFSET])
 
-    def _schedule_dusk(self):
-        self.run_at_sunset(
+    @utils.sync_wrapper
+    async def _schedule_dusk(self):
+        await self.run_at_sunset(
             self._handle_dusk,
             offset=-self.configs[ARG_DUSK][ARG_OFFSET])
 
-    def _handle_dawn(self, kwargs):
+    @utils.sync_wrapper
+    async def _handle_dawn(self, kwargs):
         """Handle dawn event."""
         self._handle_entity_services(self.dawn_entities)
-        self._schedule_dawn()
+        await self._schedule_dawn()
 
-    def _handle_dusk(self, kwargs):
+    @utils.sync_wrapper
+    async def _handle_dusk(self, kwargs):
         """Handle dusk event."""
         self._handle_entity_services(self.dusk_entities)
-        self._schedule_dusk()
+        await self._schedule_dusk()
 
-    def _handle_night(self, kwargs):
+    async def _handle_night(self, kwargs):
         """Handle night event."""
         self._handle_entity_services(self.night_entities)
 
@@ -146,8 +151,3 @@ class NightLights(BaseApp):
                 data
             )
             sleep(1.5)
-
-    def _schedule(self, event, handler, offset, wait_seconds=0):
-        """Schedule handler."""
-        sleep(wait_seconds)
-        self.__getattribute__(event)(handler, offset=offset)

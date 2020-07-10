@@ -58,7 +58,8 @@ class BaseApp(hassmqtt.HassMqtt):
         vol.Optional(ARG_LOG_LEVEL, default='ERROR'): valid_log_level
     }
 
-    def initialize(self):
+    @utils.sync_wrapper
+    async def initialize(self):
         """Initialization of Base App class."""
         self._persistent_data_file = os.path.join(self.config_dir, self.namespace,
                                                   self.name + ".js")
@@ -76,10 +77,10 @@ class BaseApp(hassmqtt.HassMqtt):
         self.log('Dependencies: %s', str(self.configs.get(ARG_DEPENDENCIES, [])))
         if APP_NOTIFIERS in self.configs.get(ARG_DEPENDENCIES, []):
             self.log('Getting reference to notifiers app')
-            self.notifier = self.get_app(APP_NOTIFIERS)
+            self.notifier = await self.get_app(APP_NOTIFIERS)
         if APP_HOLIDAYS in self.configs.get(ARG_DEPENDENCIES, []):
             self.log('Getting reference to holidays app')
-            self.holidays = self.get_app(APP_HOLIDAYS)
+            self.holidays = await self.get_app(APP_HOLIDAYS)
 
         if os.path.exists(self._persistent_data_file):
             self.log("Reading storage")
@@ -90,10 +91,11 @@ class BaseApp(hassmqtt.HassMqtt):
             self._on_persistent_data_loaded()
 
         self.info("Initializing")
-        self.initialize_app()
+        await self.initialize_app()
         self.info("Initialized")
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         pass
 
     @utils.sync_wrapper
@@ -155,16 +157,19 @@ class BaseApp(hassmqtt.HassMqtt):
         handle = await super().listen_event(callback, event, **kwargs)
         return EventListenHandle(handle, self)
 
+    @utils.sync_wrapper
     async def cancel_timer(self, handle):
         if isinstance(handle, ListenHandle):
             return await handle.cancel()
         return await super().cancel_timer(handle)
 
+    @utils.sync_wrapper
     async def cancel_listen_event(self, handle):
         if isinstance(handle, ListenHandle):
             return await handle.cancel()
         return await super().cancel_listen_event(handle)
 
+    @utils.sync_wrapper
     async def cancel_listen_state(self, handle):
         if handle is None:
             return
@@ -178,7 +183,8 @@ class BaseApp(hassmqtt.HassMqtt):
     def _prepend_log_msg(self, msg):
         return "{}({}#{}): {}".format(self.name, '__function__', '__line__', msg)
 
-    def record_data(self, key, value):
+    @utils.sync_wrapper
+    async def record_data(self, key, value):
         with self._data_lock:
             if key not in self.data:
                 self.data[key] = None
@@ -187,7 +193,7 @@ class BaseApp(hassmqtt.HassMqtt):
             if self._data_save_handle is not None:
                 return
 
-            self._data_save_handle = self.run_in(self.save_data, 4)
+            self._data_save_handle = await self.run_in(self.save_data, 4)
 
     def clear_data(self):
         with self._data_lock:
@@ -238,8 +244,9 @@ class BaseApp(hassmqtt.HassMqtt):
             namespace=namespace
         )
 
-    def condition_met(self, condition):
-        return are_conditions_met(self, condition)
+    @utils.sync_wrapper
+    async def condition_met(self, condition):
+        return await are_conditions_met(self, condition)
 
     def debug(self, msg, *args, **kwargs):
         if self._log_level >= logging.DEBUG:

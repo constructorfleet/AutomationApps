@@ -2,6 +2,7 @@ from datetime import datetime
 
 import requests
 import voluptuous as vol
+from appdaemon import utils
 
 from common.base_app import BaseApp
 from common.utils import KWArgFormatter
@@ -123,7 +124,8 @@ class HolidayColors(BaseApp):
     _for_year = None
     _holidays = {}
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         self.debug('File %s' % self._persistent_data_file)
         self.debug('Data {}'.format(str(self.data)))
         if self._for_year != datetime.now().year:
@@ -163,7 +165,8 @@ class HolidayColors(BaseApp):
         self.debug('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
-    def _retrieve_holidays(self):
+    @utils.sync_wrapper
+    async def _retrieve_holidays(self):
         self.clear_data()
         response = requests.get(self.api_url)
         try:
@@ -174,7 +177,7 @@ class HolidayColors(BaseApp):
                 self.error('Unable to parse holidays from response')
                 return
             self._for_year = datetime.now().year
-            self.record_data(KEY_YEAR, self._for_year)
+            await self.record_data(KEY_YEAR, self._for_year)
 
             for holiday in holidays:
                 name = holiday.get('name', '')
@@ -183,7 +186,7 @@ class HolidayColors(BaseApp):
                     self.debug('%s not in colors', name)
                     continue
                 holiday_date = holiday.get('date', {}).get('datetime', {})
-                self.record_data(name, holiday_date)
+                await self.record_data(name, holiday_date)
                 self._holidays[name] = self._parse_holiday_date(holiday_date)
 
         except requests.HTTPError as err:

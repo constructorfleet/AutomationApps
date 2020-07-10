@@ -1,3 +1,5 @@
+from appdaemon import utils
+
 from common.base_app import BaseApp
 from notifiers.notification_action import NotificationAction
 
@@ -12,17 +14,18 @@ ACKNOWLEDGE_ID = "acknowledge_id"
 class NotificationActionProcessor(BaseApp):
     acknowledge_listeners = []
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         self.debug("Starting listener for iOS")
-        self.listen_event(self.handle_event,
-                          event="ios.notification_action_fired")
+        await self.listen_event(self.handle_event,
+                                event="ios.notification_action_fired")
         self.debug("Starting listener for mobile app")
-        self.listen_event(self.handle_event,
-                          event="mobile_app_notification_action")
+        await self.listen_event(self.handle_event,
+                                event="mobile_app_notification_action")
 
         self.debug("Starting listener for FCM")
-        self.listen_event(self.handle_event,
-                          event="html5_notification.clicked")
+        await self.listen_event(self.handle_event,
+                                event="html5_notification.clicked")
 
     def add_acknowledge_listener(self, listener):
         self.acknowledge_listeners.append(listener)

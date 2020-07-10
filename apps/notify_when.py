@@ -1,6 +1,7 @@
 import copy
 
 import voluptuous as vol
+from appdaemon import utils
 
 from common.base_app import BaseApp
 from common.const import (
@@ -40,12 +41,13 @@ SCHEMA_NOTIFY = vol.Schema({
 class NotifyWhen(BaseApp):
     _notification_category = None
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         self._notification_category = \
             get_category_by_name(self.configs[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
         for entity in self.configs[ARG_ENTITY_ID]:
-            self.listen_state(self._handle_state_change,
-                              entity=entity)
+            await self.listen_state(self._handle_state_change,
+                                    entity=entity)
 
     @property
     def app_schema(self):
@@ -68,20 +70,21 @@ class NotifyWhen(BaseApp):
         condition_to[ARG_ENTITY_ID] = value
         return condition_to
 
-    def _handle_state_change(self, entity, attribute, old, new, kwargs):
+    @utils.sync_wrapper
+    async def _handle_state_change(self, entity, attribute, old, new, kwargs):
         if old == new or old is None or new is None:
             return
 
-        if self.condition_met(self._condition_from(old)) and \
-                self.condition_met(self._condition_to(new)):
-            self._notify(entity)
+        if await self.condition_met(self._condition_from(old)) and \
+                await self.condition_met(self._condition_to(new)):
+            await self._notify(entity)
 
-    def _notify(self, entity):
+    async def _notify(self, entity):
         replacers = copy.copy(self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS])
         for key, value in [(key, value) for key, value in
                            self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS].items() if
                            value == ATTR_ENTITY_NAME]:
-            replacers[key] = self.get_state(entity_id=entity, attribute='friendly_name')
+            replacers[key] = await self.get_state(entity_id=entity, attribute='friendly_name')
         self.notifier.notify_people(
             self._notification_category,
             response_entity_id=self.configs[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),

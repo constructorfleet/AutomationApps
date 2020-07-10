@@ -3,6 +3,7 @@ import re
 from urllib import parse
 
 import voluptuous as vol
+from appdaemon import utils
 from twilio.rest import Client
 from twilio.rest.api.v2010.account.call import CallInstance
 
@@ -63,19 +64,20 @@ class CallBHG(BaseApp):
     _called_today = False
     _calling = False
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         self._client = Client(
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
         )
 
-        self.run_daily(self._new_day,
-                       "00:01:00")
-        self.listen_event(self._call_bhg,
-                          event="call_bhg")
-        self.run_daily(self._daily_call,
-                       "%02d:%02d:00" % (self.configs[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
-                                         self.configs[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
+        await self.run_daily(self._new_day,
+                             "00:01:00")
+        await self.listen_event(self._call_bhg,
+                                event="call_bhg")
+        await self.run_daily(self._daily_call,
+                             "%02d:%02d:00" % (self.configs[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
+                                               self.configs[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
 
     @property
     def app_schema(self):
@@ -89,16 +91,19 @@ class CallBHG(BaseApp):
             vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id
         }, extra=vol.ALLOW_EXTRA)
 
-    def _new_day(self, kwargs):
+    @utils.sync_wrapper
+    async def _new_day(self, kwargs):
         self._called_today = False
 
-    def _daily_call(self, kwargs):
+    @utils.sync_wrapper
+    async def _daily_call(self, kwargs):
         if self._called_today:
             self.info("Already called today.")
             return
-        self._call_bhg('call_bhg', {}, {})
+        await self._call_bhg('call_bhg', {}, {})
 
-    def _call_bhg(self, event, data, kwargs):
+    @utils.sync_wrapper
+    async def _call_bhg(self, event, data, kwargs):
         if self._calling:
             return
         self._calling = True
@@ -121,9 +126,10 @@ class CallBHG(BaseApp):
             url=twimlet_url
         )
 
-        self.run_in(self._process_status, 5)
+        await self.run_in(self._process_status, 5)
 
-    def _process_status(self, kwargs):
+    @utils.sync_wrapper
+    async def _process_status(self, kwargs):
 
         call_status = self._call_instance.fetch().status
         status_map = {
@@ -142,28 +148,33 @@ class CallBHG(BaseApp):
         status_map.get(call_status,
                        self._handle_unknown_call_status)(call_status)
 
-    def _handle_call_in_process(self, status):
+    @utils.sync_wrapper
+    async def _handle_call_in_process(self, status):
         _LOGGER.error("Call in process %s, retrying in %d sec" % (status, 10))
-        self.run_in(self._process_status, 10)
+        await self.run_in(self._process_status, 10)
 
-    def _handle_call_failed(self, status):
+    @utils.sync_wrapper
+    async def _handle_call_failed(self, status):
         _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
         self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
         self._calling = False
         self._called_today = False
         self._call_instance = None
-        self.run_in(self._daily_call,
-                    10 * 60)
+        await self.run_in(self._daily_call,
+                          10 * 60)
 
-    def _handle_call_complete(self, status):
+    @utils.sync_wrapper
+    async def _handle_call_complete(self, status):
         _LOGGER.debug("Call complete, waiting for transcript")
-        self.run_in(self._get_transcripts, 45)
+        await self.run_in(self._get_transcripts, 45)
 
-    def _handle_unknown_call_status(self, status):
+    @utils.sync_wrapper
+    async def _handle_unknown_call_status(self, status):
         _LOGGER.warning("Unknown status %s" % status)
-        self.run_in(self._process_status, 10)
+        await self.run_in(self._process_status, 10)
 
-    def _get_transcripts(self, kwargs):
+    @utils.sync_wrapper
+    async def _get_transcripts(self, kwargs):
         recording_sids = [recording.sid for recording in
                           self._call_instance.fetch().recordings.list() if
                           recording is not None and recording.sid]

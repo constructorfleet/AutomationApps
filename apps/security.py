@@ -1,6 +1,7 @@
 import os
 
 import voluptuous as vol
+from appdaemon import utils
 
 from call_when import ARG_CONDITION
 from common.base_app import BaseApp
@@ -82,14 +83,15 @@ class Doorbell(BaseApp):
     _pause_handle = None
     _notification_category = None
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         self._notification_category = get_category_by_name(self.configs[ARG_NOTIFY_CATEGORY])
         doorbell = self.configs[ARG_DOORBELL]
-        self.listen_state(self._handle_doorbell,
-                          entity=doorbell[ARG_ENTITY_ID],
-                          new=doorbell[ARG_STATE])
+        await self.listen_state(self._handle_doorbell,
+                                entity=doorbell[ARG_ENTITY_ID],
+                                new=doorbell[ARG_STATE])
         if ARG_IMAGE_PROCESSING in self.configs:
-            self._start_image_processing(None)
+            await self._start_image_processing(None)
 
     @property
     def app_schema(self):
@@ -117,38 +119,42 @@ class Doorbell(BaseApp):
                 VALID_NOTIFICATION_CATEGORIES)
         }, extra=vol.ALLOW_EXTRA)
 
-    def _start_image_processing(self, kwargs):
+    @utils.sync_wrapper
+    async def _start_image_processing(self, kwargs):
         if self._pause_handle is not None:
-            self.cancel_timer(self._pause_handle)
+            await self.cancel_timer(self._pause_handle)
 
-        self._image_processor_handle = self.listen_state(
+        self._image_processor_handle = await self.listen_state(
             self._handle_image_processor,
             entity=self.configs[ARG_IMAGE_PROCESSING][ARG_SENSOR],
             attribute=ATTR_MATCHES,
             oneshot=True)
 
-    def _pause_image_processing(self):
+    @utils.sync_wrapper
+    async def _pause_image_processing(self):
         if self._image_processor_handle is not None:
-            self.cancel_listen_state(self._image_processor_handle)
-        self._pause_handle = self.run_in(self._start_image_processing,
-                                         self.configs[ARG_IMAGE_PROCESSING][
-                                             ARG_NOTIFY_INTERVAL] * 60)
+            await self.cancel_listen_state(self._image_processor_handle)
+        self._pause_handle = await self.run_in(self._start_image_processing,
+                                               self.configs[ARG_IMAGE_PROCESSING][
+                                                   ARG_NOTIFY_INTERVAL] * 60)
 
-    def _handle_image_processor(self, entity, attribute, old, new, kwargs):
+    @utils.sync_wrapper
+    async def _handle_image_processor(self, entity, attribute, old, new, kwargs):
         if old == new or self._should_ignore_processor:
-            self._start_image_processing(None)
+            await self._start_image_processing(None)
             return
 
         matches = new.get(self.configs[ARG_IMAGE_PROCESSING][ARG_CLASS], None)
         if matches:
             for match in matches:
                 if match.get(ATTR_SCORE, 0.0) >= self.configs[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
-                    self._pause_image_processing()
+                    await self._pause_image_processing()
                     self._notify()
                     return
-        self._start_image_processing(None)
+        await self._start_image_processing(None)
 
-    def _handle_doorbell(self, entity, attribute, old, new, kwargs):
+    @utils.sync_wrapper
+    async def _handle_doorbell(self, entity, attribute, old, new, kwargs):
         if old == new:
             return
 
@@ -189,7 +195,7 @@ class Doorbell(BaseApp):
                 or ARG_CONDITION not in self.configs[ARG_IMAGE_PROCESSING]:
             return False
         for condition in self.configs[ARG_IMAGE_PROCESSING][ARG_CONDITION]:
-            if self.condition_met(condition):
+            if await self.condition_met(condition):
                 return True
         return False
 
@@ -198,48 +204,52 @@ class Secure(BaseApp):
     _security_entity_name = None
     _last_states = {}
 
-    def initialize_app(self):
-        self._security_entity_name = self.get_state(
+    @utils.sync_wrapper
+    async def initialize_app(self):
+        self._security_entity_name = await self.get_state(
             self.configs[self._arg_security_entity],
             attribute='friendly_name'
         )
         for entity in self.configs[self._arg_watched_entities]:
             self._last_states[entity] = None
-            self.listen_state(self._handle_entity_change,
-                              entity=entity,
-                              oneshot=True)
+            await self.listen_state(self._handle_entity_change,
+                                    entity=entity,
+                                    oneshot=True)
 
-    def _handle_entity_change(self, entity, attribute, old, new, kwargs):
+    @utils.sync_wrapper
+    async def _handle_entity_change(self, entity, attribute, old, new, kwargs):
         if old == new or new == self._last_states[entity] or \
                 'unavailable' in [(new or "").lower(),
                                   (new or "").lower()]:
-            self.listen_state(self._handle_entity_change,
-                              entity=entity,
-                              oneshot=True)
+            await self.listen_state(self._handle_entity_change,
+                                    entity=entity,
+                                    oneshot=True)
             return
 
-        accuracy = self.get_state(entity, attribute='gps_accuracy', default=None)
+        accuracy = await self.get_state(entity, attribute='gps_accuracy', default=None)
         if accuracy is not None and accuracy > self.configs[ARG_GPS_MAX_ACCURACY]:
             self.warning('{} accuracy too high {}'.format(entity, accuracy))
-            self.listen_state(self._handle_entity_change,
-                              entity=entity,
-                              oneshot=True)
+            await self.listen_state(self._handle_entity_change,
+                                    entity=entity,
+                                    oneshot=True)
             return
         self._last_states[entity] = new
-        entity_name = self.get_state(entity, attribute='friendly_name')
+        entity_name = await self.get_state(entity, attribute='friendly_name')
         if new in ['Garage Radius', 'home'] and old != 'home':
-            self._handle_arrive(entity_name)
+            await self._handle_arrive(entity_name)
         elif old in ['Garage Radius', 'home'] and new == 'not_home':
-            self._handle_left(entity_name)
+            await self._handle_left(entity_name)
 
-        self.listen_state(self._handle_entity_change,
-                          entity=entity,
-                          oneshot=True)
+        await self.listen_state(self._handle_entity_change,
+                                entity=entity,
+                                oneshot=True)
 
-    def _handle_arrive(self, entity_name):
+    @utils.sync_wrapper
+    async def _handle_arrive(self, entity_name):
         pass
 
-    def _handle_left(self, entity_name):
+    @utils.sync_wrapper
+    async def _handle_left(self, entity_name):
         pass
 
     @property
@@ -251,7 +261,8 @@ class Secure(BaseApp):
         return None
 
     @property
-    def is_secured(self):
+    @utils.sync_wrapper
+    async def is_secured(self):
         return False
 
 
@@ -270,7 +281,7 @@ class DoorLock(Secure):
 
     @property
     def is_secured(self):
-        return self.get_state(self.configs[ARG_LOCK]) == 'locked'
+        return (await self.get_state(self.configs[ARG_LOCK])) == 'locked'
 
     @property
     def _arg_watched_entities(self):
@@ -349,11 +360,13 @@ class GarageDoor(Secure):
         return ARG_COVER
 
     @property
-    def is_secured(self):
-        return self.get_state(self.configs[ARG_COVER]) == 'closed'
+    @utils.sync_wrapper
+    async def is_secured(self):
+        return (await self.get_state(self.configs[ARG_COVER])) == 'closed'
 
-    def _handle_arrive(self, entity_name):
-        if not self.is_secured:
+    @utils.sync_wrapper
+    async def _handle_arrive(self, entity_name):
+        if not await self.is_secured:
             return
         self.publish_service_call(
             'cover',
@@ -367,8 +380,9 @@ class GarageDoor(Secure):
             response_entity_id=self.configs[ARG_COVER],
             vehicle_name=entity_name)
 
-    def _handle_left(self, entity_name):
-        if self.is_secured:
+    @utils.sync_wrapper
+    async def _handle_left(self, entity_name):
+        if await self.is_secured:
             return
 
         self.publish_service_call(
@@ -412,74 +426,82 @@ class AlarmSystem(BaseApp):
             })
         }, extra=vol.ALLOW_EXTRA)
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         for person in self.configs[ARG_PEOPLE]:
-            if self.get_state(person) == 'home':
+            if await self.get_state(person) == 'home':
                 self.people_in_house.append(person)
-            self.listen_state(self._handle_presence_change,
-                              entity=person)
+            await self.listen_state(self._handle_presence_change,
+                                    entity=person)
         self.info('PEOPLE AT HOME %s', str(self.people_in_house))
-        alarm_status = str(self.alarm_status)
+        alarm_status = str(await self.alarm_status)
 
         if ARG_NIGHT_MODE_ENTITY in self.configs:
-            self.listen_state(self._handle_night_mode_change,
-                              entity=self.configs[ARG_NIGHT_MODE_ENTITY])
+            await self.listen_state(self._handle_night_mode_change,
+                                    entity=self.configs[ARG_NIGHT_MODE_ENTITY])
         elif ARG_NIGHT_MODE_EVENT in self.configs:
-            self.listen_event(self._handle_night_mode_event,
-                              event=self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_ARM])
-            self.listen_event(self._handle_night_mode_event,
-                              event=self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_DISARM])
+            await self.listen_event(self._handle_night_mode_event,
+                                    event=self.configs[ARG_NIGHT_MODE_EVENT][
+                                        ARG_NIGHT_MODE_EVENT_ARM])
+            await self.listen_event(self._handle_night_mode_event,
+                                    event=self.configs[ARG_NIGHT_MODE_EVENT][
+                                        ARG_NIGHT_MODE_EVENT_DISARM])
 
         if alarm_status.startswith('armed_away') and len(self.people_in_house) > 0:
-            self._disarm()
+            await self._disarm()
         elif alarm_status.startswith('disarmed') and len(self.people_in_house) == 0:
-            self._arm()
+            await self._arm()
 
-    def _handle_night_mode_change(self, entity, attribute, old, new, kwargs):
-        alarm_status = str(self.alarm_status)
+    @utils.sync_wrapper
+    async def _handle_night_mode_change(self, entity, attribute, old, new, kwargs):
+        alarm_status = str(await self.alarm_status)
         if old == new or alarm_status.startswith('armed'):
             return
 
         if new == 'on' and len(self.people_in_house) > 0:
-            self._arm_night_mode()
+            await self._arm_night_mode()
         elif new == 'off' and len(self.people_in_house) > 0:
-            self._disarm()
+            await self._disarm()
 
-    def _handle_night_mode_event(self, event, data, kwargs):
-        alarm_status = str(self.alarm_status)
+    @utils.sync_wrapper
+    async def _handle_night_mode_event(self, event, data, kwargs):
+        alarm_status = str(await self.alarm_status)
         if event == self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_ARM]:
             if alarm_status.startswith('armed'):
                 return
             else:
-                self._arm_night_mode()
+                await self._arm_night_mode()
         if event == self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_DISARM]:
             if alarm_status.startswith('disarmed'):
                 return
             else:
-                self._disarm()
+                await self._disarm()
 
-    def _handle_presence_change(self, entity, attribute, old, new, kwargs):
+    @utils.sync_wrapper
+    async def _handle_presence_change(self, entity, attribute, old, new, kwargs):
         self.info('Presence change %s %s', entity, new)
         if old == new:
             return
 
-        alarm_status = str(self.alarm_status)
+        alarm_status = str(await self.alarm_status)
         self.info('Current alarm %s', alarm_status)
 
         if new == 'home':
             self.people_in_house.append(entity)
             if alarm_status.startswith('armed'):
-                self._disarm()
+                await self._disarm()
         elif entity in self.people_in_house:
             self.people_in_house.remove(entity)
             if alarm_status.startswith('disarmed') and len(self.people_in_house) == 0:
-                self._arm()
+                await self._arm()
 
     @property
-    def alarm_status(self):
-        return self.get_state(entity_id=self.configs[ARG_ALARM_PANEL])
+    @utils.sync_wrapper
+    async def alarm_status(self):
+        return await self.get_state(entity_id=self.configs[ARG_ALARM_PANEL])
 
-    def _disarm(self):
+    @utils.sync_wrapper
+    async def _disarm(self):
         self.publish_service_call(
             'alarm_control_panel',
             'alarm_disarm',
@@ -496,7 +518,8 @@ class AlarmSystem(BaseApp):
         )
         self._notify(NotificationCategory.SECURITY_ALARM_DISARMED)
 
-    def _arm(self):
+    @utils.sync_wrapper
+    async def _arm(self):
         self.publish_service_call(
             'alarm_control_panel',
             'alarm_arm_away',
@@ -520,7 +543,8 @@ class AlarmSystem(BaseApp):
         )
         self._notify(NotificationCategory.SECURITY_ALARM_ARM_AWAY)
 
-    def _arm_night_mode(self):
+    @utils.sync_wrapper
+    async def _arm_night_mode(self):
         self.publish_service_call(
             'alarm_control_panel',
             'alarm_arm_night',

@@ -3,6 +3,7 @@ import json
 import logging
 
 import voluptuous as vol
+from appdaemon import utils
 
 from common.base_app import BaseApp, ATTR_EVENT_TYPE, ATTR_EVENT_DATA
 from common.const import (
@@ -62,23 +63,24 @@ class CloseEnoughToHome(BaseApp):
     _last_states = {}
     _timer_handlers = {}
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         self._home_gps = {
             ATTR_LATITUDE: self.configs.get(ATTR_LATITUDE, None),
             ATTR_LONGITUDE: self.configs.get(ATTR_LONGITUDE, None)
         }
         for entity in self.configs[ARG_ENTITY_ID]:
-            self._last_states[entity] = self.get_state(
+            self._last_states[entity] = await self.get_state(
                 entity_id=entity,
                 attribute='all')
-            self._handle_entity_change(entity=entity,
-                                       attribute=None,
-                                       old=None,
-                                       new=self._last_states[entity],
-                                       kwargs={})
-            self.listen_state(self._handle_entity_change,
-                              entity=entity,
-                              attribute='all')
+            await self._handle_entity_change(entity=entity,
+                                             attribute=None,
+                                             old=None,
+                                             new=self._last_states[entity],
+                                             kwargs={})
+            await self.listen_state(self._handle_entity_change,
+                                    entity=entity,
+                                    attribute='all')
 
     @property
     def app_schema(self):
@@ -97,29 +99,34 @@ class CloseEnoughToHome(BaseApp):
             )
         }, extra=vol.ALLOW_EXTRA)
 
-    def _handle_entity_change(self, entity, attribute, old, new, kwargs):
+    @utils.sync_wrapper
+    async def _handle_entity_change(self, entity, attribute, old, new, kwargs):
         if new is None:
             return
         self._last_states[entity] = new
         if new.get(ATTR_STATE) == 'home' or (
                 new.get(ATTR_STATE) is not None
                 and new.get(ATTR_STATE) not in self.configs[ARG_ZONES_ASSUME_HOME]):
-            self._stop_timer(entity)
+            await self._stop_timer(entity)
         elif new.get(ATTR_STATE) in self.configs[ARG_ZONES_ASSUME_HOME]:
-            self._reset_timer(entity)
+            await self._reset_timer(entity)
 
-    def _stop_timer(self, entity):
+    @utils.sync_wrapper
+    async def _stop_timer(self, entity):
         if entity in self._timer_handlers:
-            self.cancel_timer(self._timer_handlers[entity])
+            await self.cancel_timer(self._timer_handlers[entity])
             del self._timer_handlers[entity]
 
-    def _reset_timer(self, entity):
-        self._stop_timer(entity)
-        self._timer_handlers[entity] = self.run_in(self._handle_assume_home,
-                                                   self.configs[ARG_MINUTES_BEFORE_ASSUME] * 60,
-                                                   **{ATTR_ENTITY_ID: entity})
+    @utils.sync_wrapper
+    async def _reset_timer(self, entity):
+        await self._stop_timer(entity)
+        self._timer_handlers[entity] = await self.run_in(self._handle_assume_home,
+                                                         self.configs[
+                                                             ARG_MINUTES_BEFORE_ASSUME] * 60,
+                                                         **{ATTR_ENTITY_ID: entity})
 
-    def _handle_assume_home(self, kwargs):
+    @utils.sync_wrapper
+    async def _handle_assume_home(self, kwargs):
         entity_id = kwargs.get(ATTR_ENTITY_ID, None)
         if entity_id is None:
             _LOGGER.warning('No entity id provided')
@@ -150,7 +157,8 @@ class TrackerGroup(BaseApp):
     _home_gps = None
     _get_distance = get_distance_helper(unit=Unit.MILES)
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         self._home_gps = (
             self.configs.get(ATTR_LATITUDE, None),
             self.configs.get(ATTR_LONGITUDE, None)
@@ -172,11 +180,11 @@ class TrackerGroup(BaseApp):
             for entity in group[ARG_ENTITY_ID]:
                 self._entity_last_gps[group_name][entity] = self._home_gps
                 self._group_entities[group_name].append(entity)
-                self.listen_state(self._handle_tracker_update,
-                                  entity=entity,
-                                  attribute='all',
-                                  immediate=True,
-                                  **callback_args)
+                await self.listen_state(self._handle_tracker_update,
+                                        entity=entity,
+                                        attribute='all',
+                                        immediate=True,
+                                        **callback_args)
 
     @property
     def app_schema(self):
@@ -188,21 +196,23 @@ class TrackerGroup(BaseApp):
             vol.Optional(ARG_MAX_DISTANCE, default=ARG_MAX_DISTANCE): vol.Coerce(float)
         }, extra=vol.ALLOW_EXTRA)
 
-    def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
+    @utils.sync_wrapper
+    async def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
         if new[ATTR_STATE] == 'home':
             gps = self._home_gps
         else:
-            gps = self._get_gps(new[ATTR_ATTRIBUTES])
+            gps = await self._get_gps(new[ATTR_ATTRIBUTES])
         if None in gps:
             return
         group_name = kwargs[ATTR_GROUP_NAME]
         self._entity_last_gps[group_name][entity] = gps
         self._calculate_group_members(group_name, kwargs[ATTR_MAX_DISTANCE])
 
-    def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
-        entity_id = 'device_tracker.group_%s' % group_name
+    @utils.sync_wrapper
+    async def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
+        entity = 'device_tracker.group_%s' % group_name
         new_state = {
-            ARG_ENTITY_ID: entity_id,
+            ARG_ENTITY_ID: entity,
             ATTR_STATE: 'tracking',
             ATTR_ATTRIBUTES: {
                 ATTR_GROUP_MEMBERS: members or [],
@@ -216,7 +226,7 @@ class TrackerGroup(BaseApp):
         payload = {
             ATTR_EVENT_TYPE: EVENT_STATE_CHANGED,
             ATTR_EVENT_DATA: {
-                ARG_ENTITY_ID: entity_id,
+                ARG_ENTITY_ID: entity,
                 'new_state': new_state
             },
             ATTR_SOURCE: self.name
@@ -266,7 +276,8 @@ class TrackerGroup(BaseApp):
                 long_avg=avg_long / len(members)
             )
 
-    def _get_gps(self, state):
+    @utils.sync_wrapper
+    async def _get_gps(self, state):
         if state.get(ATTR_SOURCE_TYPE, None) == SOURCE_TYPE_ROUTER:
             return self._home_gps
 
@@ -277,7 +288,7 @@ class TrackerGroup(BaseApp):
                     None
                 )
 
-            state = self.get_state(entity_id=state[ATTR_SOURCE], attribute='all')
+            state = await self.get_state(entity_id=state[ATTR_SOURCE], attribute='all')
 
         return (
             state.get(ATTR_LATITUDE, None),
