@@ -174,6 +174,7 @@ class Timeout(BaseApp):
         if old == new or new == self.configs[ARG_TRIGGER][ARG_STATE] \
                 or not self._running or not self._enabled_flag:
             return
+        self.log('NOT MET')
         await self._stop('No longer met')
 
     async def _pause(self):
@@ -203,6 +204,7 @@ class Timeout(BaseApp):
         await self._cancel_handlers(message)
 
     async def _handle_timeout(self, kwargs):
+        self.debug('Handling timeout (STOPPING)')
         await self._stop()
 
         self.debug("Firing on time out events")
