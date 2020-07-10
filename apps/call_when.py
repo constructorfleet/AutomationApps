@@ -91,7 +91,6 @@ class CallWhen(BaseApp):
 
         return True
 
-    @utils
     @utils.sync_wrapper
     async def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if new == old:
