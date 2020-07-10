@@ -1,3 +1,4 @@
+import copy
 import json
 import logging
 import os
@@ -246,7 +247,8 @@ class BaseApp(hassmqtt.HassMqtt):
             namespace=namespace
         )
 
-    async def condition_met(self, condition_spec):
+    async def condition_met(self, condition_to_check):
+        condition_spec = copy.deepcopy(condition_to_check)
         """Verifies if condition is met."""
         self.debug(f'CHECKING CONDITION {str(condition_spec)}')
         if ARG_AND in condition_spec:
