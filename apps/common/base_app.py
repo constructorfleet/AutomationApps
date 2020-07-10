@@ -143,6 +143,8 @@ class BaseApp(hassmqtt.HassMqtt):
 
     @utils.sync_wrapper
     async def listen_state(self, callback, entity=None, **kwargs):
+        if entity is None:
+            raise ValueError(f'Listen state called with no entity')
         handle = await super().listen_state(callback, entity, **kwargs)
         return StateListenHandle(handle, self)
 
