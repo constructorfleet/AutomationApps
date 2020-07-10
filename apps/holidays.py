@@ -165,7 +165,7 @@ class HolidayColors(BaseApp):
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
     async def _retrieve_holidays(self):
-        self.clear_data()
+        await self.clear_data()
         response = requests.get(self.api_url)
         try:
             response.raise_for_status()

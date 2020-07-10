@@ -196,7 +196,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
             self._data_save_handle = await self.run_in(self.save_data, 4)
 
-    def clear_data(self):
+    async def clear_data(self):
         async with self._data_lock:
             os.makedirs(
                 os.path.join(self.config_dir, self.namespace),
@@ -205,7 +205,7 @@ class BaseApp(hassmqtt.HassMqtt):
                 os.remove(self._persistent_data_file)
             self.data = {}
 
-    def save_data(self, kwargs):
+    async def save_data(self, kwargs):
         self.debug("Saving %s" % str(self.data))
         async with self._data_lock:
             with open(self._persistent_data_file, 'w') as json_file:
