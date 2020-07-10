@@ -159,6 +159,8 @@ class Timeout(BaseApp):
         if old == new or not self._running or not self._enabled_flag:
             return
 
+        self.debug(f'Pause check: {entity} {old} {new} paused {self._paused}')
+        self.debug(f'Condition: {str(self._pause_when[entity])}')
         if await self.condition_met(self._pause_when[entity]) and not self._paused:
             self.debug("Pause time because {} is {}".format(entity, new))
             await self._pause()
