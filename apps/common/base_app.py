@@ -249,6 +249,7 @@ class BaseApp(hassmqtt.HassMqtt):
     async def condition_met(self, condition_spec):
         """Verifies if condition is met."""
         if ARG_AND in condition_spec:
+            self.debug('AND')
             for condition in condition_spec[ARG_AND]:
                 if not await self.condition_met(condition):
                     self.debug(f'Condition not met: {str(condition)}')
@@ -256,6 +257,7 @@ class BaseApp(hassmqtt.HassMqtt):
             return True
 
         if ARG_OR in condition_spec:
+            self.debug('OR')
             for condition in condition_spec[ARG_OR]:
                 if await self.condition_met(condition):
                     self.debug(f'Condition met: {str(condition)}')
@@ -270,11 +272,13 @@ class BaseApp(hassmqtt.HassMqtt):
             return now.hour == hour and now.minute == minute and now.second == second
 
         if ARG_EXISTS in condition_spec:
+            self.debug('EXISTS')
             full_state = await self.get_state(entity_id=condition_spec[ARG_ENTITY_ID],
                                               attribute='all')
             return (condition_spec.get(ARG_ATTRIBUTE) in full_state) == condition_spec[ARG_EXISTS]
 
         if ARG_ENTITY_ID in condition_spec:
+            self.debug(f'CALLING GET STATE WITH {condition_spec[ARG_ENTITY_ID]} {condition_spec.get(ARG_ATTRIBUTE)}')
             entity_value = await self.get_state(
                 entity_id=condition_spec[ARG_ENTITY_ID],
                 attribute=condition_spec.get(ARG_ATTRIBUTE))
