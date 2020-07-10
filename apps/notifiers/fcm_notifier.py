@@ -1,5 +1,7 @@
 import json
 
+from appdaemon import utils
+
 from common.base_app import BaseApp
 from common.const import DOMAIN_NOTIFY
 from common.utils import KWArgFormatter
@@ -79,7 +81,8 @@ def _build_payload(
 
 class FcmNotifier(BaseApp):
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         self.log("Initialized")
 
     def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):

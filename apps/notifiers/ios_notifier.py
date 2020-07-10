@@ -1,5 +1,7 @@
 import os.path
 
+from appdaemon import utils
+
 from common.base_app import BaseApp
 from common.const import DOMAIN_NOTIFY
 from common.utils import KWArgFormatter
@@ -10,7 +12,8 @@ ARG_SERVICE = "service"
 
 class iOSNotifier(BaseApp):
 
-    def initialize_app(self):
+    @utils.sync_wrapper
+    async def initialize_app(self):
         return
 
     @property
