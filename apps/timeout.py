@@ -54,18 +54,17 @@ SCHEMA_ON_TIMEOUT = SCHEMA_ON_TRIGGER = vol.Schema({
 
 
 class Timeout(BaseApp):
-    _notification_category = None
-    _pause_when = {}
-    _when_handlers = set()
-    _timeout_handler = None
-    _enabled_flag = True
-    _paused = False
-    _running = False
-    _canceling_when_handlers = False
-    _when_handlers_lock = None
-
     async def initialize_app(self):
+        self._notification_category = None
+        self._pause_when = {}
+        self._when_handlers = set()
+        self._timeout_handler = None
+        self._paused = False
+        self._running = False
+        self._canceling_when_handlers = False
         self._when_handlers_lock = Lock()
+
+        self._enabled_flag = True
         if ARG_ENABLED_FLAG in self.configs:
             self._enabled_flag = await self.get_state(self.configs[ARG_ENABLED_FLAG])
             await self.listen_state(self._flag_handler,
