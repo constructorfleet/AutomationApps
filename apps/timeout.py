@@ -78,6 +78,8 @@ class Timeout(BaseApp):
         for when in self.configs[ARG_PAUSE_WHEN]:
             self._pause_when[when[ARG_ENTITY_ID]] = when
 
+        self.debug(f'PAUSE WHEN {str(self._pause_when)}')
+
         trigger = self.configs[ARG_TRIGGER]
         await self.listen_state(self._trigger_met_handler,
                                 entity=trigger[ARG_ENTITY_ID],
