@@ -1,4 +1,5 @@
 from builtins import int, isinstance
+from threading import Lock
 
 import voluptuous as vol
 
@@ -60,6 +61,8 @@ class Timeout(BaseApp):
     _enabled_flag = True
     _paused = False
     _running = False
+    _canceling_when_handlers = False
+    _when_handlers_lock = Lock()
 
     def initialize_app(self):
         if ARG_ENABLED_FLAG in self.configs:
@@ -183,11 +186,15 @@ class Timeout(BaseApp):
         self._running = True
         if self._timeout_handler is None:
             self.debug("Setting up pause handlers")
-            for pause_when in self.configs[ARG_PAUSE_WHEN]:
-                self._when_handlers.add(
-                    self.listen_state(self._handle_pause_when,
-                                      entity=pause_when[ARG_ENTITY_ID],
-                                      immediate=True))
+            self._when_handlers_lock.acquire()
+            try:
+                for pause_when in self.configs[ARG_PAUSE_WHEN]:
+                    self._when_handlers.add(
+                        self.listen_state(self._handle_pause_when,
+                                          entity=pause_when[ARG_ENTITY_ID],
+                                          immediate=True))
+            finally:
+                self._when_handlers_lock.release()
         self._reset_timer('Triggered')
 
     def _stop(self, message='Stopping'):
@@ -213,11 +220,19 @@ class Timeout(BaseApp):
             )
 
     def _cancel_handlers(self, message):
-        self.debug('Cancelling when handlers %s', message)
-        handlers = self._when_handlers.copy()
-        self._when_handlers = set()
-        for handler in [handler for handler in handlers if handler is not None]:
-            self.cancel_listen_state(handler)
+        if self._canceling_when_handlers:
+            return
+
+        self._when_handlers_lock.acquire()
+        self._canceling_when_handlers = True
+        try:
+            self.debug('Cancelling when handlers %s', message)
+            for handler in self._when_handlers:
+                self.cancel_listen_state(handler)
+            self._when_handlers.clear()
+        finally:
+            self._when_handlers_lock.release()
+            self._canceling_when_handlers = False
 
     def _cancel_timer(self, message):
         self.debug('Canceling Timer %s', message)

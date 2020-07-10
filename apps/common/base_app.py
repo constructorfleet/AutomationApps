@@ -162,6 +162,8 @@ class BaseApp(hassmqtt.HassMqtt):
         return await super().cancel_listen_event(handle)
 
     async def cancel_listen_state(self, handle):
+        if handle is None:
+            return
         if isinstance(handle, ListenHandle):
             return await handle.cancel()
         return await super().cancel_listen_state(handle)
