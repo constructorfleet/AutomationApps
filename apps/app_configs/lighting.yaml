@@ -2,7 +2,7 @@ dining_room_light:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -26,7 +26,7 @@ dining_room_light_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -48,7 +48,7 @@ garage_light:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -78,7 +78,7 @@ garage_light_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -103,7 +103,7 @@ laundry_light:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -126,7 +126,7 @@ laundry_light_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -150,7 +150,7 @@ kitchen_light:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - validation
   trigger:
@@ -170,7 +170,7 @@ kitchen_light_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - validation
   trigger:
@@ -190,7 +190,7 @@ lower_hall_light:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - validation
   trigger:
@@ -227,7 +227,7 @@ lower_hall_light_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -250,7 +250,7 @@ upper_landing_hall_light:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -277,7 +277,7 @@ upper_landing_hall_light_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -300,7 +300,7 @@ basement_stair_light:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -324,7 +324,7 @@ basement_stair_light_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -349,7 +349,7 @@ couch_lights_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -371,7 +371,7 @@ lower_bathroom_fan_timeout:
   module: timeout
   class: Timeout
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - conditions
@@ -390,7 +390,7 @@ night_lights:
   module: night_lights
   class: NightLights
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - validation

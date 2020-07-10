@@ -2,7 +2,7 @@ holidays:
   module: holidays
   class: HolidayColors
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - validation
     - utils

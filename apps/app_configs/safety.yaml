@@ -2,7 +2,7 @@ leak_detected:
   module: notify_when
   class: NotifyWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - validation
@@ -25,7 +25,7 @@ laundry_leak:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - const
     - validation
@@ -47,7 +47,7 @@ laundry_leak_clear:
   module: call_when
   class: CallWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - validation
   trigger:

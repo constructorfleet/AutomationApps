@@ -2,7 +2,7 @@ washer_done:
   module: notify_when
   class: NotifyWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - validation
   dependencies:
@@ -22,7 +22,7 @@ dryer_done:
   module: notify_when
   class: NotifyWhen
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - validation
   dependencies:

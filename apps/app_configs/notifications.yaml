@@ -49,7 +49,7 @@ notification_action_processor:
   module: notification_action_processor
   class: NotificationActionProcessor
   global_dependencies:
-    - handle
+    - listen_handle
     - base_app
     - validation
     - notification_action
