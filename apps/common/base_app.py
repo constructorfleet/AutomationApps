@@ -1,6 +1,7 @@
 import copy
 import json
 import logging
+import traceback
 import os
 import sys
 from asyncio import Lock
@@ -249,7 +250,8 @@ class BaseApp(hassmqtt.HassMqtt):
     async def condition_met(self, condition_to_check):
         """Verifies if condition is met."""
         condition_spec = copy.deepcopy(condition_to_check)
-        self.debug(f'CHECKING CONDITION {str(condition_spec)}', exc_info=1)
+        self.debug(f'CHECKING CONDITION {str(condition_spec)}')
+        self.debug(f"{''.join(traceback.format_stack())}")
         if ARG_AND in condition_spec:
             self.debug('AND')
             for condition in condition_spec[ARG_AND]:
