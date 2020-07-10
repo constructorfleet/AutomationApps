@@ -13,11 +13,11 @@ class ListenHandle:
 
     async def cancel(self):
         """Cancel the listener."""
-        if self._lock.locked() or not self.is_active:
+        if self._lock.locked() or not self.is_active or self._handle is None:
             return
 
-        self._lock.acquire()
         self.is_active = False
+        self._lock.acquire()
         await self._do_cancel()
         self._on_cancelled()
         self._lock.release()
