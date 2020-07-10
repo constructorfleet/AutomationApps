@@ -169,9 +169,10 @@ class Timeout(BaseApp):
             self.debug("Pause time because {} is {}".format(entity, new))
             await self._pause()
         elif self._paused:
-            for entity, condition in self._pause_when.items():
-                if await self.condition_met(condition):
-                    return
+            async with self._when_handlers_lock:
+                for entity, condition in self._pause_when.items():
+                    if await self.condition_met(condition):
+                        return
             await self._unpause()
 
     async def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
@@ -190,7 +191,6 @@ class Timeout(BaseApp):
         await self._reset_timer('Pause condition unmet')
 
     async def _run(self):
-        self._running = True
         if self._timeout_handler is None:
             self.debug("Setting up pause handlers")
             async with self._when_handlers_lock:
@@ -247,3 +247,4 @@ class Timeout(BaseApp):
         self.debug('Scheduling timer')
         self._timeout_handler = await self.run_in(self._handle_timeout,
                                                   await self.duration * 60)
+        self._running = True
