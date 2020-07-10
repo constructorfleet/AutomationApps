@@ -38,6 +38,8 @@ class ListenHandle:
     def __eq__(self, o):
         if self._handle is None:
             return False
+        if isinstance(o, ListenHandle):
+            return self._handle.__eq__(o._handle)
         return self._handle.__eq__(o)
 
     def __hash__(self):
