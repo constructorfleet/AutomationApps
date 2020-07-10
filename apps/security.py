@@ -140,7 +140,7 @@ class Doorbell(BaseApp):
 
     @utils.sync_wrapper
     async def _handle_image_processor(self, entity, attribute, old, new, kwargs):
-        if old == new or self._should_ignore_processor:
+        if old == new or await self._should_ignore_processor:
             await self._start_image_processing(None)
             return
 
@@ -190,7 +190,8 @@ class Doorbell(BaseApp):
         }
 
     @property
-    def _should_ignore_processor(self):
+    @utils.sync_wrapper
+    async def _should_ignore_processor(self):
         if ARG_IMAGE_PROCESSING not in self.configs \
                 or ARG_CONDITION not in self.configs[ARG_IMAGE_PROCESSING]:
             return False
