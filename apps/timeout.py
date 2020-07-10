@@ -191,7 +191,7 @@ class Timeout(BaseApp):
         await self._reset_timer('Pause condition unmet')
 
     async def _run(self):
-        if self._timeout_handler is None:
+        if not self._running:
             self.debug("Setting up pause handlers")
             async with self._when_handlers_lock:
                 for pause_when in self.configs[ARG_PAUSE_WHEN]:
@@ -202,10 +202,11 @@ class Timeout(BaseApp):
         await self._reset_timer('Triggered')
 
     async def _stop(self, message='Stopping'):
-        self._running = False
-        self._paused = False
+        self._paused = True
         await self._cancel_timer(message)
         await self._cancel_handlers(message)
+        self._running = False
+        self._paused = False
 
     async def _handle_timeout(self, kwargs):
         self.debug('Handling timeout (STOPPING)')
