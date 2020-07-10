@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import sys
+import traceback
 from datetime import datetime
 from asyncio import Lock
 
@@ -248,8 +249,9 @@ class BaseApp(hassmqtt.HassMqtt):
         )
 
     async def condition_met(self, condition_to_check):
-        condition_spec = copy.deepcopy(condition_to_check)
         """Verifies if condition is met."""
+        traceback.print_tb()
+        condition_spec = copy.deepcopy(condition_to_check)
         self.debug(f'CHECKING CONDITION {str(condition_spec)}')
         if ARG_AND in condition_spec:
             self.debug('AND')
