@@ -65,7 +65,6 @@ class Timeout(BaseApp):
     _canceling_when_handlers = False
     _when_handlers_lock = Lock()
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         if ARG_ENABLED_FLAG in self.configs:
             self._enabled_flag = await self.get_state(self.configs[ARG_ENABLED_FLAG])
@@ -113,14 +112,12 @@ class Timeout(BaseApp):
         }, extra=vol.ALLOW_EXTRA)
 
     @property
-    @utils.sync_wrapper
     async def duration(self):
         if isinstance(self.configs[ARG_DURATION], str):
             return await self.get_state(self.configs[ARG_DURATION])
         else:
             return self.configs[ARG_DURATION]
 
-    @utils.sync_wrapper
     async def _flag_handler(self, entity, attribute, old, new, kwargs):
         if self._enabled_flag == new:
             return
@@ -150,7 +147,6 @@ class Timeout(BaseApp):
                     {}
                 )
 
-    @utils.sync_wrapper
     async def _trigger_met_handler(self, entity, attribute, old, new, kwargs):
         if new == old or new != self.configs[ARG_TRIGGER][ARG_STATE] \
                 or self._paused or self._running or not self._enabled_flag:
@@ -159,7 +155,6 @@ class Timeout(BaseApp):
         self.debug('MET old %s new %s' % (old, new))
         await self._run()
 
-    @utils.sync_wrapper
     async def _handle_pause_when(self, entity, attribute, old, new, kwargs):
         if old == new or not self._running or not self._enabled_flag:
             return
@@ -174,25 +169,21 @@ class Timeout(BaseApp):
                     return
             await self._unpause()
 
-    @utils.sync_wrapper
     async def _trigger_unmet_handler(self, entity, attribute, old, new, kwargs):
         if old == new or new == self.configs[ARG_TRIGGER][ARG_STATE] \
                 or not self._running or not self._enabled_flag:
             return
         await self._stop('No longer met')
 
-    @utils.sync_wrapper
     async def _pause(self):
         self._paused = True
         await self._cancel_timer('Pause condition met')
         await self._cancel_timer('Pause condition met')
 
-    @utils.sync_wrapper
     async def _unpause(self):
         self._paused = False
         await self._reset_timer('Pause condition unmet')
 
-    @utils.sync_wrapper
     async def _run(self):
         self._running = True
         if self._timeout_handler is None:
@@ -208,14 +199,12 @@ class Timeout(BaseApp):
                 self._when_handlers_lock.release()
         await self._reset_timer('Triggered')
 
-    @utils.sync_wrapper
     async def _stop(self, message='Stopping'):
         self._running = False
         self._paused = False
         await self._cancel_timer(message)
         await self._cancel_handlers(message)
 
-    @utils.sync_wrapper
     async def _handle_timeout(self, kwargs):
         await self._stop()
 
@@ -232,7 +221,6 @@ class Timeout(BaseApp):
                 **self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
             )
 
-    @utils.sync_wrapper
     async def _cancel_handlers(self, message):
         if self._canceling_when_handlers:
             return
@@ -248,14 +236,12 @@ class Timeout(BaseApp):
             self._when_handlers_lock.release()
             self._canceling_when_handlers = False
 
-    @utils.sync_wrapper
     async def _cancel_timer(self, message):
         self.debug('Canceling Timer %s', message)
         if self._timeout_handler is not None:
             await self.cancel_timer(self._timeout_handler)
         self._timeout_handler = None
 
-    @utils.sync_wrapper
     async def _reset_timer(self, message):
         await self._cancel_timer(message)
         self.debug('Scheduling timer')

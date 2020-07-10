@@ -64,7 +64,6 @@ class CallBHG(BaseApp):
     _called_today = False
     _calling = False
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self._client = Client(
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
@@ -91,18 +90,15 @@ class CallBHG(BaseApp):
             vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id
         }, extra=vol.ALLOW_EXTRA)
 
-    @utils.sync_wrapper
     async def _new_day(self, kwargs):
         self._called_today = False
 
-    @utils.sync_wrapper
     async def _daily_call(self, kwargs):
         if self._called_today:
             self.info("Already called today.")
             return
         await self._call_bhg('call_bhg', {}, {})
 
-    @utils.sync_wrapper
     async def _call_bhg(self, event, data, kwargs):
         if self._calling:
             return
@@ -128,9 +124,7 @@ class CallBHG(BaseApp):
 
         await self.run_in(self._process_status, 5)
 
-    @utils.sync_wrapper
     async def _process_status(self, kwargs):
-
         call_status = self._call_instance.fetch().status
         status_map = {
             CallInstance.Status.BUSY: self._handle_call_failed,
@@ -145,15 +139,12 @@ class CallBHG(BaseApp):
 
             CallInstance.Status.COMPLETED: self._handle_call_complete
         }
-        status_map.get(call_status,
-                       self._handle_unknown_call_status)(call_status)
+        await status_map.get(call_status, self._handle_unknown_call_status)(call_status)
 
-    @utils.sync_wrapper
     async def _handle_call_in_process(self, status):
         _LOGGER.error("Call in process %s, retrying in %d sec" % (status, 10))
         await self.run_in(self._process_status, 10)
 
-    @utils.sync_wrapper
     async def _handle_call_failed(self, status):
         _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
         self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
@@ -163,17 +154,14 @@ class CallBHG(BaseApp):
         await self.run_in(self._daily_call,
                           10 * 60)
 
-    @utils.sync_wrapper
     async def _handle_call_complete(self, status):
         _LOGGER.debug("Call complete, waiting for transcript")
         await self.run_in(self._get_transcripts, 45)
 
-    @utils.sync_wrapper
     async def _handle_unknown_call_status(self, status):
         _LOGGER.warning("Unknown status %s" % status)
         await self.run_in(self._process_status, 10)
 
-    @utils.sync_wrapper
     async def _get_transcripts(self, kwargs):
         recording_sids = [recording.sid for recording in
                           self._call_instance.fetch().recordings.list() if

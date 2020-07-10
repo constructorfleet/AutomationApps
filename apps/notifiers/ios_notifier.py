@@ -12,7 +12,6 @@ ARG_SERVICE = "service"
 
 class iOSNotifier(BaseApp):
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         return
 

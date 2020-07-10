@@ -63,7 +63,6 @@ class CloseEnoughToHome(BaseApp):
     _last_states = {}
     _timer_handlers = {}
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self._home_gps = {
             ATTR_LATITUDE: self.configs.get(ATTR_LATITUDE, None),
@@ -99,7 +98,6 @@ class CloseEnoughToHome(BaseApp):
             )
         }, extra=vol.ALLOW_EXTRA)
 
-    @utils.sync_wrapper
     async def _handle_entity_change(self, entity, attribute, old, new, kwargs):
         if new is None:
             return
@@ -111,13 +109,11 @@ class CloseEnoughToHome(BaseApp):
         elif new.get(ATTR_STATE) in self.configs[ARG_ZONES_ASSUME_HOME]:
             await self._reset_timer(entity)
 
-    @utils.sync_wrapper
     async def _stop_timer(self, entity):
         if entity in self._timer_handlers:
             await self.cancel_timer(self._timer_handlers[entity])
             del self._timer_handlers[entity]
 
-    @utils.sync_wrapper
     async def _reset_timer(self, entity):
         await self._stop_timer(entity)
         self._timer_handlers[entity] = await self.run_in(self._handle_assume_home,
@@ -125,14 +121,14 @@ class CloseEnoughToHome(BaseApp):
                                                              ARG_MINUTES_BEFORE_ASSUME] * 60,
                                                          **{ATTR_ENTITY_ID: entity})
 
-    @utils.sync_wrapper
     async def _handle_assume_home(self, kwargs):
-        entity_id = kwargs.get(ATTR_ENTITY_ID, None)
-        if entity_id is None:
+        entity = kwargs.get(ATTR_ENTITY_ID, None)
+        if entity is None:
             _LOGGER.warning('No entity id provided')
             return
-        del self._timer_handlers[entity_id]
-        old_state = self._last_states[entity_id]
+        await self.cancel_timer(self._timer_handlers[entity])
+        del self._timer_handlers[entity]
+        old_state = self._last_states[entity]
         new_state = copy.deepcopy(old_state)
         new_state[ATTR_STATE] = 'home'
         if ATTR_ATTRIBUTES in new_state and ATTR_LATITUDE in new_state[ATTR_ATTRIBUTES] and \
@@ -157,7 +153,6 @@ class TrackerGroup(BaseApp):
     _home_gps = None
     _get_distance = get_distance_helper(unit=Unit.MILES)
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self._home_gps = (
             self.configs.get(ATTR_LATITUDE, None),
@@ -196,7 +191,6 @@ class TrackerGroup(BaseApp):
             vol.Optional(ARG_MAX_DISTANCE, default=ARG_MAX_DISTANCE): vol.Coerce(float)
         }, extra=vol.ALLOW_EXTRA)
 
-    @utils.sync_wrapper
     async def _handle_tracker_update(self, entity, attribute, old, new, kwargs):
         if new[ATTR_STATE] == 'home':
             gps = self._home_gps
@@ -208,7 +202,6 @@ class TrackerGroup(BaseApp):
         self._entity_last_gps[group_name][entity] = gps
         self._calculate_group_members(group_name, kwargs[ATTR_MAX_DISTANCE])
 
-    @utils.sync_wrapper
     async def _set_group_state(self, group_name, members=None, lat_avg=0.0, long_avg=0.0):
         entity = 'device_tracker.group_%s' % group_name
         new_state = {
@@ -276,7 +269,6 @@ class TrackerGroup(BaseApp):
                 long_avg=avg_long / len(members)
             )
 
-    @utils.sync_wrapper
     async def _get_gps(self, state):
         if state.get(ATTR_SOURCE_TYPE, None) == SOURCE_TYPE_ROUTER:
             return self._home_gps

@@ -67,7 +67,6 @@ class HassMqtt(adbase.ADBase, adapi.ADAPI):
     # Override listen_event()
     #
 
-    @utils.sync_wrapper
     async def listen_event(self, callback, event=None, **kwargs):
         """Listens for changes within the MQTT plugin.
 

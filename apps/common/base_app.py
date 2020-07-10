@@ -76,7 +76,6 @@ class BaseApp(hassmqtt.HassMqtt):
         vol.Optional(ARG_LOG_LEVEL, default='ERROR'): valid_log_level
     }
 
-    @utils.sync_wrapper
     async def initialize(self):
         """Initialization of Base App class."""
         self._persistent_data_file = os.path.join(self.config_dir, self.namespace,
@@ -112,82 +111,67 @@ class BaseApp(hassmqtt.HassMqtt):
         await self.initialize_app()
         self.info("Initialized")
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         pass
 
-    @utils.sync_wrapper
     async def run_in(self, callback, delay, **kwargs):
         handle = await super().run_in(callback, delay, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def run_every(self, callback, start, interval, **kwargs):
         handle = await super().run_every(callback, start, interval, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def run_at(self, callback, start, **kwargs):
         handle = await super().run_at(callback, start, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def run_at_sunset(self, callback, **kwargs):
         handle = await super().run_at_sunset(callback, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def run_at_sunrise(self, callback, **kwargs):
         handle = await super().run_at_sunrise(callback, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def run_once(self, callback, start, **kwargs):
         handle = await super().run_once(callback, start, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def run_daily(self, callback, start, **kwargs):
         handle = await super().run_daily(callback, start, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def run_hourly(self, callback, start, **kwargs):
         handle = await super().run_hourly(callback, start, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def run_minutely(self, callback, start, **kwargs):
         handle = await super().run_minutely(callback, start, **kwargs)
         return TimerHandle(handle, self)
 
-    @utils.sync_wrapper
     async def listen_state(self, callback, entity=None, **kwargs):
         if entity is None:
             raise ValueError(f'Listen state called with no entity')
         handle = await super().listen_state(callback, entity, **kwargs)
         return StateListenHandle(handle, self)
 
-    @utils.sync_wrapper
     async def listen_event(self, callback, event=None, **kwargs):
         if event is None:
             raise ValueError(f'Listen event called with no event')
         handle = await super().listen_event(callback, event, **kwargs)
         return EventListenHandle(handle, self)
 
-    @utils.sync_wrapper
     async def cancel_timer(self, handle):
         if isinstance(handle, ListenHandle):
             return await handle.cancel()
         return await super().cancel_timer(handle)
 
-    @utils.sync_wrapper
     async def cancel_listen_event(self, handle):
         if isinstance(handle, ListenHandle):
             return await handle.cancel()
         return await super().cancel_listen_event(handle)
 
-    @utils.sync_wrapper
     async def cancel_listen_state(self, handle):
         if handle is None:
             return
@@ -201,7 +185,6 @@ class BaseApp(hassmqtt.HassMqtt):
     def _prepend_log_msg(self, msg):
         return "{}({}#{}): {}".format(self.name, '__function__', '__line__', msg)
 
-    @utils.sync_wrapper
     async def record_data(self, key, value):
         with self._data_lock:
             if key not in self.data:
@@ -262,7 +245,6 @@ class BaseApp(hassmqtt.HassMqtt):
             namespace=namespace
         )
 
-    @utils.sync_wrapper
     async def condition_met(self, condition_spec):
         """Verifies if condition is met."""
         if ARG_AND in condition_spec:

@@ -41,7 +41,6 @@ SCHEMA_NOTIFY = vol.Schema({
 class NotifyWhen(BaseApp):
     _notification_category = None
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self._notification_category = \
             get_category_by_name(self.configs[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])
@@ -70,7 +69,6 @@ class NotifyWhen(BaseApp):
         condition_to[ARG_ENTITY_ID] = value
         return condition_to
 
-    @utils.sync_wrapper
     async def _handle_state_change(self, entity, attribute, old, new, kwargs):
         if old == new or old is None or new is None:
             return

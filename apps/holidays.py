@@ -124,13 +124,12 @@ class HolidayColors(BaseApp):
     _for_year = None
     _holidays = {}
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self.debug('File %s' % self._persistent_data_file)
         self.debug('Data {}'.format(str(self.data)))
         if self._for_year != datetime.now().year:
             self.debug('Retrieving holidays')
-            self._retrieve_holidays()
+            await self._retrieve_holidays()
 
         self.debug(str(self._holidays))
 
@@ -165,7 +164,6 @@ class HolidayColors(BaseApp):
         self.debug('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
-    @utils.sync_wrapper
     async def _retrieve_holidays(self):
         self.clear_data()
         response = requests.get(self.api_url)

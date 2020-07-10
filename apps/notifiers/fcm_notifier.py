@@ -81,7 +81,6 @@ def _build_payload(
 
 class FcmNotifier(BaseApp):
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self.log("Initialized")
 

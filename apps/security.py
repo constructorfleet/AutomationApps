@@ -83,7 +83,6 @@ class Doorbell(BaseApp):
     _pause_handle = None
     _notification_category = None
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self._notification_category = get_category_by_name(self.configs[ARG_NOTIFY_CATEGORY])
         doorbell = self.configs[ARG_DOORBELL]
@@ -119,7 +118,6 @@ class Doorbell(BaseApp):
                 VALID_NOTIFICATION_CATEGORIES)
         }, extra=vol.ALLOW_EXTRA)
 
-    @utils.sync_wrapper
     async def _start_image_processing(self, kwargs):
         if self._pause_handle is not None:
             await self.cancel_timer(self._pause_handle)
@@ -130,7 +128,6 @@ class Doorbell(BaseApp):
             attribute=ATTR_MATCHES,
             oneshot=True)
 
-    @utils.sync_wrapper
     async def _pause_image_processing(self):
         if self._image_processor_handle is not None:
             await self.cancel_listen_state(self._image_processor_handle)
@@ -138,7 +135,6 @@ class Doorbell(BaseApp):
                                                self.configs[ARG_IMAGE_PROCESSING][
                                                    ARG_NOTIFY_INTERVAL] * 60)
 
-    @utils.sync_wrapper
     async def _handle_image_processor(self, entity, attribute, old, new, kwargs):
         if old == new or await self._should_ignore_processor:
             await self._start_image_processing(None)
@@ -153,7 +149,6 @@ class Doorbell(BaseApp):
                     return
         await self._start_image_processing(None)
 
-    @utils.sync_wrapper
     async def _handle_doorbell(self, entity, attribute, old, new, kwargs):
         if old == new:
             return
@@ -190,7 +185,6 @@ class Doorbell(BaseApp):
         }
 
     @property
-    @utils.sync_wrapper
     async def _should_ignore_processor(self):
         if ARG_IMAGE_PROCESSING not in self.configs \
                 or ARG_CONDITION not in self.configs[ARG_IMAGE_PROCESSING]:
@@ -205,7 +199,6 @@ class Secure(BaseApp):
     _security_entity_name = None
     _last_states = {}
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self._security_entity_name = await self.get_state(
             self.configs[self._arg_security_entity],
@@ -217,7 +210,6 @@ class Secure(BaseApp):
                                     entity=entity,
                                     oneshot=True)
 
-    @utils.sync_wrapper
     async def _handle_entity_change(self, entity, attribute, old, new, kwargs):
         if old == new or new == self._last_states[entity] or \
                 'unavailable' in [(new or "").lower(),
@@ -245,11 +237,9 @@ class Secure(BaseApp):
                                 entity=entity,
                                 oneshot=True)
 
-    @utils.sync_wrapper
     async def _handle_arrive(self, entity_name):
         pass
 
-    @utils.sync_wrapper
     async def _handle_left(self, entity_name):
         pass
 
@@ -262,7 +252,6 @@ class Secure(BaseApp):
         return None
 
     @property
-    @utils.sync_wrapper
     async def is_secured(self):
         return False
 
@@ -281,7 +270,6 @@ class DoorLock(Secure):
         }, extra=vol.ALLOW_EXTRA)
 
     @property
-    @utils.sync_wrapper
     async def is_secured(self):
         return (await self.get_state(self.configs[ARG_LOCK])) == 'locked'
 
@@ -293,7 +281,6 @@ class DoorLock(Secure):
     def _arg_security_entity(self):
         return ARG_LOCK
 
-    @utils.sync_wrapper
     async def _handle_arrive(self, entity_name):
         if not await self.is_secured:
             self._notify(
@@ -313,7 +300,6 @@ class DoorLock(Secure):
             response_entity_id=self.configs[ARG_LOCK],
             person_name=entity_name)
 
-    @utils.sync_wrapper
     async def _handle_left(self, entity_name):
         if await self.is_secured:
             self._notify(
@@ -364,11 +350,9 @@ class GarageDoor(Secure):
         return ARG_COVER
 
     @property
-    @utils.sync_wrapper
     async def is_secured(self):
         return (await self.get_state(self.configs[ARG_COVER])) == 'closed'
 
-    @utils.sync_wrapper
     async def _handle_arrive(self, entity_name):
         if not await self.is_secured:
             return
@@ -384,7 +368,6 @@ class GarageDoor(Secure):
             response_entity_id=self.configs[ARG_COVER],
             vehicle_name=entity_name)
 
-    @utils.sync_wrapper
     async def _handle_left(self, entity_name):
         if await self.is_secured:
             return
@@ -430,7 +413,6 @@ class AlarmSystem(BaseApp):
             })
         }, extra=vol.ALLOW_EXTRA)
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         for person in self.configs[ARG_PEOPLE]:
             if await self.get_state(person) == 'home':
@@ -456,7 +438,6 @@ class AlarmSystem(BaseApp):
         elif alarm_status.startswith('disarmed') and len(self.people_in_house) == 0:
             await self._arm()
 
-    @utils.sync_wrapper
     async def _handle_night_mode_change(self, entity, attribute, old, new, kwargs):
         alarm_status = str(await self.alarm_status)
         if old == new or alarm_status.startswith('armed'):
@@ -467,7 +448,6 @@ class AlarmSystem(BaseApp):
         elif new == 'off' and len(self.people_in_house) > 0:
             await self._disarm()
 
-    @utils.sync_wrapper
     async def _handle_night_mode_event(self, event, data, kwargs):
         alarm_status = str(await self.alarm_status)
         if event == self.configs[ARG_NIGHT_MODE_EVENT][ARG_NIGHT_MODE_EVENT_ARM]:
@@ -481,7 +461,6 @@ class AlarmSystem(BaseApp):
             else:
                 await self._disarm()
 
-    @utils.sync_wrapper
     async def _handle_presence_change(self, entity, attribute, old, new, kwargs):
         self.info('Presence change %s %s', entity, new)
         if old == new:
@@ -500,11 +479,9 @@ class AlarmSystem(BaseApp):
                 await self._arm()
 
     @property
-    @utils.sync_wrapper
     async def alarm_status(self):
         return await self.get_state(entity_id=self.configs[ARG_ALARM_PANEL])
 
-    @utils.sync_wrapper
     async def _disarm(self):
         self.publish_service_call(
             'alarm_control_panel',
@@ -522,7 +499,6 @@ class AlarmSystem(BaseApp):
         )
         self._notify(NotificationCategory.SECURITY_ALARM_DISARMED)
 
-    @utils.sync_wrapper
     async def _arm(self):
         self.publish_service_call(
             'alarm_control_panel',
@@ -547,7 +523,6 @@ class AlarmSystem(BaseApp):
         )
         self._notify(NotificationCategory.SECURITY_ALARM_ARM_AWAY)
 
-    @utils.sync_wrapper
     async def _arm_night_mode(self):
         self.publish_service_call(
             'alarm_control_panel',

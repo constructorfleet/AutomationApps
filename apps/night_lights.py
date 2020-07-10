@@ -56,7 +56,6 @@ class NightLights(BaseApp):
     dusk_entities = []
     night_entities = []
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         """Initalize the application."""
         conf_dawn = self.configs.get(ARG_DAWN)
@@ -106,25 +105,21 @@ class NightLights(BaseApp):
             )
         }, extra=vol.ALLOW_EXTRA)
 
-    @utils.sync_wrapper
     async def _schedule_dawn(self):
         await self.run_at_sunrise(
             self._handle_dawn,
             offset=self.configs[ARG_DAWN][ARG_OFFSET])
 
-    @utils.sync_wrapper
     async def _schedule_dusk(self):
         await self.run_at_sunset(
             self._handle_dusk,
             offset=-self.configs[ARG_DUSK][ARG_OFFSET])
 
-    @utils.sync_wrapper
     async def _handle_dawn(self, kwargs):
         """Handle dawn event."""
         self._handle_entity_services(self.dawn_entities)
         await self._schedule_dawn()
 
-    @utils.sync_wrapper
     async def _handle_dusk(self, kwargs):
         """Handle dusk event."""
         self._handle_entity_services(self.dusk_entities)

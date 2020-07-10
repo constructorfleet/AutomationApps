@@ -37,7 +37,6 @@ SCHEMA_CALL = vol.Schema({
 class CallWhen(BaseApp):
     _conditions = {}
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         for trigger in self.configs[ARG_TRIGGER]:
             if ARG_STATE not in trigger \
@@ -83,7 +82,6 @@ class CallWhen(BaseApp):
         }, extra=vol.ALLOW_EXTRA)
 
     @property
-    @utils.sync_wrapper
     async def conditions_met(self):
         for condition in self.configs[ARG_CONDITION]:
             if not await self.condition_met(condition):
@@ -91,7 +89,6 @@ class CallWhen(BaseApp):
 
         return True
 
-    @utils.sync_wrapper
     async def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if new == old:
             return

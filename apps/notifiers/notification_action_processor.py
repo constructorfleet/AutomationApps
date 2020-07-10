@@ -14,7 +14,6 @@ ACKNOWLEDGE_ID = "acknowledge_id"
 class NotificationActionProcessor(BaseApp):
     acknowledge_listeners = []
 
-    @utils.sync_wrapper
     async def initialize_app(self):
         self.debug("Starting listener for iOS")
         await self.listen_event(self.handle_event,
@@ -30,7 +29,7 @@ class NotificationActionProcessor(BaseApp):
     def add_acknowledge_listener(self, listener):
         self.acknowledge_listeners.append(listener)
 
-    def handle_event(self, event_name, data, kwargs):
+    async def handle_event(self, event_name, data, kwargs):
         self.debug("Event Data {} and kwargs {}".format(str(data), str(kwargs)))
         self.debug("ACTION NAME {} ".format(data.get(ACTION_NAME, data.get(ACTION, "")).lower()))
         for name, member in NotificationAction.__members__.items():
