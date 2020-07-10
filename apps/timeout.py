@@ -1,8 +1,7 @@
+from asyncio import Lock
 from builtins import int, isinstance
-from threading import Lock
 
 import voluptuous as vol
-from appdaemon import utils
 
 from common.base_app import BaseApp
 from common.const import (
@@ -188,15 +187,12 @@ class Timeout(BaseApp):
         self._running = True
         if self._timeout_handler is None:
             self.debug("Setting up pause handlers")
-            self._when_handlers_lock.acquire()
-            try:
+            async with self._when_handlers_lock:
                 for pause_when in self.configs[ARG_PAUSE_WHEN]:
                     self._when_handlers.add(
                         await self.listen_state(self._handle_pause_when,
                                                 entity=pause_when[ARG_ENTITY_ID],
                                                 immediate=True))
-            finally:
-                self._when_handlers_lock.release()
         await self._reset_timer('Triggered')
 
     async def _stop(self, message='Stopping'):
@@ -225,15 +221,12 @@ class Timeout(BaseApp):
         if self._canceling_when_handlers:
             return
 
-        self._when_handlers_lock.acquire()
-        self._canceling_when_handlers = True
-        try:
+        async with self._when_handlers_lock:
+            self._canceling_when_handlers = True
             self.debug('Cancelling when handlers %s', message)
             for handler in self._when_handlers:
                 await self.cancel_listen_state(handler)
             self._when_handlers.clear()
-        finally:
-            self._when_handlers_lock.release()
             self._canceling_when_handlers = False
 
     async def _cancel_timer(self, message):

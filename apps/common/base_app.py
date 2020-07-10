@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from threading import Lock
+from asyncio import Lock
 
 import voluptuous as vol
 from appdaemon import utils
@@ -186,7 +186,7 @@ class BaseApp(hassmqtt.HassMqtt):
         return "{}({}#{}): {}".format(self.name, '__function__', '__line__', msg)
 
     async def record_data(self, key, value):
-        with self._data_lock:
+        async with self._data_lock:
             if key not in self.data:
                 self.data[key] = None
             self.data[key] = value
@@ -197,7 +197,7 @@ class BaseApp(hassmqtt.HassMqtt):
             self._data_save_handle = await self.run_in(self.save_data, 4)
 
     def clear_data(self):
-        with self._data_lock:
+        async with self._data_lock:
             os.makedirs(
                 os.path.join(self.config_dir, self.namespace),
                 exist_ok=True)
@@ -207,7 +207,7 @@ class BaseApp(hassmqtt.HassMqtt):
 
     def save_data(self, kwargs):
         self.debug("Saving %s" % str(self.data))
-        with self._data_lock:
+        async with self._data_lock:
             with open(self._persistent_data_file, 'w') as json_file:
                 json.dump(self.data, json_file)
             self._data_save_handle = None

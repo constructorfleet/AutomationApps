@@ -1,4 +1,4 @@
-from threading import Lock
+from asyncio import Lock
 
 
 class ListenHandle:
@@ -17,10 +17,9 @@ class ListenHandle:
             return
 
         self.is_active = False
-        self._lock.acquire()
-        await self._do_cancel()
-        self._on_cancelled()
-        self._lock.release()
+        async with self._lock:
+            await self._do_cancel()
+            self._on_cancelled()
 
     def _on_cancelled(self):
         """Set properties once cancelled."""
