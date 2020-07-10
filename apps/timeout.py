@@ -159,11 +159,10 @@ class Timeout(BaseApp):
         if old == new or not self._running or not self._enabled_flag:
             return
 
-        if self._timeout_handler is not None \
-                and await self.condition_met(self._pause_when[entity]) and not self._paused:
+        if await self.condition_met(self._pause_when[entity]) and not self._paused:
             self.debug("Pause time because {} is {}".format(entity, new))
             await self._pause()
-        elif self._timeout_handler is None and self._paused:
+        elif self._paused:
             for entity, condition in self._pause_when.items():
                 if await self.condition_met(condition):
                     return
@@ -177,7 +176,6 @@ class Timeout(BaseApp):
 
     async def _pause(self):
         self._paused = True
-        await self._cancel_timer('Pause condition met')
         await self._cancel_timer('Pause condition met')
 
     async def _unpause(self):
