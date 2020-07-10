@@ -111,12 +111,11 @@ def is_movie(media_type):
 class MovieMode(BaseApp):
     """Movie mode app."""
 
-    delay_handle = None
-    media_type = None
-    state = None
-    memory = {}
-
     async def initialize_app(self):
+        self.delay_handle = None
+        self.media_type = None
+        self.state = None
+        self.memory = {}
         self.debug("Configs %s", str(self.configs))
         await self.listen_state(
             self.player_state_changed,

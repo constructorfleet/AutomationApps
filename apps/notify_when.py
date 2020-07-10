@@ -39,8 +39,6 @@ SCHEMA_NOTIFY = vol.Schema({
 
 
 class NotifyWhen(BaseApp):
-    _notification_category = None
-
     async def initialize_app(self):
         self._notification_category = \
             get_category_by_name(self.configs[ARG_NOTIFY][ARG_NOTIFY_CATEGORY])

@@ -52,11 +52,9 @@ def get_arg_schema(args):
 
 
 class PersonNotifier(adbase.ADBase, adapi.ADAPI):
-    _notifier = None
-    _service = None
-    configs = {}
-
     async def initialize(self):
+        self._notifier = None
+        self._service = None
         self.configs = get_arg_schema(self.args)
 
     async def notify_people(self, notification_category, response_entity_id=None, **kwargs):

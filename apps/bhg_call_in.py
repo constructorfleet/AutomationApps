@@ -58,13 +58,11 @@ SCHEMA_CREDENTIALS_CONFIG = vol.Schema({
 class CallBHG(BaseApp):
     """Calls a NGH to determine if Alan needs to go in."""
 
-    _client = None
-    _twiML = None
-    _call_instance = None
-    _called_today = False
-    _calling = False
-
     async def initialize_app(self):
+        self._twiML = None
+        self._call_instance = None
+        self._called_today = False
+        self._calling = False
         self._client = Client(
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]

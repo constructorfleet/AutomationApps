@@ -79,12 +79,12 @@ def _get_file_path(camera, file_name=None):
 
 
 class Doorbell(BaseApp):
-    _image_processor_handle = None
-    _pause_handle = None
-    _notification_category = None
 
     async def initialize_app(self):
+        self._pause_handle = None
+        self._image_processor_handle = None
         self._notification_category = get_category_by_name(self.configs[ARG_NOTIFY_CATEGORY])
+
         doorbell = self.configs[ARG_DOORBELL]
         await self.listen_state(self._handle_doorbell,
                                 entity=doorbell[ARG_ENTITY_ID],
@@ -196,10 +196,9 @@ class Doorbell(BaseApp):
 
 
 class Secure(BaseApp):
-    _security_entity_name = None
-    _last_states = {}
 
     async def initialize_app(self):
+        self._last_states = {}
         self._security_entity_name = await self.get_state(
             self.configs[self._arg_security_entity],
             attribute='friendly_name'

@@ -3,7 +3,6 @@ from asyncio import Lock
 
 class ListenHandle:
     """Base listen handle container."""
-    __slots__ = ['is_active', '_handle', '_lock', '_app']
 
     def __init__(self, handle, app):
         self._lock = Lock()

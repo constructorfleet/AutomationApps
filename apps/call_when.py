@@ -35,7 +35,6 @@ SCHEMA_CALL = vol.Schema({
 
 
 class CallWhen(BaseApp):
-    _conditions = {}
 
     async def initialize_app(self):
         for trigger in self.configs[ARG_TRIGGER]:

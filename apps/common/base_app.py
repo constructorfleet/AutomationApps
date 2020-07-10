@@ -63,22 +63,16 @@ DEFAULT_PUBLISH_TOPIC = "events/rules"
 
 
 class BaseApp(hassmqtt.HassMqtt):
-    notifier = None
-    holidays = None
-    plugin_config = None
-    data = {}
-    configs = {}
-    _persistent_data_file = None
-    _data_save_handle = None
-    _data_lock = None
-    _log_level = None
-
     _base_config_schema = {
         vol.Optional(ARG_LOG_LEVEL, default='ERROR'): valid_log_level
     }
 
     async def initialize(self):
         """Initialization of Base App class."""
+        self.notifier = None
+        self.holidays = None
+        self.data = {}
+        self._data_save_handle = None
         self._data_lock = Lock()
         self._persistent_data_file = os.path.join(self.config_dir, self.namespace,
                                                   self.name + ".js")
@@ -250,8 +244,6 @@ class BaseApp(hassmqtt.HassMqtt):
     async def condition_met(self, condition_to_check):
         """Verifies if condition is met."""
         condition_spec = copy.deepcopy(condition_to_check)
-        self.debug(f'CHECKING CONDITION {str(condition_spec)}')
-        self.debug(f"{''.join(traceback.format_stack())}")
         if ARG_AND in condition_spec:
             self.debug('AND')
             for condition in condition_spec[ARG_AND]:
@@ -282,8 +274,6 @@ class BaseApp(hassmqtt.HassMqtt):
             return (condition_spec.get(ARG_ATTRIBUTE) in full_state) == condition_spec[ARG_EXISTS]
 
         if ARG_ENTITY_ID in condition_spec:
-            self.debug(
-                f'CALLING GET STATE WITH {condition_spec[ARG_ENTITY_ID]} {condition_spec.get(ARG_ATTRIBUTE)}')
             entity_value = await self.get_state(
                 entity_id=condition_spec[ARG_ENTITY_ID],
                 attribute=condition_spec.get(ARG_ATTRIBUTE))

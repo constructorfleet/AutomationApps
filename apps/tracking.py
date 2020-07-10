@@ -59,11 +59,10 @@ def get_home_gps(hass_config):
 
 
 class CloseEnoughToHome(BaseApp):
-    _home_gps = None
-    _last_states = {}
-    _timer_handlers = {}
 
     async def initialize_app(self):
+        self._last_states = {}
+        self._timer_handlers = {}
         self._home_gps = {
             ATTR_LATITUDE: self.configs.get(ATTR_LATITUDE, None),
             ATTR_LONGITUDE: self.configs.get(ATTR_LONGITUDE, None)
@@ -147,13 +146,11 @@ class CloseEnoughToHome(BaseApp):
 
 
 class TrackerGroup(BaseApp):
-    _entity_last_gps = {}
-    _group_entities = {}
-    _group_states = {}
-    _home_gps = None
-    _get_distance = get_distance_helper(unit=Unit.MILES)
-
     async def initialize_app(self):
+        self._entity_last_gps = {}
+        self._group_entities = {}
+        self._group_states = {}
+        self._get_distance = get_distance_helper(unit=Unit.MILES)
         self._home_gps = (
             self.configs.get(ATTR_LATITUDE, None),
             self.configs.get(ATTR_LONGITUDE, None)

@@ -121,10 +121,9 @@ HOLIDAY_COLORS = {
 
 
 class HolidayColors(BaseApp):
-    _for_year = None
-    _holidays = {}
-
     async def initialize_app(self):
+        self._for_year = None
+        self._holidays = {}
         self.debug('File %s' % self._persistent_data_file)
         self.debug('Data {}'.format(str(self.data)))
         if self._for_year != datetime.now().year:
