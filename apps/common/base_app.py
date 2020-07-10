@@ -150,6 +150,8 @@ class BaseApp(hassmqtt.HassMqtt):
 
     @utils.sync_wrapper
     async def listen_event(self, callback, event=None, **kwargs):
+        if event is None:
+            raise ValueError(f'Listen event called with no event')
         handle = await super().listen_event(callback, event, **kwargs)
         return EventListenHandle(handle, self)
 
