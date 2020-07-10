@@ -3,12 +3,10 @@ import json
 import logging
 import os
 import sys
-import traceback
-from datetime import datetime
 from asyncio import Lock
+from datetime import datetime
 
 import voluptuous as vol
-from appdaemon import utils
 
 import hassmqttapi as hassmqtt
 from common.const import (
@@ -250,7 +248,6 @@ class BaseApp(hassmqtt.HassMqtt):
 
     async def condition_met(self, condition_to_check):
         """Verifies if condition is met."""
-        traceback.print_tb()
         condition_spec = copy.deepcopy(condition_to_check)
         self.debug(f'CHECKING CONDITION {str(condition_spec)}', exc_info=1)
         if ARG_AND in condition_spec:
@@ -283,7 +280,8 @@ class BaseApp(hassmqtt.HassMqtt):
             return (condition_spec.get(ARG_ATTRIBUTE) in full_state) == condition_spec[ARG_EXISTS]
 
         if ARG_ENTITY_ID in condition_spec:
-            self.debug(f'CALLING GET STATE WITH {condition_spec[ARG_ENTITY_ID]} {condition_spec.get(ARG_ATTRIBUTE)}')
+            self.debug(
+                f'CALLING GET STATE WITH {condition_spec[ARG_ENTITY_ID]} {condition_spec.get(ARG_ATTRIBUTE)}')
             entity_value = await self.get_state(
                 entity_id=condition_spec[ARG_ENTITY_ID],
                 attribute=condition_spec.get(ARG_ATTRIBUTE))
