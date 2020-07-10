@@ -164,7 +164,7 @@ class Timeout(BaseApp):
             return
 
         self.debug(f'Pause check: {entity} {old} {new} paused {self._paused}')
-        self.debug(f'Condition: {str(self._pause_when[entity])}')
+        self.debug(f'Condition: {str(self._pause_when)}')
         if await self.condition_met(self._pause_when[entity]) and not self._paused:
             self.debug("Pause time because {} is {}".format(entity, new))
             await self._pause()
