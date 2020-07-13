@@ -1,7 +1,6 @@
 import os
 
 import voluptuous as vol
-from appdaemon import utils
 
 from call_when import ARG_CONDITION
 from common.base_app import BaseApp
@@ -282,7 +281,7 @@ class DoorLock(Secure):
 
     async def _handle_arrive(self, entity_name):
         if not await self.is_secured:
-            self._notify(
+            await self._notify(
                 NotificationCategory.PRESENCE_PERSON_ARRIVED,
                 response_entity_id=None,
                 person_name=entity_name)
@@ -294,14 +293,14 @@ class DoorLock(Secure):
                 ARG_ENTITY_ID: self.configs[ARG_LOCK]
             }
         )
-        self._notify(
+        await self._notify(
             NotificationCategory.SECURITY_UNLOCKED,
             response_entity_id=self.configs[ARG_LOCK],
             person_name=entity_name)
 
     async def _handle_left(self, entity_name):
         if await self.is_secured:
-            self._notify(
+            await self._notify(
                 NotificationCategory.PRESENCE_PERSON_DEPARTED,
                 response_entity_id=None,
                 person_name=entity_name)
@@ -314,13 +313,13 @@ class DoorLock(Secure):
             }
         )
 
-        self._notify(
+        await self._notify(
             NotificationCategory.SECURITY_LOCKED,
             response_entity_id=self.configs[ARG_LOCK],
             person_name=entity_name)
 
-    def _notify(self, category, response_entity_id, person_name):
-        self.notifier.notify_people(
+    async def _notify(self, category, response_entity_id, person_name):
+        await self.notifier.notify_people(
             category,
             response_entity_id=response_entity_id,
             person_name=person_name,
@@ -362,7 +361,7 @@ class GarageDoor(Secure):
                 ARG_ENTITY_ID: self.configs[ARG_COVER]
             }
         )
-        self._notify(
+        await self._notify(
             NotificationCategory.SECURITY_COVER_OPENED,
             response_entity_id=self.configs[ARG_COVER],
             vehicle_name=entity_name)
@@ -379,13 +378,13 @@ class GarageDoor(Secure):
             }
         )
 
-        self._notify(
+        await self._notify(
             NotificationCategory.SECURITY_COVER_CLOSED,
             response_entity_id=self.configs[ARG_LOCK],
             vehicle_name=entity_name)
 
-    def _notify(self, category, response_entity_id, vehicle_name):
-        self.notifier.notify_people(
+    async def _notify(self, category, response_entity_id, vehicle_name):
+        await self.notifier.notify_people(
             category,
             response_entity_id=response_entity_id,
             vehicle_name=vehicle_name,
@@ -496,7 +495,7 @@ class AlarmSystem(BaseApp):
                 'entity_id': self.configs[ARG_LOCK]
             }
         )
-        self._notify(NotificationCategory.SECURITY_ALARM_DISARMED)
+        await self._notify(NotificationCategory.SECURITY_ALARM_DISARMED)
 
     async def _arm(self):
         self.publish_service_call(
@@ -520,7 +519,7 @@ class AlarmSystem(BaseApp):
                 'entity_id': self.configs[ARG_COVER]
             }
         )
-        self._notify(NotificationCategory.SECURITY_ALARM_ARM_AWAY)
+        await self._notify(NotificationCategory.SECURITY_ALARM_ARM_AWAY)
 
     async def _arm_night_mode(self):
         self.publish_service_call(
@@ -544,10 +543,10 @@ class AlarmSystem(BaseApp):
                 'entity_id': self.configs[ARG_COVER]
             }
         )
-        self._notify(NotificationCategory.SECURITY_ALARM_ARM_HOME)
+        await self._notify(NotificationCategory.SECURITY_ALARM_ARM_HOME)
 
-    def _notify(self, category):
-        self.notifier.notify_people(
+    async def _notify(self, category):
+        await self.notifier.notify_people(
             category,
             response_entity_id=self.configs[ARG_ALARM_PANEL]
         )

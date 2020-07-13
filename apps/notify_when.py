@@ -1,7 +1,6 @@
 import copy
 
 import voluptuous as vol
-from appdaemon import utils
 
 from common.base_app import BaseApp
 from common.const import (
@@ -81,7 +80,7 @@ class NotifyWhen(BaseApp):
                            self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS].items() if
                            value == ATTR_ENTITY_NAME]:
             replacers[key] = await self.get_state(entity_id=entity, attribute='friendly_name')
-        self.notifier.notify_people(
+        await self.notifier.notify_people(
             self._notification_category,
             response_entity_id=self.configs[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
             **replacers)

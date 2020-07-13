@@ -218,7 +218,7 @@ class Timeout(BaseApp):
                                       event[ARG_SERVICE_DATA])
 
         if self._notification_category is not None:
-            self.notifier.notify_people(
+            await self.notifier.notify_people(
                 self._notification_category,
                 response_entity_id=self.configs[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
                 **self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]

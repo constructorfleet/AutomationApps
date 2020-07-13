@@ -3,7 +3,6 @@ import re
 from urllib import parse
 
 import voluptuous as vol
-from appdaemon import utils
 from twilio.rest import Client
 from twilio.rest.api.v2010.account.call import CallInstance
 
@@ -73,8 +72,11 @@ class CallBHG(BaseApp):
         await self.listen_event(self._call_bhg,
                                 event="call_bhg")
         await self.run_daily(self._daily_call,
-                             "%02d:%02d:00" % (self.configs[ARG_FREQUENCY][ARG_FREQUENCY_HOUR],
-                                               self.configs[ARG_FREQUENCY][ARG_FREQUENCY_MINUTE]))
+                             "%02d:%02d:00" % (
+                                 self.configs[ARG_FREQUENCY][
+                                     ARG_FREQUENCY_HOUR],
+                                 self.configs[ARG_FREQUENCY][
+                                     ARG_FREQUENCY_MINUTE]))
 
     @property
     def app_schema(self):
@@ -145,7 +147,7 @@ class CallBHG(BaseApp):
 
     async def _handle_call_failed(self, status):
         _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
-        self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
+        await self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
         self._calling = False
         self._called_today = False
         self._call_instance = None
@@ -166,7 +168,7 @@ class CallBHG(BaseApp):
                           recording is not None and recording.sid]
 
         if not recording_sids or len(recording_sids) == 0:
-            self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIBE_FAILED)
+            await self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIBE_FAILED)
             self._called_today = False
             return
 
@@ -179,8 +181,8 @@ class CallBHG(BaseApp):
         self._calling = False
         self._called_today = True
 
-    def _notify(self, category, **kwargs):
-        self.notifier.notify_people(
+    async def _notify(self, category, **kwargs):
+        await self.notifier.notify_people(
             category,
             None,
             **kwargs
@@ -195,7 +197,8 @@ class CallBHG(BaseApp):
                                               {
                                                   ARG_ENTITY_ID: self.configs[ARG_SCHEDULE_TOGGLE]
                                               })
-                self._notify(NotificationCategory.IMPORTANT_BHG_SCHEDULED, transcript=transcript)
+                await self._notify(NotificationCategory.IMPORTANT_BHG_SCHEDULED,
+                                   transcript=transcript)
             elif REGEX_NOT_SCHEDULED.match(transcript):
                 if ARG_SCHEDULE_TOGGLE in self.configs:
                     self.publish_service_call(DOMAIN_FLAG_SERVICE,
@@ -203,4 +206,5 @@ class CallBHG(BaseApp):
                                               {
                                                   ARG_ENTITY_ID: self.configs[ARG_SCHEDULE_TOGGLE]
                                               })
-                self._notify(NotificationCategory.IMPORTANT_BHG_ALL_CLEAR, transcript=transcript)
+                await self._notify(NotificationCategory.IMPORTANT_BHG_ALL_CLEAR,
+                                   transcript=transcript)
