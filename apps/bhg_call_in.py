@@ -176,7 +176,7 @@ class CallBHG(BaseApp):
                                for transcription in self._client.transcriptions.list()
                                if transcription and transcription.transcription_text
                                and transcription.recording_sid in recording_sids]
-        self._process_transcriptions(transcription_texts)
+        await self._process_transcriptions(transcription_texts)
         self._call_instance = None
         self._calling = False
         self._called_today = True
@@ -188,7 +188,7 @@ class CallBHG(BaseApp):
             **kwargs
         )
 
-    def _process_transcriptions(self, transcripts):
+    async def _process_transcriptions(self, transcripts):
         for transcript in [transcript for transcript in transcripts]:
             if REGEX_SCHEDULED.match(transcript):
                 if ARG_SCHEDULE_TOGGLE in self.configs:
