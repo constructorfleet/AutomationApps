@@ -140,11 +140,12 @@ class Doorbell(BaseApp):
             return
 
         matches = new.get(self.configs[ARG_IMAGE_PROCESSING][ARG_CLASS], None)
+        self.debug(f'Matches {str(matches)}')
         if matches:
             for match in matches:
                 if match.get(ATTR_SCORE, 0.0) >= self.configs[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
                     await self._pause_image_processing()
-                    self._notify()
+                    await self._notify()
                     return
         await self._start_image_processing(None)
 
@@ -152,10 +153,10 @@ class Doorbell(BaseApp):
         if old == new:
             return
 
-        self._notify()
+        await self._notify()
 
-    def _notify(self):
-        self.notifier.notify_people(
+    async def _notify(self):
+        await self.notifier.notify_people(
             self._notification_category,
             response_entity_id="lock.front_door",
             location="the front door",
