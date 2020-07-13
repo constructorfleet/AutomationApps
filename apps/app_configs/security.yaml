@@ -14,9 +14,6 @@ doorbell:
     sensor: image_processing.doods_front_door
     confidence: 90
     class: person
-    condition:
-      - entity_id: binary_sensor.front_door_sensor
-        value: 'on'
     notify_interval: 2
   camera: camera.front_door
   base_image_url: https://automation.prettybaked.com/local/camera_snapshot/
