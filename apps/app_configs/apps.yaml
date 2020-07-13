@@ -76,3 +76,4 @@ bhg_call_in:
   twilio_credential:
     account_sid: !secret twilio_account_sid
     token: !secret twilio_auth_token
+  log_level: DEBUG
