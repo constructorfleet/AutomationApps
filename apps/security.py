@@ -128,6 +128,7 @@ class Doorbell(BaseApp):
             oneshot=True)
 
     async def _pause_image_processing(self):
+        self.debug('Pausing')
         if self._image_processor_handle is not None:
             await self.cancel_listen_state(self._image_processor_handle)
         self._pause_handle = await self.run_in(self._start_image_processing,
@@ -143,6 +144,7 @@ class Doorbell(BaseApp):
         self.debug(f'Matches {str(matches)}')
         if matches:
             for match in matches:
+                self.debug(f'Match {str(match)}')
                 if match.get(ATTR_SCORE, 0.0) >= self.configs[ARG_IMAGE_PROCESSING][ARG_CONFIDENCE]:
                     await self._pause_image_processing()
                     await self._notify()
@@ -156,6 +158,7 @@ class Doorbell(BaseApp):
         await self._notify()
 
     async def _notify(self):
+        self.debug('Notifying')
         await self.notifier.notify_people(
             self._notification_category,
             response_entity_id="lock.front_door",
