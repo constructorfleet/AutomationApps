@@ -115,6 +115,7 @@ set_hue_sync_video:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
+    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
   condition:
     - entity_id: media_player.living_room_apple_tv
       value: playing

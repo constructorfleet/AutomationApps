@@ -2,6 +2,8 @@ import logging
 import re
 from urllib import parse
 
+from datetime import datetime
+
 import voluptuous as vol
 from twilio.rest import Client
 from twilio.rest.api.v2010.account.call import CallInstance
@@ -32,6 +34,7 @@ ARG_NOTIFY_GROUP = "people"
 ARG_NOTIFY_IGNORER = "ignored"
 ARG_SCHEDULE_TOGGLE = "schedule_toggle"
 ARG_TIMEOUT = "timeout"
+ARG_SKIP_WEEKENDS = "skip_weekends"
 
 DOMAIN_FLAG_SERVICE = "homeassistant"
 TURN_OFF_SERVICE = "turn_off"
@@ -85,6 +88,7 @@ class CallBHG(BaseApp):
             vol.Required(ARG_CALL_TO): vol.Match(r"\+1\d{10}$"),
             vol.Required(ARG_MESSAGE): str,
             vol.Required(ARG_FREQUENCY): SCHEMA_DAILY_AT,
+            vol.Optional(ARG_SKIP_WEEKENDS, default=False): vol.Coerce(bool),
             vol.Required(ARG_CREDENTIALS): SCHEMA_CREDENTIALS_CONFIG,
             vol.Optional(ARG_TIMEOUT, default=3): vol.Range(1, 5),
             vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id
@@ -96,6 +100,8 @@ class CallBHG(BaseApp):
     async def _daily_call(self, kwargs):
         if self._called_today:
             self.info("Already called today.")
+            return
+        if self.configs[ARG_SKIP_WEEKENDS] and datetime.today().weekday() >= 5:  # Skip Weekend
             return
         await self._call_bhg('call_bhg', {}, {})
 

@@ -32,7 +32,7 @@ unlock:
     - device_tracker.alan
     - device_tracker.teagan
     - device_tracker.grace
-    - device_tracker.persia
+#    - device_tracker.persia
     - device_tracker.colby
     - device_tracker.gina
     - device_tracker.keith
