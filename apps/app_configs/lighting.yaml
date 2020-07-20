@@ -88,6 +88,50 @@ turn_living_room_light_off:
     service_data:
       entity_id: light.living_room_ceiling_light
 
+turn_master_fan_light_om:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - const
+    - conditions
+    - validation
+  trigger:
+    - entity_id: switch.master_fan_control_light
+      state: 'on'
+  condition:
+    - entity_id: light.master_ceiling_fan_light
+      value: 'off'
+  call:
+    domain: light
+    service: turn_on
+    service_data:
+      entity_id: light.master_ceiling_fan_light
+      brightness_pct: 50
+      transition: 30
+
+turn_master_fan_light_off:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - const
+    - conditions
+    - validation
+  trigger:
+    - entity_id: switch.master_fan_control_light
+      state: 'off'
+  condition:
+    - entity_id: light.master_ceiling_fan_light
+      value: 'on'
+  call:
+    domain: light
+    service: turn_off
+    service_data:
+      entity_id: switch.master_fan_control_light
+
 garage_light:
   module: call_when
   class: CallWhen
