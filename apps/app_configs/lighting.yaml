@@ -130,7 +130,7 @@ turn_master_fan_light_off:
     domain: light
     service: turn_off
     service_data:
-      entity_id: switch.master_fan_control_light
+      entity_id: light.master_ceiling_fan_light
 
 garage_light:
   module: call_when
