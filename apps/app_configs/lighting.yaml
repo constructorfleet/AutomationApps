@@ -108,8 +108,8 @@ turn_master_fan_light_om:
     service: turn_on
     service_data:
       entity_id: light.master_ceiling_fan_light
-      brightness_pct: 50
-      transition: 30
+      brightness_pct: 80
+      transition: 60
 
 turn_master_fan_light_off:
   module: call_when
