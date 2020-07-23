@@ -12,7 +12,7 @@ washer_started:
     comparator: '<'
     value: 0.5
   to:
-    comparator: '<'
+    comparator: '>'
     value: 0.5
   notify:
     notify_category: INFO_LAUNDRY_STARTED
@@ -33,7 +33,7 @@ dryer_started:
     comparator: '<'
     value: 0.5
   to:
-    comparator: '<'
+    comparator: '>'
     value: 0.5
   notify:
     notify_category: INFO_LAUNDRY_STARTED
