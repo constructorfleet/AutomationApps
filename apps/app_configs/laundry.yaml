@@ -9,10 +9,11 @@ washer_started:
     - notifiers
   entity_id: sensor.washer_current_draw
   from:
-    value: 0.0
+    comparator: '<'
+    value: 0.5
   to:
-    comparator: '>'
-    value: 0.0
+    comparator: '<'
+    value: 0.5
   notify:
     notify_category: INFO_LAUNDRY_STARTED
     replacers:
@@ -29,10 +30,11 @@ dryer_started:
     - notifiers
   entity_id: sensor.dryer_current_draw
   from:
-    value: 0.0
+    comparator: '<'
+    value: 0.5
   to:
-    comparator: '>'
-    value: 0.0
+    comparator: '<'
+    value: 0.5
   notify:
     notify_category: INFO_LAUNDRY_STARTED
     replacers:
@@ -50,10 +52,10 @@ washer_done:
   entity_id: sensor.washer_current_draw
   from:
     comparator: '>'
-    value: 0.5
+    value: 0.25
   to:
     comparator: '<'
-    value: 0.2
+    value: 0.25
   notify:
     notify_category: INFO_LAUNDRY_DONE
     replacers:
@@ -71,7 +73,7 @@ dryer_done:
   entity_id: sensor.dryer_current_draw
   from:
     comparator: '>'
-    value: 1.0
+    value: 0.5
   to:
     comparator: '<'
     value: 0.5
