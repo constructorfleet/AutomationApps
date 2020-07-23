@@ -50,9 +50,10 @@ washer_done:
   entity_id: sensor.washer_current_draw
   from:
     comparator: '>'
-    value: 0.0
+    value: 0.5
   to:
-    value: 0.0
+    comparator: '<'
+    value: 0.2
   notify:
     notify_category: INFO_LAUNDRY_DONE
     replacers:
@@ -72,7 +73,8 @@ dryer_done:
     comparator: '>'
     value: 1.0
   to:
-    value: 0.0
+    comparator: '<'
+    value: 0.5
   notify:
     notify_category: INFO_LAUNDRY_DONE
     replacers:
