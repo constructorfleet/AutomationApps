@@ -1,3 +1,43 @@
+washer_started:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.washer_current_draw
+  from:
+    value: 0.0
+  to:
+    comparator: '>'
+    value: 0.0
+  notify:
+    notify_category: INFO_LAUNDRY_STARTED
+    replacers:
+      laundry_machine: Washer
+
+dryer_started:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.dryer_current_draw
+  from:
+    value: 0.0
+  to:
+    comparator: '>'
+    value: 0.0
+  notify:
+    notify_category: INFO_LAUNDRY_STARTED
+    replacers:
+      laundry_machine: Dryer
+
 washer_done:
   module: notify_when
   class: NotifyWhen
