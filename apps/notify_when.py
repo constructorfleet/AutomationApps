@@ -70,8 +70,8 @@ class NotifyWhen(BaseApp):
         if old == new or old is None or new is None:
             return
 
-        if await self.condition_met(self._condition_from(old)) and \
-                await self.condition_met(self._condition_to(new)):
+        if await self.condition_met(self._condition_from(entity)) and \
+                await self.condition_met(self._condition_to(entity)):
             await self._notify(entity)
 
     async def _notify(self, entity):
