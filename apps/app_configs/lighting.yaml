@@ -492,7 +492,6 @@ night_lights:
         service: turn_on
         service_data:
           brightness_pct: 60
-          rgb_color: (255, 64, 64)
       - entity_id: light.porch_upper
         domain: light
         service: turn_on
@@ -529,4 +528,3 @@ night_lights:
       service: turn_on
       service_data:
         brightness_pct: 20
-        rgb_color: (255, 64, 64)
