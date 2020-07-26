@@ -463,9 +463,6 @@ night_lights:
   dawn:
     offset: 60
     entities:
-      - entity_id: light.entry_light
-        domain: light
-        service: turn_off
       - entity_id: light.porch_upper
         domain: light
         service: turn_off
@@ -487,11 +484,6 @@ night_lights:
   dusk:
     offset: 60
     entities:
-      - entity_id: light.entry_light
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 60
       - entity_id: light.porch_upper
         domain: light
         service: turn_on
@@ -522,9 +514,3 @@ night_lights:
         service: turn_on
         service_data:
           brightness_pct: 100
-  night:
-    - entity_id: light.entry_light
-      domain: light
-      service: turn_on
-      service_data:
-        brightness_pct: 20
