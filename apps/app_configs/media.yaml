@@ -142,13 +142,7 @@ set_hue_sync_off:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
-    - entity_id: input_boolean.enable_living_room_sync
-  condition:
-    - or:
-      - entity_id: media_player.living_room_apple_tv
-        value: idle
-      - entity_id: media_player.living_room_apple_tv
-        value: stopped
+      state: idle
   call:
     domain: hue_sync_box
     service: set_sync_mode
