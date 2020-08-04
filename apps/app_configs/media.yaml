@@ -80,23 +80,16 @@ set_hue_sync_music:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
   condition:
     - entity_id: media_player.living_room_apple_tv
       value: playing
-    - or:
-      - entity_id: media_player.living_room_apple_tv
-        attribute: media_content_type
-        value: music
-      - entity_id: media_player.living_room_apple_tv
-        attribute: media_title
-        value: No title
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
+    - entity_id: media_player.living_room_apple_tv
+      attribute: media_content_type
+      value: music
+    - entity_id: media_player.living_room_apple_tv
+      attribute: app_id
       comparator: '!='
-      value: playing
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
-      comparator: '!='
-      value: paused
+      value: com.plexapp.plex
   call:
     domain: hue_sync_box
     service: set_sync_mode
@@ -115,47 +108,16 @@ set_hue_sync_video:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
   condition:
     - entity_id: media_player.living_room_apple_tv
       value: playing
-    - entity_id: media_player.living_room_apple_tv
-      attribute: media_content_type
-      value: video
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
-      comparator: '!='
-      value: playing
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
-      comparator: '!='
-      value: paused
-  call:
-    domain: hue_sync_box
-    service: set_sync_mode
-    service_data:
-      entity_id: remote.hue_sync_box
-      sync_mode: video
-
-set_hue_sync_video_plex:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: media_player.living_room_apple_tv
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
-  condition:
-    - entity_id: media_player.living_room_apple_tv
-      value: playing
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
-      value: playing
-    - entity_id: media_player.plex_plex_for_apple_tv_living_room_apple_tv
-      attribute: media_content_type
-      comparator: '!='
-      value: music
+    - or:
+      - entity_id: media_player.living_room_apple_tv
+        attribute: media_content_type
+        value: video
+      - entity_id: media_player.living_room_apple_tv
+        attribute: app_id
+        value: com.plexapp.plex
   call:
     domain: hue_sync_box
     service: set_sync_mode
