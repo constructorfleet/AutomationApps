@@ -181,28 +181,28 @@ set_hue_sync_off:
       entity_id: remote.living_room_hue_sync_box
       sync_mode: passthrough
 
-set_hue_sync_paused:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: media_player.living_room_apple_tv
-    - entity_id: remote.living_room_hue_sync_box
-      attribute: sync_mode
-  condition:
-    - entity_id: media_player.living_room_apple_tv
-      value: paused
-  call:
-    domain: hue_sync_box
-    service: set_sync_mode
-    service_data:
-      entity_id: remote.living_room_hue_sync_box
-      sync_mode: passthrough
+#set_hue_sync_paused:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: media_player.living_room_apple_tv
+#    - entity_id: remote.living_room_hue_sync_box
+#      attribute: sync_mode
+#  condition:
+#    - entity_id: media_player.living_room_apple_tv
+#      value: paused
+#  call:
+#    domain: hue_sync_box
+#    service: set_sync_mode
+#    service_data:
+#      entity_id: remote.living_room_hue_sync_box
+#      sync_mode: passthrough
 #
 #hue_sync_paused_timeout:
 #  module: timeout
