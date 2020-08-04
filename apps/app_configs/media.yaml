@@ -90,7 +90,7 @@ set_hue_sync_music:
     - entity_id: media_player.living_room_apple_tv
       attribute: app_id
       comparator: '!='
-      value: com.plexapp.plex
+      value: 'com.plexapp.plex'
     - entity_id: input_boolean.enable_living_room_sync
       value: 'on'
   call:
@@ -121,7 +121,7 @@ set_hue_sync_video:
         value: video
       - entity_id: media_player.living_room_apple_tv
         attribute: app_id
-        value: com.plexapp.plex
+        value: 'com.plexapp.plex'
     - entity_id: input_boolean.enable_living_room_sync
       value: 'on'
   call:
