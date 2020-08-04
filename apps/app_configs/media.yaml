@@ -80,6 +80,7 @@ set_hue_sync_music:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
+    - entity_id: input_boolean.enable_living_room_sync
   condition:
     - entity_id: media_player.living_room_apple_tv
       value: playing
@@ -90,6 +91,8 @@ set_hue_sync_music:
       attribute: app_id
       comparator: '!='
       value: com.plexapp.plex
+    - entity_id: input_boolean.enable_living_room_sync
+      value: 'on'
   call:
     domain: hue_sync_box
     service: set_sync_mode
@@ -108,6 +111,7 @@ set_hue_sync_video:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
+    - entity_id: input_boolean.enable_living_room_sync
   condition:
     - entity_id: media_player.living_room_apple_tv
       value: playing
@@ -118,6 +122,8 @@ set_hue_sync_video:
       - entity_id: media_player.living_room_apple_tv
         attribute: app_id
         value: com.plexapp.plex
+    - entity_id: input_boolean.enable_living_room_sync
+      value: 'on'
   call:
     domain: hue_sync_box
     service: set_sync_mode
@@ -136,12 +142,15 @@ set_hue_sync_off:
     - validation
   trigger:
     - entity_id: media_player.living_room_apple_tv
+    - entity_id: input_boolean.enable_living_room_sync
   condition:
     - or:
       - entity_id: media_player.living_room_apple_tv
         value: idle
       - entity_id: media_player.living_room_apple_tv
         value: stopped
+      - entity_id: input_boolean.enable_living_room_sync
+        value: 'off'
   call:
     domain: hue_sync_box
     service: set_sync_mode
