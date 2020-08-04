@@ -97,7 +97,7 @@ set_hue_sync_music:
     domain: hue_sync_box
     service: set_sync_mode
     service_data:
-      entity_id: remote.hue_sync_box
+      entity_id: remote.living_room_hue_sync_box
       sync_mode: music
 
 set_hue_sync_video:
@@ -128,7 +128,7 @@ set_hue_sync_video:
     domain: hue_sync_box
     service: set_sync_mode
     service_data:
-      entity_id: remote.hue_sync_box
+      entity_id: remote.living_room_hue_sync_box
       sync_mode: video
 
 set_hue_sync_off:
@@ -155,7 +155,7 @@ set_hue_sync_off:
     domain: hue_sync_box
     service: set_sync_mode
     service_data:
-      entity_id: remote.hue_sync_box
+      entity_id: remote.living_room_hue_sync_box
       sync_mode: passthrough
 
 hue_sync_paused_timeout:
@@ -175,5 +175,5 @@ hue_sync_paused_timeout:
     domain: hue_sync_box
     service: set_sync_mode
     service_data:
-      entity_id: remote.hue_sync_box
+      entity_id: remote.living_room_hue_sync_box
       sync_mode: passthrough
