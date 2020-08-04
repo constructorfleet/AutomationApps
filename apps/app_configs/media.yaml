@@ -181,7 +181,7 @@ set_hue_sync_off:
       entity_id: remote.living_room_hue_sync_box
       sync_mode: passthrough
 
-set_hue_sync_off:
+set_hue_sync_paused:
   module: call_when
   class: CallWhen
   global_dependencies:
