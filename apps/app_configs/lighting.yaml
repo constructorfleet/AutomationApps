@@ -101,13 +101,15 @@ turn_master_fan_light_om:
     - entity_id: switch.master_fan_control_light
       state: 'on'
   condition:
-    - entity_id: light.master_ceiling_fan_light
+    - entity_id: light.master_bedroom_ceiling_bulb_1
       value: 'off'
   call:
     domain: light
     service: turn_on
     service_data:
-      entity_id: light.master_ceiling_fan_light
+      entity_id:
+        - light.master_bedroom_ceiling_bulb_1
+        - light.master_bedroom_ceiling_bulb_2
       brightness_pct: 100
 
 turn_master_fan_light_off:
@@ -123,13 +125,15 @@ turn_master_fan_light_off:
     - entity_id: switch.master_fan_control_light
       state: 'off'
   condition:
-    - entity_id: light.master_ceiling_fan_light
+    - entity_id: light.master_bedroom_ceiling_bulb_1
       value: 'on'
   call:
     domain: light
     service: turn_off
     service_data:
-      entity_id: light.master_ceiling_fan_light
+      entity_id:
+        - light.master_bedroom_ceiling_bulb_1
+        - light.master_bedroom_ceiling_bulb_2
 
 garage_light:
   module: call_when
