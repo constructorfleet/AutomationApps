@@ -28,7 +28,7 @@ class HassmqttPlugin(PluginBase):
         self.name = name
         self.initialized = False
         self.mqtt_connected = False
-        self.state = {}
+        self.state = ad.state
 
         self.logger.info("MQTT Plugin Initializing")
 
@@ -244,11 +244,11 @@ class HassmqttPlugin(PluginBase):
         try:
             self.logger.debug("Message Received: Topic = %s, Payload = %s", msg.topic, msg.payload)
             topic = msg.topic
-            payload_dict = {}
             try:
                 payload_dict = json.loads(msg.payload.decode())
             except TypeError as err:
                 self.logger.critical("Payload is not JSON")
+                return
 
             self.logger.debug("GOT  %s" % msg.payload.decode())
 
@@ -260,12 +260,20 @@ class HassmqttPlugin(PluginBase):
                     entity_id = new_state.get("entity_id", None)
                     if entity_id is not None:
                         state = new_state.get("state", None)
-                        if state is not None and deep_equals(state, self.state.get(entity_id, {})):
-                            return
-                        elif state is not None:
-                            self.state[entity_id] = new_state
+                        attributes = new_state.get("attributes", None)
+                        self.state.set_state(
+                            self.name,
+                            self.namespace,
+                            entity_id,
+                            state=state,
+                            attributes=attributes,
+                            replace=True,
+                            _silent=True
+                        )
                 except Exception as err:
                     self.logger.error(str(err))
+
+                return
 
             if self.mqtt_wildcards != [] and list(filter(lambda x: x in topic,
                                                          self.mqtt_wildcards)) != []:  # check if any of the wildcards belong
