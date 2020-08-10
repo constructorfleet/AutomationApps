@@ -174,9 +174,6 @@ set_hue_sync_off:
   trigger:
     - entity_id: media_player.living_room_apple_tv
       state: 'idle'
-  condition:
-    - entity_id: media_player.living_room_apple_tv
-      value: idle
   call:
     domain: hue_sync_box
     service: set_sync_mode
