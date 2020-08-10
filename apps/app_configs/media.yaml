@@ -131,6 +131,7 @@ set_hue_sync_video_plex:
     service_data:
       entity_id: remote.living_room_hue_sync_box
       sync_mode: video
+  log_level: DEBUG
 
 set_hue_sync_video:
   module: call_when
@@ -160,6 +161,7 @@ set_hue_sync_video:
     service_data:
       entity_id: remote.living_room_hue_sync_box
       sync_mode: video
+  log_level: DEBUG
 
 set_hue_sync_off:
   module: call_when
@@ -184,6 +186,7 @@ set_hue_sync_off:
     service_data:
       entity_id: remote.living_room_hue_sync_box
       sync_mode: passthrough
+  log_level: DEBUG
 
 #set_hue_sync_paused:
 #  module: call_when
