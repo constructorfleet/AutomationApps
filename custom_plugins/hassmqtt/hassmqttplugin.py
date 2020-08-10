@@ -263,14 +263,14 @@ class HassmqttPlugin(PluginBase):
                     if entity_id is not None:
                         state = new_state.get("state", None)
                         attributes = new_state.get("attributes", None)
-                        self.state.set_state(
+                        self.loop.create_task(self.state.set_state(
                             self.name,
                             self.namespace,
                             entity_id,
                             state=state,
                             attributes=attributes,
                             replace=True
-                        )
+                        ))
                 except Exception as err:
                     self.logger.error(str(err))
 
