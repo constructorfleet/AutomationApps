@@ -417,7 +417,7 @@ class HassmqttPlugin(PluginBase):
 
     async def get_complete_state(self):
         self.logger.debug("*** Sending Complete State: %s ***", self.state)
-        return copy.deepcopy(self.state)
+        return copy.deepcopy(self.state.state.get(self.namespace, {}))
 
     async def get_metadata(self):
         return self.mqtt_metadata
