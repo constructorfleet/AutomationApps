@@ -92,7 +92,7 @@ class CallWhen(BaseApp):
         if new == old:
             return
         if not await self.conditions_met:
-            self.debug("Conditions no met")
+            self.debug("Conditions not met")
             return
 
         events = self.configs[ARG_CALL]
