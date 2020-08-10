@@ -22,7 +22,7 @@ class HassmqttPlugin(PluginBase):
         super().__init__(ad, name, args)
         """Initialize MQTT Plugin."""
 
-        self.set_log_level('DEBUG')
+        # self.set_log_level('DEBUG')
 
         self.AD = ad
         self.stopping = False
