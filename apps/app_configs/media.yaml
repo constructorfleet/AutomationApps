@@ -176,6 +176,8 @@ set_hue_sync_off:
       state: 'idle'
     - entity_id: remote.living_room_hue_sync_box
       attribute: sync_mode
+      comparator: '!='
+      state: 'passthrough'
   condition:
     - entity_id: media_player.living_room_apple_tv
       value: 'idle'
