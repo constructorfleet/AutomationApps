@@ -267,8 +267,7 @@ class HassmqttPlugin(PluginBase):
                             entity_id,
                             state=state,
                             attributes=attributes,
-                            replace=True,
-                            _silent=True
+                            replace=True
                         )
                 except Exception as err:
                     self.logger.error(str(err))
