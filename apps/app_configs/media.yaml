@@ -148,7 +148,6 @@ set_hue_sync_video:
     - entity_id: media_player.living_room_apple_tv
       attribute: media_content_type
       state: 'video'
-    - entity_id: input_boolean.enable_living_room_sync
   condition:
     - entity_id: media_player.living_room_apple_tv
       value: 'playing'
@@ -175,8 +174,6 @@ set_hue_sync_off:
   trigger:
     - entity_id: media_player.living_room_apple_tv
       state: 'idle'
-    - entity_id: remote.living_room_hue_sync_box
-      attribute: sync_mode
   condition:
     - entity_id: media_player.living_room_apple_tv
       value: idle
