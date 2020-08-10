@@ -1,13 +1,13 @@
 import datetime
-import os
 import re
-import string
 from datetime import (
     timedelta,
     time as time_sys
 )
 from urllib.parse import urlparse
 
+import os
+import string
 import voluptuous as vol
 
 from common.base_app import logging
@@ -165,8 +165,9 @@ def valid_entity_id(entity_id):
         return False
 
     return isinstance(entity_id, str) and \
-           '.' in entity_id and \
-           entity_id == entity_id.replace(' ', '_')
+        '.' in entity_id and \
+        len(entity_id.split('.')) == 2 and \
+        entity_id == entity_id.replace(' ', '_')
 
 
 def valid_service(value):
