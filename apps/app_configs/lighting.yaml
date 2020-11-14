@@ -1,520 +1,520 @@
-dining_room_light:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: binary_sensor.dining_room_motion
-      state: 'on'
-  condition:
-    - entity_id: switch.dining_room_ceiling_light
-      value: 'off'
-    - entity_id: sensor.dining_room_luminance
-      comparator: '<'
-      value: 10
-  call:
-    domain: homeassistant
-    service: turn_on
-    service_data:
-      entity_id: switch.dining_room_ceiling_light
-
-dining_room_light_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    entity_id: switch.dining_room_ceiling_light
-  pause_when:
-    - entity_id: binary_sensor.dining_room_motion
-      value: 'on'
-  enabled_flag: input_boolean.dining_room_light_timeout
-  duration: 20
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id: switch.dining_room_ceiling_light
-
-turn_living_room_light_on:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: light.living_room_fan_control_light
-      state: 'on'
-  condition:
-    - entity_id: light.living_room_fan_light_bulbs
-      value: 'off'
-  call:
-    domain: light
-    service: turn_on
-    service_data:
-      entity_id: light.living_room_ceiling_light
-      brightness_pct: 50
-      transition: 30
-
-turn_living_room_light_off:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: light.living_room_fan_control_light
-      state: 'off'
-  condition:
-    - entity_id: light.living_room_fan_light_bulbs
-      value: 'on'
-  call:
-    domain: light
-    service: turn_off
-    service_data:
-      entity_id: light.living_room_ceiling_light
-
-turn_master_fan_light_om:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: switch.master_fan_control_light
-      state: 'on'
-  condition:
-    - entity_id: light.master_bedroom_ceiling_bulb_1
-      value: 'off'
-  call:
-    domain: light
-    service: turn_on
-    service_data:
-      entity_id:
-        - light.master_bedroom_ceiling_bulb_1
-        - light.master_bedroom_ceiling_bulb_2
-      brightness_pct: 100
-
-turn_master_fan_light_off:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: switch.master_fan_control_light
-      state: 'off'
-  condition:
-    - entity_id: light.master_bedroom_ceiling_bulb_1
-      value: 'on'
-  call:
-    domain: light
-    service: turn_off
-    service_data:
-      entity_id:
-        - light.master_bedroom_ceiling_bulb_1
-        - light.master_bedroom_ceiling_bulb_2
-
-garage_light:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: binary_sensor.garage_motion_sensor_1
-      state: 'on'
-    - entity_id: binary_sensor.garage_motion_sensor_2
-      state: 'on'
-  condition:
-    - entity_id: switch.garage_light
-      value: 'off'
-    - entity_id: sensor.garage_sensor_1_luminance
-      comparator: '<'
-      value: 10
-    - entity_id: sensor.garage_sensor_2_luminance
-      comparator: '<'
-      value: 10
-  call:
-    domain: homeassistant
-    service: turn_on
-    service_data:
-      entity_id:
-        - switch.garage_light
-
-garage_light_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    entity_id: switch.garage_light
-  pause_when:
-    - entity_id: binary_sensor.garage_motion_sensor_1
-      value: 'on'
-    - entity_id: binary_sensor.garage_motion_sensor_2
-      value: 'on'
-  enabled_flag: input_boolean.garage_light_timeout
-  duration: 5
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id:
-        - switch.garage_light
-
-laundry_light:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: binary_sensor.laundry_room_motion
-      state: 'on'
-    - entity_id: binary_sensor.server_rack_motion
-      state: 'on'
-  condition:
-    entity_id: switch.laundry_room_lights
-    value: 'off'
-  call:
-    domain: homeassistant
-    service: turn_on
-    service_data:
-      entity_id: switch.laundry_room_lights
-
-laundry_light_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    entity_id: switch.laundry_room_lights
-  pause_when:
-    - entity_id: binary_sensor.server_rack_motion
-      value: 'on'
-    - entity_id: binary_sensor.laundry_room_motion
-      value: 'on'
-  duration: 5
-  enabled_flag: input_boolean.laundry_light_timeout
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id: switch.laundry_room_lights
-
-kitchen_light:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - validation
-  trigger:
-    entity_id: binary_sensor.kitchen_motion
-    state: 'on'
-  condition:
-    entity_id: switch.kitchen_light
-    value: 'off'
-  call:
-    domain: homeassistant
-    service: turn_on
-    service_data:
-      entity_id: switch.kitchen_light
-
-kitchen_light_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - validation
-  trigger:
-    entity_id: switch.kitchen_light
-  pause_when:
-    - entity_id: binary_sensor.kitchen_motion
-      value: 'on'
-  duration: 5
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id: switch.kitchen_light
-
-lower_hall_light:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - validation
-  trigger:
-    entity_id: binary_sensor.lower_stairs_motion
-    state: 'on'
-  condition:
-    - entity_id: media_player.living_room_apple_tv
-      value: 'paused'
-    - entity_id: media_player.living_room_apple_tv
-      value: 'stopped'
-    - entity_id: media_player.living_room_apple_tv
-      value: 'off'
-    - entity_id: media_player.living_room_apple_tv
-      value: 'idle'
-    - entity_id: light.entry_light
-      value: 'off'
-    - entity_id: light.hue_play_1
-      value: 'off'
-    - entity_id: light.hue_play_2
-      value: 'off'
-    - entity_id: switch.lower_hall_light
-      value: 'off'
-    - entity_id: sensor.lower_stairs_luminance
-      comparator: '<'
-      value: 5
-  call:
-    - domain: homeassistant
-      service: turn_on
-      service_data:
-        entity_id:
-          - switch.lower_hall_light
-
-lower_hall_light_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    entity_id: switch.lower_hall_light
-  pause_when:
-    - entity_id: binary_sensor.lower_stairs_motion
-      value: 'on'
-  enabled_flag: input_boolean.lower_hall_light_timeout
-  duration: 1
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id:
-        - switch.lower_hall_light
-
-upper_landing_hall_light:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    entity_id: binary_sensor.upper_landing_motion
-    state: 'on'
-  condition:
-    - entity_id: light.entry_light
-      value: 'off'
-    - entity_id: switch.upper_landing
-      value: 'off'
-    - entity_id: sensor.upper_landing_luminance
-      comparator: '<'
-      value: 1
-  call:
-    - domain: homeassistant
-      service: turn_on
-      service_data:
-        entity_id:
-          - switch.upper_landing
-
-upper_landing_hall_light_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    entity_id: switch.upper_landing
-  pause_when:
-    - entity_id: binary_sensor.upper_landing_motion
-      value: 'on'
-  enabled_flag: input_boolean.upper_landing_hall_timeout
-  duration: 1
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id:
-        - switch.upper_landing
-
-basement_stair_light:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    - entity_id: binary_sensor.basement_stairs_motion
-      state: 'on'
-    - entity_id: binary_sensor.bottom_basement_stairs_motion
-      state: 'on'
-  condition:
-    - entity_id: switch.basement_stairs_light
-      value: 'off'
-  call:
-    - domain: homeassistant
-      service: turn_on
-      service_data:
-        entity_id:
-          - switch.basement_stairs_light
-
-basement_stair_light_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    entity_id: switch.basement_stairs_light
-  pause_when:
-    - entity_id: binary_sensor.basement_stairs_motion
-      value: 'on'
-    - entity_id: binary_sensor.bottom_basement_stairs_motion
-      value: 'on'
-  enabled_flag: input_boolean.basement_stair_light_timeout
-  duration: 1
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id:
-        - switch.basement_stairs_light
-
-lower_bathroom_fan_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  trigger:
-    entity_id: switch.lower_bathroom_fan
-  duration: 20
-  enabled_flag: input_boolean.lower_bathroom_fan_timeout
-  on_timeout:
-    domain: homeassistant
-    service: turn_off
-    service_data:
-      entity_id: switch.lower_bathroom_fan
-
-night_lights:
-  module: night_lights
-  class: NightLights
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-    - utils
-  dependencies:
-    - holidays
-  dawn:
-    offset: 60
-    entities:
-      - entity_id: light.porch_upper
-        domain: light
-        service: turn_off
-      - entity_id: light.porch_lower
-        domain: light
-        service: turn_off
-      - entity_id: light.garage_upper_1
-        domain: light
-        service: turn_off
-      - entity_id: light.garage_upper_2
-        domain: light
-        service: turn_off
-      - entity_id: light.garage_lower_1
-        domain: light
-        service: turn_off
-      - entity_id: light.garage_lower_2
-        domain: light
-        service: turn_off
-  dusk:
-    offset: 60
-    entities:
-      - entity_id: light.porch_upper
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.porch_lower
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_upper_1
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_upper_2
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_lower_1
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_lower_2
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
+#dining_room_light:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: binary_sensor.dining_room_motion
+#      state: 'on'
+#  condition:
+#    - entity_id: switch.dining_room_ceiling_light
+#      value: 'off'
+#    - entity_id: sensor.dining_room_luminance
+#      comparator: '<'
+#      value: 10
+#  call:
+#    domain: homeassistant
+#    service: turn_on
+#    service_data:
+#      entity_id: switch.dining_room_ceiling_light
+#
+#dining_room_light_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    entity_id: switch.dining_room_ceiling_light
+#  pause_when:
+#    - entity_id: binary_sensor.dining_room_motion
+#      value: 'on'
+#  enabled_flag: input_boolean.dining_room_light_timeout
+#  duration: 20
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id: switch.dining_room_ceiling_light
+#
+#turn_living_room_light_on:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: light.living_room_fan_control_light
+#      state: 'on'
+#  condition:
+#    - entity_id: light.living_room_fan_light_bulbs
+#      value: 'off'
+#  call:
+#    domain: light
+#    service: turn_on
+#    service_data:
+#      entity_id: light.living_room_ceiling_light
+#      brightness_pct: 50
+#      transition: 30
+#
+#turn_living_room_light_off:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: light.living_room_fan_control_light
+#      state: 'off'
+#  condition:
+#    - entity_id: light.living_room_fan_light_bulbs
+#      value: 'on'
+#  call:
+#    domain: light
+#    service: turn_off
+#    service_data:
+#      entity_id: light.living_room_ceiling_light
+#
+#turn_master_fan_light_om:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: switch.master_fan_control_light
+#      state: 'on'
+#  condition:
+#    - entity_id: light.master_bedroom_ceiling_bulb_1
+#      value: 'off'
+#  call:
+#    domain: light
+#    service: turn_on
+#    service_data:
+#      entity_id:
+#        - light.master_bedroom_ceiling_bulb_1
+#        - light.master_bedroom_ceiling_bulb_2
+#      brightness_pct: 100
+#
+#turn_master_fan_light_off:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: switch.master_fan_control_light
+#      state: 'off'
+#  condition:
+#    - entity_id: light.master_bedroom_ceiling_bulb_1
+#      value: 'on'
+#  call:
+#    domain: light
+#    service: turn_off
+#    service_data:
+#      entity_id:
+#        - light.master_bedroom_ceiling_bulb_1
+#        - light.master_bedroom_ceiling_bulb_2
+#
+#garage_light:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: binary_sensor.garage_motion_sensor_1
+#      state: 'on'
+#    - entity_id: binary_sensor.garage_motion_sensor_2
+#      state: 'on'
+#  condition:
+#    - entity_id: switch.garage_light
+#      value: 'off'
+#    - entity_id: sensor.garage_sensor_1_luminance
+#      comparator: '<'
+#      value: 10
+#    - entity_id: sensor.garage_sensor_2_luminance
+#      comparator: '<'
+#      value: 10
+#  call:
+#    domain: homeassistant
+#    service: turn_on
+#    service_data:
+#      entity_id:
+#        - switch.garage_light
+#
+#garage_light_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    entity_id: switch.garage_light
+#  pause_when:
+#    - entity_id: binary_sensor.garage_motion_sensor_1
+#      value: 'on'
+#    - entity_id: binary_sensor.garage_motion_sensor_2
+#      value: 'on'
+#  enabled_flag: input_boolean.garage_light_timeout
+#  duration: 5
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id:
+#        - switch.garage_light
+#
+#laundry_light:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: binary_sensor.laundry_room_motion
+#      state: 'on'
+#    - entity_id: binary_sensor.server_rack_motion
+#      state: 'on'
+#  condition:
+#    entity_id: switch.laundry_room_lights
+#    value: 'off'
+#  call:
+#    domain: homeassistant
+#    service: turn_on
+#    service_data:
+#      entity_id: switch.laundry_room_lights
+#
+#laundry_light_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    entity_id: switch.laundry_room_lights
+#  pause_when:
+#    - entity_id: binary_sensor.server_rack_motion
+#      value: 'on'
+#    - entity_id: binary_sensor.laundry_room_motion
+#      value: 'on'
+#  duration: 5
+#  enabled_flag: input_boolean.laundry_light_timeout
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id: switch.laundry_room_lights
+#
+#kitchen_light:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - validation
+#  trigger:
+#    entity_id: binary_sensor.kitchen_motion
+#    state: 'on'
+#  condition:
+#    entity_id: switch.kitchen_light
+#    value: 'off'
+#  call:
+#    domain: homeassistant
+#    service: turn_on
+#    service_data:
+#      entity_id: switch.kitchen_light
+#
+#kitchen_light_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - validation
+#  trigger:
+#    entity_id: switch.kitchen_light
+#  pause_when:
+#    - entity_id: binary_sensor.kitchen_motion
+#      value: 'on'
+#  duration: 5
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id: switch.kitchen_light
+#
+#lower_hall_light:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - validation
+#  trigger:
+#    entity_id: binary_sensor.lower_stairs_motion
+#    state: 'on'
+#  condition:
+#    - entity_id: media_player.living_room_apple_tv
+#      value: 'paused'
+#    - entity_id: media_player.living_room_apple_tv
+#      value: 'stopped'
+#    - entity_id: media_player.living_room_apple_tv
+#      value: 'off'
+#    - entity_id: media_player.living_room_apple_tv
+#      value: 'idle'
+#    - entity_id: light.entry_light
+#      value: 'off'
+#    - entity_id: light.hue_play_1
+#      value: 'off'
+#    - entity_id: light.hue_play_2
+#      value: 'off'
+#    - entity_id: switch.lower_hall_light
+#      value: 'off'
+#    - entity_id: sensor.lower_stairs_luminance
+#      comparator: '<'
+#      value: 5
+#  call:
+#    - domain: homeassistant
+#      service: turn_on
+#      service_data:
+#        entity_id:
+#          - switch.lower_hall_light
+#
+#lower_hall_light_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    entity_id: switch.lower_hall_light
+#  pause_when:
+#    - entity_id: binary_sensor.lower_stairs_motion
+#      value: 'on'
+#  enabled_flag: input_boolean.lower_hall_light_timeout
+#  duration: 1
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id:
+#        - switch.lower_hall_light
+#
+#upper_landing_hall_light:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    entity_id: binary_sensor.upper_landing_motion
+#    state: 'on'
+#  condition:
+#    - entity_id: light.entry_light
+#      value: 'off'
+#    - entity_id: switch.upper_landing
+#      value: 'off'
+#    - entity_id: sensor.upper_landing_luminance
+#      comparator: '<'
+#      value: 1
+#  call:
+#    - domain: homeassistant
+#      service: turn_on
+#      service_data:
+#        entity_id:
+#          - switch.upper_landing
+#
+#upper_landing_hall_light_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    entity_id: switch.upper_landing
+#  pause_when:
+#    - entity_id: binary_sensor.upper_landing_motion
+#      value: 'on'
+#  enabled_flag: input_boolean.upper_landing_hall_timeout
+#  duration: 1
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id:
+#        - switch.upper_landing
+#
+#basement_stair_light:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    - entity_id: binary_sensor.basement_stairs_motion
+#      state: 'on'
+#    - entity_id: binary_sensor.bottom_basement_stairs_motion
+#      state: 'on'
+#  condition:
+#    - entity_id: switch.basement_stairs_light
+#      value: 'off'
+#  call:
+#    - domain: homeassistant
+#      service: turn_on
+#      service_data:
+#        entity_id:
+#          - switch.basement_stairs_light
+#
+#basement_stair_light_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    entity_id: switch.basement_stairs_light
+#  pause_when:
+#    - entity_id: binary_sensor.basement_stairs_motion
+#      value: 'on'
+#    - entity_id: binary_sensor.bottom_basement_stairs_motion
+#      value: 'on'
+#  enabled_flag: input_boolean.basement_stair_light_timeout
+#  duration: 1
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id:
+#        - switch.basement_stairs_light
+#
+#lower_bathroom_fan_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  trigger:
+#    entity_id: switch.lower_bathroom_fan
+#  duration: 20
+#  enabled_flag: input_boolean.lower_bathroom_fan_timeout
+#  on_timeout:
+#    domain: homeassistant
+#    service: turn_off
+#    service_data:
+#      entity_id: switch.lower_bathroom_fan
+#
+#night_lights:
+#  module: night_lights
+#  class: NightLights
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - validation
+#    - utils
+#  dependencies:
+#    - holidays
+#  dawn:
+#    offset: 60
+#    entities:
+#      - entity_id: light.porch_upper
+#        domain: light
+#        service: turn_off
+#      - entity_id: light.porch_lower
+#        domain: light
+#        service: turn_off
+#      - entity_id: light.garage_upper_1
+#        domain: light
+#        service: turn_off
+#      - entity_id: light.garage_upper_2
+#        domain: light
+#        service: turn_off
+#      - entity_id: light.garage_lower_1
+#        domain: light
+#        service: turn_off
+#      - entity_id: light.garage_lower_2
+#        domain: light
+#        service: turn_off
+#  dusk:
+#    offset: 60
+#    entities:
+#      - entity_id: light.porch_upper
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.porch_lower
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_upper_1
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_upper_2
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_lower_1
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.garage_lower_2
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100

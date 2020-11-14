@@ -17,12 +17,16 @@ appdaemon:
   time_zone: !secret home_timezone
   load_distribution: load
   plugins:
-    MQTT_States:
-      type: hassmqtt
-      client_host: homebridge-iot.home.prettybaked.com
-      client_id: rules
-      verbose: false
-      delay: 30
-      client_topics:
-        - events/#
-        - states/#
+    HASS:
+      type: hass
+      ha_url: https://automation.home.prettybaked.com
+      token: !secret ha_ws_token
+#    MQTT_States:
+#      type: hassmqtt
+#      client_host: homebridge-iot.home.prettybaked.com
+#      client_id: rules
+#      verbose: false
+#      delay: 30
+#      client_topics:
+#        - events/#
+#        - states/#

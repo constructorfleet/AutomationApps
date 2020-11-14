@@ -1,78 +1,16 @@
-leak_detected:
-  module: notify_when
-  class: NotifyWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  dependencies:
-    - notifiers
-  entity_id:
-    - binary_sensor.dog_bowl_leak_sensor_dry
-    - binary_sensor.laundry_room_leak_sensor_dry
-    - binary_sensor.server_leak_sensor_dry
-  from:
-    value: 'off'
-  to:
-    value: 'on'
-  notify:
-    notify_category: SAFETY_LEAK_DETECTED
-    replacers:
-      entity_name: entity_name
-
-laundry_leak:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  trigger:
-    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
-      state: 'on'
-    - entity_id: switch.washer
-      state: 'on'
-  condition:
-    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
-      value: 'on'
-  call:
-    domain: switch
-    service: turn_off
-    service_data:
-      entity_id: switch.washer
-
-laundry_leak_clear:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - validation
-  trigger:
-    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
-      state: 'off'
-  condition:
-    - entity_id: switch.washer
-      value: 'off'
-  call:
-    domain: switch
-    service: turn_on
-    service_data:
-      entity_id: switch.washer
-
-#leak_sensor_battery:
+#leak_detected:
 #  module: notify_when
 #  class: NotifyWhen
 #  global_dependencies:
+#    - listen_handle
 #    - base_app
+#    - const
 #    - validation
 #  dependencies:
 #    - notifiers
 #  entity_id:
 #    - binary_sensor.dog_bowl_leak_sensor_dry
-#    - binary_sensor.laundry_leak_sensor_dry
+#    - binary_sensor.laundry_room_leak_sensor_dry
 #    - binary_sensor.server_leak_sensor_dry
 #  from:
 #    value: 'off'
@@ -82,3 +20,65 @@ laundry_leak_clear:
 #    notify_category: SAFETY_LEAK_DETECTED
 #    replacers:
 #      entity_name: entity_name
+#
+#laundry_leak:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - validation
+#  trigger:
+#    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
+#      state: 'on'
+#    - entity_id: switch.washer
+#      state: 'on'
+#  condition:
+#    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
+#      value: 'on'
+#  call:
+#    domain: switch
+#    service: turn_off
+#    service_data:
+#      entity_id: switch.washer
+#
+#laundry_leak_clear:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - validation
+#  trigger:
+#    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
+#      state: 'off'
+#  condition:
+#    - entity_id: switch.washer
+#      value: 'off'
+#  call:
+#    domain: switch
+#    service: turn_on
+#    service_data:
+#      entity_id: switch.washer
+#
+##leak_sensor_battery:
+##  module: notify_when
+##  class: NotifyWhen
+##  global_dependencies:
+##    - base_app
+##    - validation
+##  dependencies:
+##    - notifiers
+##  entity_id:
+##    - binary_sensor.dog_bowl_leak_sensor_dry
+##    - binary_sensor.laundry_leak_sensor_dry
+##    - binary_sensor.server_leak_sensor_dry
+##  from:
+##    value: 'off'
+##  to:
+##    value: 'on'
+##  notify:
+##    notify_category: SAFETY_LEAK_DETECTED
+##    replacers:
+##      entity_name: entity_name

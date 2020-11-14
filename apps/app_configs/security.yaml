@@ -1,142 +1,142 @@
-doorbell:
-  module: security
-  class: Doorbell
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  dependencies:
-    - notifiers
-  doorbell:
-    entity_id: switch.doorbell
-  image_processing:
-    sensor: image_processing.doods_front_door
-    confidence: 90
-    class: person
-    notify_interval: 2
-  camera: camera.front_door
-  base_image_url: https://automation.prettybaked.com/local/camera_snapshot/
-
-unlock:
-  module: security
-  class: DoorLock
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  dependencies:
-    - notifiers
-  people:
-    - device_tracker.alan
-    - device_tracker.teagan
-    - device_tracker.grace
-#    - device_tracker.persia
-    - device_tracker.colby
-    - device_tracker.gina
-    - device_tracker.keith
-    - device_tracker.becky
-    - device_tracker.taylor
-    - device_tracker.patrick
-    - device_tracker.james
-    - device_tracker.valerie
-    - device_tracker.rhema
-    - device_tracker.heather
-    - device_tracker.seb
-  lock: lock.front_door
-
-#car_garage_door:
+#doorbell:
 #  module: security
-#  class: GarageDoor
+#  class: Doorbell
 #  global_dependencies:
+#    - listen_handle
 #    - base_app
+#    - const
 #    - validation
 #  dependencies:
 #    - notifiers
-#  vehicles:
-#    - device_tracker.2011_subaru_impreza_wagon
-#    - device_tracker.2015_jeep_cherokee
-#    - device_tracker.2019_jeep_compass
-#  cover: cover.garage_door
-
-garage_door_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - validation
-    - const
-  dependencies:
-    - notifiers
-  trigger:
-    entity_id: cover.garage_door
-    state: 'open'
-  reset_when:
-    - entity_id: binary_sensor.garage_motion_sensor_1
-      value: 'on'
-    - entity_id: binary_sensor.garage_motion_sensor_2
-      value: 'on'
-  duration: 5
-  on_timeout:
-    domain: cover
-    service: close_cover
-    service_data:
-      entity_id: cover.garage_door
-  notify:
-    notify_category: SECURITY_COVER_CLOSED_TIMEOUT
-    response_entity_id: cover.garage_door
-    replacers:
-      entity_name: garage door
-
-front_door_lock_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  dependencies:
-    - notifiers
-  trigger:
-    entity_id: lock.front_door
-    state: 'unlocked'
-#  pause_when:
-#    - entity_id: binary_sensor.front_door_sensor
+#  doorbell:
+#    entity_id: switch.doorbell
+#  image_processing:
+#    sensor: image_processing.doods_front_door
+#    confidence: 90
+#    class: person
+#    notify_interval: 2
+#  camera: camera.front_door
+#  base_image_url: https://automation.prettybaked.com/local/camera_snapshot/
+#
+#unlock:
+#  module: security
+#  class: DoorLock
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - validation
+#  dependencies:
+#    - notifiers
+#  people:
+#    - device_tracker.alan
+#    - device_tracker.teagan
+#    - device_tracker.grace
+##    - device_tracker.persia
+#    - device_tracker.colby
+#    - device_tracker.gina
+#    - device_tracker.keith
+#    - device_tracker.becky
+#    - device_tracker.taylor
+#    - device_tracker.patrick
+#    - device_tracker.james
+#    - device_tracker.valerie
+#    - device_tracker.rhema
+#    - device_tracker.heather
+#    - device_tracker.seb
+#  lock: lock.front_door
+#
+##car_garage_door:
+##  module: security
+##  class: GarageDoor
+##  global_dependencies:
+##    - base_app
+##    - validation
+##  dependencies:
+##    - notifiers
+##  vehicles:
+##    - device_tracker.2011_subaru_impreza_wagon
+##    - device_tracker.2015_jeep_cherokee
+##    - device_tracker.2019_jeep_compass
+##  cover: cover.garage_door
+#
+#garage_door_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - validation
+#    - const
+#  dependencies:
+#    - notifiers
+#  trigger:
+#    entity_id: cover.garage_door
+#    state: 'open'
+#  reset_when:
+#    - entity_id: binary_sensor.garage_motion_sensor_1
 #      value: 'on'
-  enabled_flag: input_boolean.front_door_lock_timeout
-  duration: 5
-  on_timeout:
-    domain: lock
-    service: lock
-    service_data:
-      entity_id: lock.front_door
-  notify:
-    notify_category: SECURITY_LOCK_TIMEOUT
-    response_entity_id: lock.front_door
-    replacers:
-      entity_name: front door
-
-alarm_system:
-  module: security
-  class: AlarmSystem
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  dependencies:
-    - notifiers
-  people:
-    - device_tracker.alan_icloud
-    - device_tracker.teagan_icloud
-    - device_tracker.grace_icloud
-    - device_tracker.persia_icloud
-  lock: lock.front_door
-  cover: cover.garage_door
-  alarm_panel: alarm_control_panel.magrathea_alarm
-  night_mode_events:
-    arm: arm_night_mode
-    disarm: disarm_night_mode
+#    - entity_id: binary_sensor.garage_motion_sensor_2
+#      value: 'on'
+#  duration: 5
+#  on_timeout:
+#    domain: cover
+#    service: close_cover
+#    service_data:
+#      entity_id: cover.garage_door
+#  notify:
+#    notify_category: SECURITY_COVER_CLOSED_TIMEOUT
+#    response_entity_id: cover.garage_door
+#    replacers:
+#      entity_name: garage door
+#
+#front_door_lock_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - validation
+#  dependencies:
+#    - notifiers
+#  trigger:
+#    entity_id: lock.front_door
+#    state: 'unlocked'
+##  pause_when:
+##    - entity_id: binary_sensor.front_door_sensor
+##      value: 'on'
+#  enabled_flag: input_boolean.front_door_lock_timeout
+#  duration: 5
+#  on_timeout:
+#    domain: lock
+#    service: lock
+#    service_data:
+#      entity_id: lock.front_door
+#  notify:
+#    notify_category: SECURITY_LOCK_TIMEOUT
+#    response_entity_id: lock.front_door
+#    replacers:
+#      entity_name: front door
+#
+#alarm_system:
+#  module: security
+#  class: AlarmSystem
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - validation
+#  dependencies:
+#    - notifiers
+#  people:
+#    - device_tracker.alan_icloud
+#    - device_tracker.teagan_icloud
+#    - device_tracker.grace_icloud
+#    - device_tracker.persia_icloud
+#  lock: lock.front_door
+#  cover: cover.garage_door
+#  alarm_panel: alarm_control_panel.magrathea_alarm
+#  night_mode_events:
+#    arm: arm_night_mode
+#    disarm: disarm_night_mode

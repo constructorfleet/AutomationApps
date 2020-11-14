@@ -9,7 +9,8 @@ from datetime import datetime
 
 import voluptuous as vol
 
-import hassmqttapi as hassmqtt
+# import hassmqttapi as hassmqtt
+import hassapi as hass
 from common.const import (
     ARG_LOG_LEVEL,
     ARG_DEPENDENCIES,
@@ -62,7 +63,7 @@ EVENT_CALL_SERVICE = "call_service"
 DEFAULT_PUBLISH_TOPIC = "events/rules"
 
 
-class BaseApp(hassmqtt.HassMqtt):
+class BaseApp(hass.Hass):
     _base_config_schema = {
         vol.Optional(ARG_LOG_LEVEL, default='ERROR'): valid_log_level
     }
