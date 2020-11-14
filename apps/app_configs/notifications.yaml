@@ -37,7 +37,7 @@ notifiers:
     - name: Alan
       notifier:
         - name: ios
-          service: mobile_app_deviphone
+          service: mobile_app_deviphone12_aj
         - name: ios
           service: mobile_app_dev_ipadpro
     # - name: Grace
