@@ -9,7 +9,7 @@ from datetime import datetime
 
 import voluptuous as vol
 
-# import hassmqttapi as hassmqtt
+import hassmqttapi as hassmqtt
 import hassapi as hass
 from common.const import (
     ARG_LOG_LEVEL,
@@ -219,14 +219,16 @@ class BaseApp(hass.Hass):
 
     def publish_service_call(self, domain, service, kwargs):
         self.debug("Publish Domain %s Service %s with args %s" % (domain, service, str(kwargs)))
-        return self.publish_event(
-            EVENT_CALL_SERVICE,
-            {
-                ATTR_DOMAIN: domain,
-                ATTR_SERVICE: service,
-                ATTR_SERVICE_DATA: kwargs or {}
-            }
-        )
+        if isinstance(self, hassmqtt.HassMqtt):
+            return self.publish_event(
+                EVENT_CALL_SERVICE,
+                {
+                    ATTR_DOMAIN: domain,
+                    ATTR_SERVICE: service,
+                    ATTR_SERVICE_DATA: kwargs or {}
+                }
+            )
+        return self.call_service('{0}/{1}'.format(domain, service), **kwargs)
 
     def publish_event(self, event, event_data, qos=0, retain=False, namespace='default'):
         self.debug("Publish Event %s Data %s " % (event, str(event_data)))
