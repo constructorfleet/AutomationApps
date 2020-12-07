@@ -11,6 +11,7 @@ import string
 import voluptuous as vol
 
 from common.base_app import logging
+from common.colors import COLORS
 
 REGEX_IP = r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}' \
            r'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'
@@ -50,6 +51,18 @@ longitude = vol.All(vol.Coerce(float), vol.Range(min=-180, max=180),
 gps = vol.ExactSequence([latitude, longitude])
 sun_event = vol.All(vol.Lower, vol.Any(SUN_EVENT_SUNSET, SUN_EVENT_SUNRISE))
 port = vol.All(vol.Coerce(int), vol.Range(min=1, max=65535))
+color_rgb = vol.All(vol.ExactSequence((byte, byte, byte)), vol.Coerce(tuple))
+
+
+def color_name(given_color_name):
+    """Convert color name to RGB hex value."""
+    # COLORS map has no spaces in it, so make the color_name have no
+    # spaces in it as well for matching purposes
+    rgb_value = COLORS.get(given_color_name.replace(" ", "").lower())
+    if not rgb_value:
+        raise vol.Invalid("Unknown color {0}".format(given_color_name))
+
+    return rgb_value
 
 
 # Adapted from:
