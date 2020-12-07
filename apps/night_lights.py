@@ -10,7 +10,8 @@ from common.const import (
     ARG_DOMAIN,
     ARG_ENTITY_ID,
     ARG_SERVICE,
-    ARG_SERVICE_DATA)
+    ARG_SERVICE_DATA,
+    ATTR_RGB_COLOR)
 from common.validation import ensure_list, entity_id, color_rgb, color_name
 
 ARG_DUSK = "dusk"
