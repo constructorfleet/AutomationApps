@@ -1,6 +1,7 @@
 global_modules:
   - listen_handle
   - base_app
+  - colors
   - const
   - utils
   - helpers
