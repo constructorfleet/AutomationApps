@@ -134,6 +134,7 @@ class NightLights(BaseApp):
         holiday_colors = [(255, 255, 255)]
         if self.holidays:
             holiday_colors = self.holidays.get_closest_holiday_colors()
+            self.info("HOLIDAY COLORS: {0}".format(str(holiday_colors)))
 
         for i, entity in enumerate(entities):
             data = entity.get(ARG_SERVICE_DATA, {})
@@ -143,6 +144,8 @@ class NightLights(BaseApp):
                 data[ATTR_RGB_COLOR] = color
             elif holiday_colors and '_on' in entity[ARG_SERVICE]:
                 data[ATTR_RGB_COLOR] = holiday_colors[i % len(holiday_colors)]
+
+            self.info('Light Color: {0}'.format(data.get(ATTR_RGB_COLOR, 'n/a')))
 
             self.publish_service_call(
                 entity[ARG_DOMAIN],
