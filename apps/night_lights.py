@@ -11,26 +11,26 @@ from common.const import (
     ARG_ENTITY_ID,
     ARG_SERVICE,
     ARG_SERVICE_DATA)
-from common.validation import ensure_list, entity_id
+from common.validation import ensure_list, entity_id, color_rgb, color_name
 
 ARG_DUSK = "dusk"
 ARG_DAWN = "dawn"
 ARG_NIGHT = "night"
 ARG_ENTITIES = "entities"
 ARG_OFFSET = "offset"
-
-ATTR_RGB_COLOR = "rgb_color"
+ARG_STATIC_COLOR = "static_color"
 
 DEFAULT_OFFSET = 0
 DEFAULT_DOMAIN = "homeassistant"
-DEFAULT_DUSK_SERVICE = "turn_on"
+DEFAULT_DUSK_SERVICE = DEFAULT_NIGHT_SERVICE = "turn_on"
 DEFAULT_DAWN_SERVICE = "turn_off"
 
 SCHEDULE_WAIT = 60 * 5  # 5 Minutes
 
 ENTITY_SCHEMA = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
-    vol.Optional(ARG_SERVICE_DATA, default={}): dict
+    vol.Optional(ARG_SERVICE_DATA, default={}): dict,
+    vol.Optional(ARG_STATIC_COLOR): vol.All(vol.Any(color_rgb, color_name), vol.Coerce(tuple))
 })
 
 DUSK_ENTITY_SCHEMA = ENTITY_SCHEMA.extend({
@@ -44,8 +44,8 @@ DAWN_ENTITY_SCHEMA = ENTITY_SCHEMA.extend({
 })
 
 NIGHT_ENTITY_SCHEMA = ENTITY_SCHEMA.extend({
-    vol.Required(ARG_SERVICE): str,
-    vol.Required(ARG_DOMAIN): str
+    vol.Required(ARG_SERVICE, default=DEFAULT_NIGHT_SERVICE): str,
+    vol.Required(ARG_DOMAIN, default=DEFAULT_DOMAIN): str
 })
 
 
@@ -129,19 +129,22 @@ class NightLights(BaseApp):
         """Handle night event."""
         self._handle_entity_services(self.night_entities)
 
-    def _handle_entity_services(self, entity_services):
+    def _handle_entity_services(self, entities):
         holiday_colors = [(255, 255, 255)]
         if self.holidays:
             holiday_colors = self.holidays.get_closest_holiday_colors()
 
-        for i, entity_service in enumerate(entity_services):
-            data = entity_service.get(ARG_SERVICE_DATA, {})
+        for i, entity in enumerate(entities):
+            data = entity.get(ARG_SERVICE_DATA, {})
             data[ARG_ENTITY_ID] = entity_service[ARG_ENTITY_ID]
-            if holiday_colors and '_on' in entity_service[ARG_SERVICE]:
+            color = entity.get(ARG_STATIC_COLOR, None)
+            if color:
+                data[ATTR_RGB_COLOR] = color
+            elif holiday_colors and '_on' in entity_service[ARG_SERVICE]:
                 data[ATTR_RGB_COLOR] = holiday_colors[i % len(holiday_colors)]
 
             self.publish_service_call(
-                entity_service[ARG_DOMAIN],
-                entity_service[ARG_SERVICE],
+                entity[ARG_DOMAIN],
+                entity[ARG_SERVICE],
                 data
             )
