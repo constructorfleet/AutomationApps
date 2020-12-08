@@ -66,7 +66,8 @@ bhg_call_in:
     - utils
   dependencies:
     - notifiers
-  schedule_toggle: input_boolean.bhg_scheduled
+  schedule_toggle: input_boolean.schedule_for_bhg
+  called_toggle: input_boolean.bhg_called
   call_from: !secret twilio_voice_from_number
   call_to: "+13036295293"
   message: https://handler.twilio.com/twiml/EH2034e8b04e2aef59b90767d68f67df1c
