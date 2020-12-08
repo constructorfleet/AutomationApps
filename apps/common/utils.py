@@ -1,6 +1,11 @@
 import datetime
 import logging
+import imghdr
+from email.headerregistry import Address
+from email.message import EmailMessage
 from string import Formatter
+
+from smtplibaio import SMTP_SSL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,6 +59,101 @@ def json_serializer(obj):
     if isinstance(obj, datetime.datetime):
         return obj.isoformat
     return str(obj)
+
+
+async def send_email(
+        subject,
+        content,
+        to,
+        username,
+        password,
+        display_name=None,
+        cc_recipients=None,
+        bcc_recipients=None,
+        important=False,
+        attach_img=None,
+        content_type='text/plain',
+        server='smtp.gmail.com',
+        port=587):
+
+    if not to or not username or not password or not subject or not content:
+        return False
+
+    def email_name(addr):
+        return addr.split('@')[0]
+
+    def email_domain(addr):
+        return addr.split('@')[1]
+
+    def generate_header(addresses):
+        if isinstance(addresses, Address):
+            return str(addresses)
+        return ', '.join([str(addr) for addr in addresses])
+
+    display_name = display_name or email_name(username)
+
+    from_addr = Address(display_name, display_name.lower(), email_domain(username))
+    to_addr = [
+        Address(
+            email_name(recipient),
+            email_name(recipient).lower(),
+            email_domain(recipient)
+        )
+        for recipient
+        in (to if isinstance(to, list) else [to])
+    ]
+    cc_addr = [
+        Address(
+            email_name(recipient),
+            email_name(recipient).lower(),
+            email_domain(recipient)
+        )
+        for recipient
+        in (cc_recipients or [])
+    ]
+    bcc_addr = [
+        Address(
+            email_name(recipient),
+            email_name(recipient).lower(),
+            email_domain(recipient)
+        )
+        for recipient
+        in (bcc_recipients or [])
+    ]
+
+    # Build the list of recipients (To + Bcc):
+    recipients = [addr.addr_spec for addr in (to_addr + cc_addr + bcc_addr)]
+
+    # Build the EmailMessage object:
+    message = EmailMessage()
+    message.add_header("From", generate_header(from_addr))
+    message.add_header("To", generate_header(to_addr))
+    if cc_addr:
+        message.add_header("Cc", generate_header(cc_addr))
+    if bcc_addr:
+        message.add_header("Bcc", generate_header(bcc_addr))
+    message.add_header("Subject", subject)
+    message.add_header("Content-type", content_type, charset="utf-8")
+    if attach_img:
+        message.add_attachment(
+            attach_img,
+            main_type='image',
+            subtype=imghdr.what(None, attach_img)
+        )
+    if important:
+        message.add_header("X-Priority", "1 (Highest)")
+        message.add_header("X-Priority", "1 (Highest)")
+        message.add_header("X-MSMail-Priority", "High")
+        message.add_header("Importance", "High")
+
+    message.set_content(content)
+
+    # Send the e-mail:
+    async with SMTP_SSL(hostname=server, port=port) as client:
+        await client.auth(username, password)
+        await client.sendmail(from_addr.addr_spec, recipients, message.as_string())
+
+    return True
 
 
 class KWArgFormatter(Formatter):
