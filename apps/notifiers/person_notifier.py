@@ -133,7 +133,7 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
             self.log("Not found {}".format(name))
 
     async def _get_person(self, name):
-        for person_args in  self.configs[ARG_PEOPLE]:
+        for person_args in self.configs[ARG_PEOPLE]:
             if person_args[ARG_PERSON_NAME] == name:
                 return await self._init_person(person_args)
         return None
