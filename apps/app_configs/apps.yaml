@@ -71,8 +71,10 @@ bhg_call_in:
   call_to: "+13036295293"
   message: https://handler.twilio.com/twiml/EH2034e8b04e2aef59b90767d68f67df1c
   daily_at:
-    hour: 0
-    minute: 30
+    - hour: 0
+      minute: 15
+    - hour: 9
+      minute: 0
   skip_weekends: true
   twilio_credential:
     account_sid: !secret twilio_account_sid

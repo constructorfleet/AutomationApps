@@ -1,17 +1,15 @@
 import logging
 import re
+from datetime import datetime
 from urllib import parse
 
-from datetime import datetime
-
 import voluptuous as vol
-from twilio.rest import Client
-from twilio.rest.api.v2010.account.call import CallInstance
-
 from common.base_app import BaseApp
 from common.const import ARG_ENTITY_ID
-from common.validation import entity_id
+from common.validation import entity_id, ensure_list
 from notifiers.notification_category import NotificationCategory
+from twilio.rest import Client
+from twilio.rest.api.v2010.account.call import CallInstance
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,6 +31,7 @@ ARG_NOTIFY = "notify"
 ARG_NOTIFY_GROUP = "people"
 ARG_NOTIFY_IGNORER = "ignored"
 ARG_SCHEDULE_TOGGLE = "schedule_toggle"
+ARG_CALLED_TOGGLE = "called_toggle"
 ARG_TIMEOUT = "timeout"
 ARG_SKIP_WEEKENDS = "skip_weekends"
 
@@ -63,7 +62,6 @@ class CallBHG(BaseApp):
     async def initialize_app(self):
         self._twiML = None
         self._call_instance = None
-        self._called_today = False
         self._calling = False
         self._client = Client(
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
@@ -74,12 +72,11 @@ class CallBHG(BaseApp):
                              "00:01:00")
         await self.listen_event(self._call_bhg,
                                 event="call_bhg")
-        await self.run_daily(self._daily_call,
-                             "%02d:%02d:00" % (
-                                 self.configs[ARG_FREQUENCY][
-                                     ARG_FREQUENCY_HOUR],
-                                 self.configs[ARG_FREQUENCY][
-                                     ARG_FREQUENCY_MINUTE]))
+        for schedule in self.configs[ARG_FREQUENCY]:
+            await self.run_daily(self._daily_call,
+                                 "%02d:%02d:00" % (
+                                     schedule[ARG_FREQUENCY_HOUR],
+                                     schedule[ARG_FREQUENCY_MINUTE]))
 
     @property
     def app_schema(self):
@@ -87,20 +84,21 @@ class CallBHG(BaseApp):
             vol.Required(ARG_CALL_FROM): vol.Match(r"\+1\d{10}$"),
             vol.Required(ARG_CALL_TO): vol.Match(r"\+1\d{10}$"),
             vol.Required(ARG_MESSAGE): str,
-            vol.Required(ARG_FREQUENCY): SCHEMA_DAILY_AT,
+            vol.Required(ARG_FREQUENCY): vol.All(
+                ensure_list,
+                [SCHEMA_DAILY_AT]
+            ),
             vol.Optional(ARG_SKIP_WEEKENDS, default=False): vol.Coerce(bool),
             vol.Required(ARG_CREDENTIALS): SCHEMA_CREDENTIALS_CONFIG,
             vol.Optional(ARG_TIMEOUT, default=3): vol.Range(1, 5),
-            vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id
+            vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id,
+            vol.Optional(ARG_CALLED_TOGGLE): entity_id
         }, extra=vol.ALLOW_EXTRA)
 
     async def _new_day(self, kwargs):
-        self._called_today = False
+        self._set_called(False)
 
     async def _daily_call(self, kwargs):
-        if self._called_today:
-            self.info("Already called today.")
-            return
         if self.configs[ARG_SKIP_WEEKENDS] and datetime.today().weekday() >= 5:  # Skip Weekend
             return
         await self._call_bhg('call_bhg', {}, {})
@@ -155,7 +153,6 @@ class CallBHG(BaseApp):
         _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
         await self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
         self._calling = False
-        self._called_today = False
         self._call_instance = None
         await self.run_in(self._daily_call,
                           10 * 60)
@@ -175,17 +172,18 @@ class CallBHG(BaseApp):
 
         if not recording_sids or len(recording_sids) == 0:
             await self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIBE_FAILED)
-            self._called_today = False
-            return
-
-        transcription_texts = [transcription.transcription_text
-                               for transcription in self._client.transcriptions.list()
-                               if transcription and transcription.transcription_text
-                               and transcription.recording_sid in recording_sids]
-        await self._process_transcriptions(transcription_texts)
+            self._calling = False
+            self._call_instance = None
+            await self.run_in(self._daily_call,
+                              10 * 60)
+        else:
+            transcription_texts = [transcription.transcription_text
+                                   for transcription in self._client.transcriptions.list()
+                                   if transcription and transcription.transcription_text
+                                   and transcription.recording_sid in recording_sids]
+            await self._process_transcriptions(transcription_texts)
         self._call_instance = None
         self._calling = False
-        self._called_today = True
 
     async def _notify(self, category, **kwargs):
         await self.notifier.notify_people(
@@ -197,20 +195,27 @@ class CallBHG(BaseApp):
     async def _process_transcriptions(self, transcripts):
         for transcript in [transcript for transcript in transcripts]:
             if REGEX_SCHEDULED.match(transcript):
-                if ARG_SCHEDULE_TOGGLE in self.configs:
-                    self.publish_service_call(DOMAIN_FLAG_SERVICE,
-                                              TURN_ON_SERVICE,
-                                              {
-                                                  ARG_ENTITY_ID: self.configs[ARG_SCHEDULE_TOGGLE]
-                                              })
+                self._set_scheduled(True)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_SCHEDULED,
                                    transcript=transcript)
             elif REGEX_NOT_SCHEDULED.match(transcript):
-                if ARG_SCHEDULE_TOGGLE in self.configs:
-                    self.publish_service_call(DOMAIN_FLAG_SERVICE,
-                                              TURN_OFF_SERVICE,
-                                              {
-                                                  ARG_ENTITY_ID: self.configs[ARG_SCHEDULE_TOGGLE]
-                                              })
+                self._set_scheduled(False)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_ALL_CLEAR,
                                    transcript=transcript)
+
+    def _set_scheduled(self, scheduled):
+        if ARG_SCHEDULE_TOGGLE in self.configs:
+            self.publish_service_call(DOMAIN_FLAG_SERVICE,
+                                      TURN_ON_SERVICE if scheduled else TURN_OFF_SERVICE,
+                                      {
+                                          ARG_ENTITY_ID: self.configs[ARG_SCHEDULE_TOGGLE]
+                                      })
+        self._set_called(True)
+
+    def _set_called(self, called):
+        if ARG_CALLED_TOGGLE in self.configs:
+            self.publish_service_call(DOMAIN_FLAG_SERVICE,
+                                      TURN_ON_SERVICE if called else TURN_OFF_SERVICE,
+                                      {
+                                          ARG_ENTITY_ID: self.configs[ARG_CALLED_TOGGLE]
+                                      })
