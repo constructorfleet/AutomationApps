@@ -4,28 +4,59 @@ import traceback
 import voluptuous as vol
 from appdaemon import adbase, adapi
 
-from common.validation import ensure_list
+from common.validation import ensure_list, email
 from notifiers.notification_channel import NotificationChannel
 
 NOTIFIER_IOS = "ios"
 NOTIFIER_FCM = "fcm"
+NOTIFIER_EMAIL = "email"
 
 ARG_PEOPLE = "people"
 ARG_PERSON_NAME = "name"
+ARG_EMAIL_ADDRESS = "email_address"
 ARG_CHANNELS = "channels"
+ARG_TYPE = "type"
 ARG_NAME = "name"
 ARG_SERVICE = "service"
+
 ARG_VALID_CHANNELS = [member.name for name, member in NotificationChannel.__members__.items()]
 ARG_NOTIFIER = "notifier"
 ARG_VALID_NOTIFIERS = [
     NOTIFIER_IOS,
-    NOTIFIER_FCM
+    NOTIFIER_FCM,
+    NOTIFIER_EMAIL
 ]
 
 ATTR_IMAGE_URL = "image_url"
+ATTR_IMAGE_PATH = "image_path"
 ATTR_EXTENSION = "image_ext"
 
 DEFAULT_CHANNELS = ARG_VALID_CHANNELS
+
+SCHEMA_NOTIFIER_BASE = vol.Schema({
+    vol.Required(ARG_TYPE): vol.In(ARG_VALID_NOTIFIERS),
+    vol.Optional(ARG_CHANNELS, default=ARG_VALID_CHANNELS): vol.All(
+        ensure_list,
+        [vol.In(ARG_VALID_CHANNELS)]
+    )
+})
+
+SCHEMA_SERVICE_NOTIFIER = SCHEMA_NOTIFIER_BASE.extend(
+    {
+        vol.Required(ARG_SERVICE): str
+    }
+)
+
+SCHEMA_EMAIL_NOTIFIER = SCHEMA_NOTIFIER_BASE.extend(
+    {
+        vol.Optional(ARG_NAME, default="email"): str
+    }
+)
+
+SCHEMA_NOTIFIER = vol.Any(
+    SCHEMA_SERVICE_NOTIFIER,
+    SCHEMA_EMAIL_NOTIFIER
+)
 
 
 def get_arg_schema(args):
@@ -35,12 +66,10 @@ def get_arg_schema(args):
             ensure_list,
             [{
                 vol.Required(ARG_PERSON_NAME): str,
+                vol.Optional(ARG_EMAIL_ADDRESS): vol.All(vol.Coerce(str), email),
                 vol.Required(ARG_NOTIFIER): vol.All(
                     ensure_list,
-                    [vol.Schema({
-                        vol.Required(ARG_NAME): vol.In(ARG_VALID_NOTIFIERS),
-                        vol.Required(ARG_SERVICE): str
-                    })]
+                    [SCHEMA_NOTIFIER]
                 ),
                 vol.Optional(ARG_CHANNELS, default=DEFAULT_CHANNELS):
                     vol.All(ensure_list,
@@ -80,12 +109,14 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
                                                    str(person.notification_channels)))
             if notification_category.channel.name in person.notification_channels:
                 for notifier in person.notifiers:
+                    if notification_category.channel.name not in notifier.get(ARG_CHANNELS, ARG_VALID_CHANNELS):
+                        continue
                     # noinspection PyBroadException
                     try:
                         notifier["app"].notify_person(
                             notification_category,
                             person,
-                            notifier[ARG_SERVICE],
+                            notifier.get(ARG_SERVICE, None),
                             response_entity_id,
                             **kwargs)
                     except Exception:
@@ -106,9 +137,11 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
     async def _init_person(self, args):
         notifiers = []
         for notifier in args[ARG_NOTIFIER]:
+            notifier_name = notifier.get(ARG_NAME, notifier[ARG_TYPE]).lower()
             notifiers.append({
-                "app": await self.get_app(str(notifier[ARG_NAME]).lower() + "_notifier"),
-                ARG_SERVICE: notifier[ARG_SERVICE]
+                "app": await self.get_app(notifier_name + "_notifier"),
+                ARG_SERVICE: notifier.get(ARG_SERVICE, None),
+                ARG_CHANNELS: notifier.get(ARG_CHANNELS, ARG_VALID_CHANNELS)
             })
         return self.Person(
             args[ARG_PERSON_NAME],
