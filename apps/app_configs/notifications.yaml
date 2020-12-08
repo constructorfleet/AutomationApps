@@ -16,6 +16,18 @@ ios_notifier:
     - notification_category
     - notification_channels
 
+email_notifier:
+  module: email_notifier
+  class: EmailNotifier
+  global_dependencies:
+    - validation
+    - notification_action
+    - notification_category
+    - notification_channels
+    - utils
+  username: !secret email_username
+  passsword: !secret email_password
+
 notifiers:
   module: person_notifier
   class: PersonNotifier
@@ -24,21 +36,25 @@ notifiers:
     - notification_action
     - notification_category
     - notification_channels
+    - utils
   dependencies:
     - ios_notifier
     - fcm_notifier
+    - email_notifier
   people:
     - name: Teagan
+      email_address: teagan.glenn@icloud.com
       notifier:
-        - name: ios
+        - type: ios
           service: mobile_app_agrajag
-        - name: ios
+        - type: ios
           service: mobile_app_sub_etha
     - name: Alan
+      email_address: alan.janis@gmail.com
       notifier:
-        - name: ios
+        - type: ios
           service: mobile_app_deviphone12_aj
-        - name: ios
+        - type: ios
           service: mobile_app_dev_ipadpro
     # - name: Grace
     #   notifier:
