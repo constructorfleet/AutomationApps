@@ -1,3 +1,3 @@
 twilio==6.35.5
 aioopenssl==0.5.1
-smtplibaio==2.1.2.post1
+https://files.pythonhosted.org/packages/2d/09/8e483ba0f1e896dda450e497b966fa4cadc450e013de10d0b598531d09c5/smtplibaio-2.1.2.post1-py3-none-any.whl
