@@ -109,6 +109,10 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
                                                    str(person.notification_channels)))
             if notification_category.channel.name in person.notification_channels:
                 for notifier in person.notifiers:
+                    if not notifier.get("app", None):
+                        self.log("No app found, skipping")
+                        continue
+
                     if notification_category.channel.name not in notifier.get(ARG_CHANNELS, ARG_VALID_CHANNELS):
                         continue
                     # noinspection PyBroadException
