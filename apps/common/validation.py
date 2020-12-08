@@ -5,6 +5,7 @@ from datetime import (
     time as time_sys
 )
 from urllib.parse import urlparse
+from email.headerregistry import Address
 
 import os
 import string
@@ -267,6 +268,14 @@ def entities_domain(domain):
         return values
 
     return validate
+
+
+def email(value):
+    """Validate value is a valid email address."""
+    try:
+        return Address(addr_spec=value).addr_spec
+    except ValueError as e:
+        vol.Invalid('Unable to parse email {0}: {1}'.format(value, str(e)))
 
 
 def enum(enumClass):
