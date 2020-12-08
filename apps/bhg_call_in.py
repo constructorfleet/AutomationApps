@@ -42,7 +42,7 @@ TURN_ON_SERVICE = "turn_on"
 SCHEMA_DAILY_AT = vol.Schema({
     vol.Required(ARG_FREQUENCY_HOUR): vol.All(
         vol.Coerce(int),
-        vol.Range(0, 6)
+        vol.Range(0, 12)
     ),
     vol.Optional(ARG_FREQUENCY_MINUTE, default=0): vol.All(
         vol.Coerce(int),
