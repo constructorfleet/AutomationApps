@@ -64,4 +64,4 @@ class KWArgFormatter(Formatter):
             except KeyError:
                 return key
         else:
-            return Formatter.get_value(key, args, kwds)
+            return super(KWArgFormatter, self).get_value(key, args, kwds)
