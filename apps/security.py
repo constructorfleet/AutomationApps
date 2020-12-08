@@ -17,7 +17,7 @@ from notifiers.notification_category import (
     VALID_NOTIFICATION_CATEGORIES,
     get_category_by_name
 )
-from notifiers.person_notifier import ATTR_IMAGE_URL, ATTR_EXTENSION
+from notifiers.person_notifier import ATTR_IMAGE_URL, ATTR_IMAGE_PATH, ATTR_EXTENSION
 
 ARG_DOORBELL = 'doorbell'
 ARG_IMAGE_PROCESSING = 'image_processing'
@@ -184,6 +184,7 @@ class Doorbell(BaseApp):
 
         return {
             ATTR_IMAGE_URL: _get_image_url(self.configs[ARG_BASE_IMAGE_URL], file_name),
+            ATTR_IMAGE_PATH: file_path,
             ATTR_EXTENSION: "jpg"
         }
 
