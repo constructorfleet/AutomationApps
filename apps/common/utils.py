@@ -5,7 +5,7 @@ from email.headerregistry import Address
 from email.message import EmailMessage
 from string import Formatter
 
-from smtplibaio import SMTP
+from aiosmtplib import SMTP
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ async def send_email(
         attach_img=None,
         content_type='text/plain',
         server='smtp.gmail.com',
-        port=587):
+        port=465):
 
     if not to or not username or not password or not subject or not content:
         return False
@@ -148,10 +148,7 @@ async def send_email(
 
     message.set_content(content)
 
-    # Send the e-mail:
-    async with SMTP(hostname=server, port=port, use_aioopenssl=True) as client:
-        await client.starttls()
-        await client.auth(username, password)
+    async with SMTP(hostname=server, port=port, use_tls=True, username=username, password=password) as client:
         await client.sendmail(from_addr.addr_spec, recipients, message.as_string())
 
     return True
