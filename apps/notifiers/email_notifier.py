@@ -20,18 +20,18 @@ ARG_BCC = "bcc"
 class EmailNotifier(BaseApp):
 
     async def initialize_app(self):
+        self.error(str(self.configs))
         self._username = self.configs[ARG_USERNAME]
         self._password = self.configs[ARG_PASSWORD]
         self._cc = self.configs.get(ARG_CC, None)
         self._bcc = self.configs.get(ARG_BCC, None)
-        return
 
     @property
     def app_schema(self):
         return vol.Schema({
             vol.Optional(ARG_NAME, default='email'): str,
             vol.Required(ARG_USERNAME): validate.email,
-            vol.Required(ARG_PASSWORD): str,
+            vol.Optional(ARG_PASSWORD): str,
             vol.Optional(ARG_CC, default=[]): vol.All(
                 validate.ensure_list,
                 [validate.email]
