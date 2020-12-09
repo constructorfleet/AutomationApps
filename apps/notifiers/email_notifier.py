@@ -53,6 +53,7 @@ class EmailNotifier(BaseApp):
         subject = str(notification_category.channel.name).title()
         content = KWArgFormatter().format(str(notification_category.body), **kwargs)
         image_path = kwargs.get(ATTR_IMAGE_PATH, None)
+        img_data = None
         if image_path and exists(image_path) and isfile(image_path):
             with open(kwargs[ATTR_IMAGE_PATH], 'rb') as fp:
                 img_data = fp.read()

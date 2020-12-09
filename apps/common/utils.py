@@ -74,7 +74,7 @@ async def send_email(
         attach_img=None,
         content_type='text/plain',
         server='smtp.gmail.com',
-        port=587):
+        port=465):
 
     if not to or not username or not password or not subject or not content:
         return False
