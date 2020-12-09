@@ -46,7 +46,7 @@ class EmailNotifier(BaseApp):
     def service(self):
         return ""
 
-    def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
+    async def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
         to = person.get(ARG_EMAIL_ADDRESS, None)
         if not to:
             self.error("No email address for {0}".format(person[ARG_NAME]))

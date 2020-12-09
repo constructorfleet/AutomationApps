@@ -19,7 +19,7 @@ class iOSNotifier(BaseApp):
     def service(self):
         return ""
 
-    def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
+    async def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
         critical = notification_category.critical
         if notification_category.channel.name in person.notification_channels:
             service_data = {

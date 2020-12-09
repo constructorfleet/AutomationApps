@@ -117,7 +117,7 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
                         continue
                     # noinspection PyBroadException
                     try:
-                        notifier["app"].notify_person(
+                        await notifier["app"].notify_person(
                             notification_category,
                             person,
                             notifier.get(ARG_SERVICE, None),

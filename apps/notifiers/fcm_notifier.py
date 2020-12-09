@@ -84,7 +84,7 @@ class FcmNotifier(BaseApp):
     async def initialize_app(self):
         self.log("Initialized")
 
-    def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
+    async def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
         if notification_category.channel.name in person.notification_channels:
             self.log("Notifying {}".format(person.name))
             extra_args = {}
