@@ -26,7 +26,7 @@ email_notifier:
     - notification_channels
     - utils
   username: !secret email_username
-  passsword: !secret email_password
+  password: !secret email_password
 
 notifiers:
   module: person_notifier
