@@ -49,6 +49,9 @@ notifiers:
           service: mobile_app_agrajag
         - type: ios
           service: mobile_app_sub_etha
+        - type: email
+          channels:
+            - IMPORTANT
     - name: Alan
       email_address: alan.janis@gmail.com
       notifier:
