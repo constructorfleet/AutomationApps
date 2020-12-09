@@ -5,7 +5,7 @@ from email.headerregistry import Address
 from email.message import EmailMessage
 from string import Formatter
 
-from smtplibaio import SMTP_SSL
+from smtplibaio import SMTP
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -149,7 +149,7 @@ async def send_email(
     message.set_content(content)
 
     # Send the e-mail:
-    async with SMTP_SSL(hostname=server, port=port, use_aioopenssl=True) as client:
+    async with SMTP(hostname=server, port=port, use_aioopenssl=True) as client:
         await client.starttls()
         await client.auth(username, password)
         await client.sendmail(from_addr.addr_spec, recipients, message.as_string())
