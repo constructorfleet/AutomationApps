@@ -43,7 +43,8 @@ notifiers:
     - email_notifier
   people:
     - name: Teagan
-      email_address: teagan.glenn@icloud.com
+      email_address:
+        - teagan.glenn@icloud.com
       notifier:
         - type: ios
           service: mobile_app_agrajag
@@ -53,12 +54,17 @@ notifiers:
           channels:
             - IMPORTANT
     - name: Alan
-      email_address: alan.janis@gmail.com
+      email_address:
+        - alan.janis@gmail.com
+        - 9412863602@vtext.com
       notifier:
         - type: ios
           service: mobile_app_deviphone12_aj
         - type: ios
           service: mobile_app_dev_ipadpro
+        - type: email
+          channels:
+            - IMPORTANT
     # - name: Grace
     #   notifier:
     #     - name: ios

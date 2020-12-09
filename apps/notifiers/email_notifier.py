@@ -49,6 +49,8 @@ class EmailNotifier(BaseApp):
         to = person.email
         if not to:
             self.error("No email address for {0}".format(person[ARG_NAME]))
+        if notification_category.channel.name not in person.notification_channels:
+            return
         critical = notification_category.critical
         subject = str(notification_category.channel.name).title()
         content = KWArgFormatter().format(str(notification_category.body), **kwargs)
@@ -57,8 +59,9 @@ class EmailNotifier(BaseApp):
         if image_path and exists(image_path) and isfile(image_path):
             with open(kwargs[ATTR_IMAGE_PATH], 'rb') as fp:
                 img_data = fp.read()
-        if notification_category.channel.name in person.notification_channels:
-            self.log("Sending email {0}".format(subject))
+
+        for to in person.email:
+            self.log("Sending email {0} to {1}".format(subject, to))
             await send_email(
                 to=to,
                 subject=subject,

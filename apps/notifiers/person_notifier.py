@@ -66,7 +66,10 @@ def get_arg_schema(args):
             ensure_list,
             [{
                 vol.Required(ARG_PERSON_NAME): str,
-                vol.Optional(ARG_EMAIL_ADDRESS): vol.All(vol.Coerce(str), email),
+                vol.Optional(ARG_EMAIL_ADDRESS): vol.All(
+                    ensure_list,
+                    [email]
+                ),
                 vol.Required(ARG_NOTIFIER): vol.All(
                     ensure_list,
                     [SCHEMA_NOTIFIER]
