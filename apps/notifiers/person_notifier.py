@@ -149,11 +149,13 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
             })
         return self.Person(
             args[ARG_PERSON_NAME],
+            args.get(ARG_EMAIL_ADDRESS, None),
             notifiers,
             args.get(ARG_CHANNELS, DEFAULT_CHANNELS))
 
     class Person(object):
-        def __init__(self, name, notifiers, channels):
+        def __init__(self, name, email, notifiers, channels):
             self.name = name
+            self.email = email
             self.notifiers = notifiers
             self.notification_channels = channels

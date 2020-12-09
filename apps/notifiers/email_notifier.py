@@ -46,7 +46,7 @@ class EmailNotifier(BaseApp):
         return ""
 
     async def notify_person(self, notification_category, person, service, response_entity_id, **kwargs):
-        to = person.get(ARG_EMAIL_ADDRESS, None)
+        to = person.email
         if not to:
             self.error("No email address for {0}".format(person[ARG_NAME]))
         critical = notification_category.critical
