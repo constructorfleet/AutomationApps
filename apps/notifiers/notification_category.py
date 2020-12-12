@@ -67,14 +67,14 @@ class NotificationCategory(Enum):
     IMPORTANT_BHG_CALL_FAILED = (
         NotificationChannel.IMPORTANT,
         "Automated call to BHG failed, please try manually",
-        [NotificationAction.ACTION_CANCEL_RETRY],
+        [NotificationAction.ACTION_CANCEL_BHG_RETRY],
         "priority",
         True
     )
     IMPORTANT_BHG_TRANSCRIBE_FAILED = (
         NotificationChannel.IMPORTANT,
         "Unable to receive transcription from BHG, please try manually",
-        [NotificationAction.ACTION_CANCEL_RETRY],
+        [NotificationAction.ACTION_CANCEL_BHG_RETRY],
         "priority",
         True
     )
