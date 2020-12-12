@@ -103,6 +103,7 @@ class CallBHG(BaseApp):
         self._set_called(False)
 
     async def _cancel_retry(self, event, data, kwargs):
+        self.info("Cancelling retry...")
         if self._retry_handle:
             await self._retry_handle.cancel()
         self._retry_handle = None

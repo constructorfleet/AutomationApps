@@ -48,6 +48,7 @@ class NotificationActionProcessor(BaseApp):
             acknowledge_id = acknowledge_id or action.acknowledge_id
             if not acknowledge_id:
                 return
+            self.info("Firing event {}".format("notification_action.{}".format(acknowledge_id)))
             self.fire_event("notification_action.{}".format(acknowledge_id))
             for listener in self.acknowledge_listeners:
                 listener(acknowledge_id, action)
