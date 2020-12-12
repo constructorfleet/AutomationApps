@@ -40,6 +40,8 @@ TURN_OFF_SERVICE = "turn_off"
 TURN_ON_SERVICE = "turn_on"
 RETRY_ACKNOWLEDGE_ID = "bhg_retry_acknowledge"
 
+MAX_RETRY = 5
+
 SCHEMA_DAILY_AT = vol.Schema({
     vol.Required(ARG_FREQUENCY_HOUR): vol.All(
         vol.Coerce(int),
@@ -65,6 +67,7 @@ class CallBHG(BaseApp):
         self._call_instance = None
         self._calling = False
         self._retry_handle = None
+        self._retries = 0
         self._client = Client(
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
@@ -117,9 +120,13 @@ class CallBHG(BaseApp):
             self.info('Wrong action name')
 
     async def _retry(self, kwargs):
+        self._retries += 1
+        if self._retries > MAX_RETRY:
+            return
         await self._call_bhg('call_bhg', {}, {})
 
     async def _daily_call(self, kwargs):
+        self._retries = 0
         if self.configs[ARG_SKIP_WEEKENDS] and datetime.today().weekday() >= 5:  # Skip Weekend
             return
         await self._call_bhg('call_bhg', {}, {})
