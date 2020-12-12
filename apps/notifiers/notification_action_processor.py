@@ -51,7 +51,7 @@ class NotificationActionProcessor(BaseApp):
             self.info("Firing event {}".format("notification_action.{}".format(acknowledge_id)))
             self.fire_event("notification_action.{}".format(acknowledge_id))
             for listener in self.acknowledge_listeners:
-                listener(acknowledge_id, action)
+                await listener(acknowledge_id, action)
             return
 
         entity_id = data["data"][ACTION_DATA][ENTITY_ID] \
