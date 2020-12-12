@@ -102,7 +102,7 @@ class CallBHG(BaseApp):
     async def _new_day(self, kwargs):
         self._set_called(False)
 
-    async def _cancel_retry(self, kwargs):
+    async def _cancel_retry(self, event, data, kwargs):
         if self._retry_handle:
             await self._retry_handle.cancel()
         self._retry_handle = None
