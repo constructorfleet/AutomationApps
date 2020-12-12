@@ -42,9 +42,9 @@ class NotificationActionProcessor(BaseApp):
 
         action = found_action[0]
         if not action.service:
-            acknowledge_id = data["data"][ACTION_DATA].get(ACKNOWLEDGE_ID, None) \
+            acknowledge_id = data["data"].get(ACTION_DATA, {}).get(ACKNOWLEDGE_ID, None) \
                 if event_name == "html5_notification.clicked" \
-                else data[ACTION_DATA].get(ACKNOWLEDGE_ID, None)
+                else data.get(ACTION_DATA, {}).get(ACKNOWLEDGE_ID, None)
             acknowledge_id = acknowledge_id or action.acknowledge_id
             if not acknowledge_id:
                 return
