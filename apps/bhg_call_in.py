@@ -78,8 +78,7 @@ class CallBHG(BaseApp):
         await self.listen_event(self._call_bhg,
                                 event="call_bhg")
         await self.listen_event(self._cancel_retry,
-                                event="ios.notification_action_fired",
-                                actionName="ACTIONCANCELBHGRETRY")
+                                event="ios.notification_action_fired")
         for schedule in self.configs[ARG_FREQUENCY]:
             await self.run_daily(self._daily_call,
                                  "%02d:%02d:00" % (
@@ -107,10 +106,15 @@ class CallBHG(BaseApp):
         self._set_called(False)
 
     async def _cancel_retry(self, event, data, kwargs):
-        self.info("Cancelling retry...")
-        if self._retry_handle:
-            await self._retry_handle.cancel()
-        self._retry_handle = None
+        self.info(str(data))
+        action_name = data.get('actionName', None)
+        if action_name == "ACTIONCANCELBHGRETRY":
+            self.info("Cancelling retry...")
+            if self._retry_handle:
+                await self._retry_handle.cancel()
+            self._retry_handle = None
+        else:
+            self.info('Wrong action name')
 
     async def _retry(self, kwargs):
         await self._call_bhg('call_bhg', {}, {})
