@@ -70,12 +70,15 @@ class CallBHG(BaseApp):
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
         )
 
+        action_processor = await self.get_app("notification_action_processor")
+        action_processor.add_acknowledge_listener(self._cancel_retry)
+
         await self.run_daily(self._new_day,
                              "00:01:00")
         await self.listen_event(self._call_bhg,
                                 event="call_bhg")
-        await self.listen_event(self._cancel_retry,
-                                event="notification_action.{}".format(RETRY_ACKNOWLEDGE_ID))
+        # await self.listen_event(self._cancel_retry,
+        #                         event="notification_action.{}".format(RETRY_ACKNOWLEDGE_ID))
         for schedule in self.configs[ARG_FREQUENCY]:
             await self.run_daily(self._daily_call,
                                  "%02d:%02d:00" % (
@@ -102,7 +105,10 @@ class CallBHG(BaseApp):
     async def _new_day(self, kwargs):
         self._set_called(False)
 
-    async def _cancel_retry(self, event, data, kwargs):
+    async def _cancel_retry(self, acknowledge_id, action):
+        if acknowledge_id != RETRY_ACKNOWLEDGE_ID:
+            return
+
         self.info("Cancelling retry...")
         if self._retry_handle:
             await self._retry_handle.cancel()
