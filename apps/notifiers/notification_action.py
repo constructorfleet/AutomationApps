@@ -36,9 +36,12 @@ class NotificationAction(Enum):
     ACTION_TRAIN_GOOD = ("Good", "training/good")
     ACTION_TRAIN_BAD = ("Bad", "training/bad")
 
-    def __init__(self, text, service):
+    ACTION_CANCEL_BHG_RETRY = ("Cancel Retry", None, "bhg_retry_acknowledge")
+
+    def __init__(self, text, service, acknowledge_id=None):
         self.text = text
         self.service = service
+        self.acknowledge_id = acknowledge_id
 
     def __str__(self):
         return self.name.lower().replace('_', '')

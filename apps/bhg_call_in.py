@@ -38,6 +38,7 @@ ARG_SKIP_WEEKENDS = "skip_weekends"
 DOMAIN_FLAG_SERVICE = "homeassistant"
 TURN_OFF_SERVICE = "turn_off"
 TURN_ON_SERVICE = "turn_on"
+RETRY_ACKNOWLEDGE_ID = "bhg_retry_acknowledge"
 
 SCHEMA_DAILY_AT = vol.Schema({
     vol.Required(ARG_FREQUENCY_HOUR): vol.All(
@@ -63,6 +64,7 @@ class CallBHG(BaseApp):
         self._twiML = None
         self._call_instance = None
         self._calling = False
+        self._retry_handle = None
         self._client = Client(
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
@@ -72,6 +74,8 @@ class CallBHG(BaseApp):
                              "00:01:00")
         await self.listen_event(self._call_bhg,
                                 event="call_bhg")
+        await self.listen_event(self._cancel_retry,
+                                event="notification_action.{}".format(RETRY_ACKNOWLEDGE_ID))
         for schedule in self.configs[ARG_FREQUENCY]:
             await self.run_daily(self._daily_call,
                                  "%02d:%02d:00" % (
@@ -98,12 +102,23 @@ class CallBHG(BaseApp):
     async def _new_day(self, kwargs):
         self._set_called(False)
 
+    async def _cancel_retry(self, kwargs):
+        if self._retry_handle:
+            await self._retry_handle.cancel()
+        self._retry_handle = None
+
+    async def _retry(self, kwargs):
+        await self._call_bhg('call_bhg', {}, {})
+
     async def _daily_call(self, kwargs):
         if self.configs[ARG_SKIP_WEEKENDS] and datetime.today().weekday() >= 5:  # Skip Weekend
             return
         await self._call_bhg('call_bhg', {}, {})
 
     async def _call_bhg(self, event, data, kwargs):
+        if self._retry_handle:
+            await self._retry_handle.cancel()
+        self._retry_handle = None
         if self._calling:
             return
         self._calling = True
@@ -150,12 +165,12 @@ class CallBHG(BaseApp):
         await self.run_in(self._process_status, 10)
 
     async def _handle_call_failed(self, status):
-        _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 10))
+        _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 30))
         await self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
         self._calling = False
         self._call_instance = None
-        await self.run_in(self._daily_call,
-                          10 * 60)
+        self._retry_handle = await self.run_in(self._retry,
+                                               30 * 60)
 
     async def _handle_call_complete(self, status):
         _LOGGER.debug("Call complete, waiting for transcript")
@@ -174,7 +189,7 @@ class CallBHG(BaseApp):
             await self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIBE_FAILED)
             self._calling = False
             self._call_instance = None
-            await self.run_in(self._daily_call,
+            await self.run_in(self._retry,
                               10 * 60)
         else:
             transcription_texts = [transcription.transcription_text

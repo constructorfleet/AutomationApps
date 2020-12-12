@@ -45,8 +45,10 @@ class NotificationActionProcessor(BaseApp):
             acknowledge_id = data["data"][ACTION_DATA][ACKNOWLEDGE_ID] \
                 if event_name == "html5_notification.clicked" \
                 else data[ACTION_DATA][ACKNOWLEDGE_ID]
+            acknowledge_id = acknowledge_id or action.acknowledge_id
             if not acknowledge_id:
                 return
+            self.fire_event("notification_action.{}".format(acknowledge_id))
             for listener in self.acknowledge_listeners:
                 listener(acknowledge_id, action)
             return
