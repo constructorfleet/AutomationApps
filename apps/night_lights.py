@@ -1,9 +1,7 @@
 import datetime
 from builtins import int
-from time import sleep
 
 import voluptuous as vol
-from appdaemon import utils
 
 from common.base_app import BaseApp
 from common.const import (
@@ -56,6 +54,9 @@ class NightLights(BaseApp):
     dawn_entities = []
     dusk_entities = []
     night_entities = []
+    dawn_handle = None
+    dusk_handle = None
+    night_handle = None
 
     async def initialize_app(self):
         """Initalize the application."""
@@ -107,12 +108,16 @@ class NightLights(BaseApp):
         }, extra=vol.ALLOW_EXTRA)
 
     async def _schedule_dawn(self):
-        await self.run_at_sunrise(
+        if self.dawn_handle:
+            await self.cancel_timer(self.dawn_handle)
+        self.dawn_handle = await self.run_at_sunrise(
             self._handle_dawn,
             offset=self.configs[ARG_DAWN][ARG_OFFSET])
 
     async def _schedule_dusk(self):
-        await self.run_at_sunset(
+        if self.dusk_handle:
+            await self.cancel_timer(self.dusk_handle)
+        self.dusk_handle = await self.run_at_sunset(
             self._handle_dusk,
             offset=-self.configs[ARG_DUSK][ARG_OFFSET])
 
