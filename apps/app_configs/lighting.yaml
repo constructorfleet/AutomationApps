@@ -470,9 +470,11 @@ night_lights:
       - entity_id: light.porch_upper
         domain: light
         service: turn_off
+        static_color: white
       - entity_id: light.porch_lower
         domain: light
         service: turn_off
+        static_color: white
       - entity_id: light.garage_upper_1
         domain: light
         service: turn_off
@@ -483,6 +485,9 @@ night_lights:
         domain: light
         service: turn_off
       - entity_id: light.garage_lower_2
+        domain: light
+        service: turn_off
+      - entity_id: light.hue_outdoor_bollard_1
         domain: light
         service: turn_off
   dusk:
@@ -516,6 +521,11 @@ night_lights:
         service_data:
           brightness_pct: 100
       - entity_id: light.garage_west_lower
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
+      - entity_id: light.hue_outdoor_bollard_1
         domain: light
         service: turn_on
         service_data:
