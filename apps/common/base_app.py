@@ -280,6 +280,7 @@ class BaseApp(hass.Hass):
         if ARG_ENTITY_ID in condition_spec:
             entity_value = condition_spec.get(ARG_STATE, None)
             if entity_value is None:
+                self.debug(f'{ARG_STATE} not provided, retrieving {condition_spec[ARG_ENTITY_ID]} state')
                 entity_value = await self.get_state(
                     entity_id=condition_spec[ARG_ENTITY_ID],
                     attribute=condition_spec.get(ARG_ATTRIBUTE))
