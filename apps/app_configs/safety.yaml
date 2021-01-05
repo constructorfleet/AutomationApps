@@ -10,8 +10,8 @@ leak_detected:
     - notifiers
   entity_id:
     - binary_sensor.dog_bowl_leak_sensor_dry
-    - binary_sensor.laundry_room_leak_sensor_dry
-    - binary_sensor.server_leak_sensor_dry
+    - binary_sensor.laundry_room_leak_sensor
+    - binary_sensor.server_leak_sensor
   from:
     value: 'off'
   to:
@@ -30,12 +30,12 @@ laundry_leak:
     - const
     - validation
   trigger:
-    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
+    - entity_id: binary_sensor.laundry_room_leak_sensor
       state: 'on'
     - entity_id: switch.washer
       state: 'on'
   condition:
-    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
+    - entity_id: binary_sensor.laundry_room_leak_sensor
       value: 'on'
   call:
     domain: switch
@@ -51,7 +51,7 @@ laundry_leak_clear:
     - base_app
     - validation
   trigger:
-    - entity_id: binary_sensor.laundry_room_leak_sensor_dry
+    - entity_id: binary_sensor.laundry_room_leak_sensor
       state: 'off'
   condition:
     - entity_id: switch.washer
