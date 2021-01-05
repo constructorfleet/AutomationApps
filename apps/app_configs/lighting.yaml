@@ -488,6 +488,9 @@ night_lights:
       - entity_id: light.hue_outdoor_bollard_1
         domain: light
         service: turn_off
+      - entity_id: light.hue_outdoor_bollard_2
+        domain: light
+        service: turn_off
   dusk:
     offset: 60
     entities:
@@ -524,6 +527,11 @@ night_lights:
         service_data:
           brightness_pct: 100
       - entity_id: light.hue_outdoor_bollard_1
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
+      - entity_id: light.hue_outdoor_bollard_2
         domain: light
         service: turn_on
         service_data:
