@@ -51,8 +51,8 @@ class NotificationCategory(Enum):
     TRAIN = (NotificationChannel.TRAINING, "I performed $action on {entity_name}",
              [NotificationAction.ACTION_TRAIN_GOOD, NotificationAction.ACTION_TRAIN_BAD])
 
-    INFO_LAUNDRY_DONE = (NotificationChannel.INFO, "{laundry_machine} is done")
-    INFO_LAUNDRY_STARTED = (NotificationChannel.INFO, "{laundry_machine} has started")
+    INFO_APPLIANCE_DONE = (NotificationChannel.INFO, "{appliance} is done")
+    INFO_APPLIANCE_STARTED = (NotificationChannel.INFO, "{appliance} has started")
 
     WARNING_LOW_BATTERY = (
         NotificationChannel.WARNING, "Time to replace {entity_name}'s battery"

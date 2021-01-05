@@ -1,0 +1,83 @@
+washer_started:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.washer_amps
+  from:
+    comparator: '='
+    value: 0
+  to:
+    comparator: '>'
+    value: 0
+  notify:
+    notify_category: INFO_APPLIANCE_STARTED
+    replacers:
+      appliance: Washer
+
+dishwasher_started:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.dishwasher_amps
+  from:
+    comparator: '='
+    value: 0.0
+  to:
+    comparator: '>'
+    value: 0.0
+  notify:
+    notify_category: INFO_APPLIANCE_STARTED
+    replacers:
+      appliance: Dishwasher
+
+washer_done:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.washer_amps
+  from:
+    comparator: '>'
+    value: 0
+  to:
+    comparator: '='
+    value: 0
+  notify:
+    notify_category: INFO_APPLIANCE_DONE
+    replacers:
+      appliance: Washer
+
+dishwasher_done:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.dishwasher_amps
+  from:
+    comparator: '>'
+    value: 0.0
+  to:
+    comparator: '='
+    value: 0.0
+  notify:
+    notify_category: INFO_APPLIANCE_DONE
+    replacers:
+      appliance: Dishwasher
