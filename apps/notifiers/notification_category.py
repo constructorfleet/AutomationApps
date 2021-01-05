@@ -94,10 +94,6 @@ class NotificationCategory(Enum):
         True
     )
 
-    INFO_APPLIANCE_DONE = (
-        NotificationChannel.INFO, "The {appliance_name} is done."
-    )
-
     def __init__(self, channel, body, actions=None, importance_override=None, critical=False):
         if actions is None:
             actions = []
