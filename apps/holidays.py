@@ -161,7 +161,7 @@ class HolidayColors(BaseApp):
             key=lambda x: abs(x - now))
         holiday = [name for name, date in self._holidays.items() if
                    closest.month == date.month and closest.day == date.day][0]
-        self.debug('Holiday %s', holiday)
+        self.info('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
     async def _retrieve_holidays(self):
