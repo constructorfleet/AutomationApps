@@ -5,6 +5,7 @@ import voluptuous as vol
 from common.base_app import BaseApp
 from common.const import (
     ARG_ENTITY_ID,
+    ARG_STATE,
     ARG_COMPARATOR,
     ARG_VALUE,
     ARG_NOTIFY_CATEGORY,
@@ -56,22 +57,24 @@ class NotifyWhen(BaseApp):
             vol.Required(ARG_NOTIFY): SCHEMA_NOTIFY
         }, extra=vol.ALLOW_EXTRA)
 
-    def _condition_to(self, value):
+    def _condition_to(self, entity, state):
         condition_to = copy.deepcopy(self.configs[ARG_TO])
-        condition_to[ARG_ENTITY_ID] = value
+        condition_to[ARG_ENTITY_ID] = entity
+        condition_to[ARG_STATE] = state
         return condition_to
 
-    def _condition_from(self, value):
+    def _condition_from(self, entity, state):
         condition_to = copy.deepcopy(self.configs[ARG_FROM])
-        condition_to[ARG_ENTITY_ID] = value
+        condition_to[ARG_ENTITY_ID] = entity
+        condition_to[ARG_STATE] = state
         return condition_to
 
     async def _handle_state_change(self, entity, attribute, old, new, kwargs):
         if old == new or old is None or new is None:
             return
 
-        if await self.condition_met(self._condition_from(entity)) and \
-                await self.condition_met(self._condition_to(entity)):
+        if await self.condition_met(self._condition_from(entity, old)) and \
+                await self.condition_met(self._condition_to(entity, new)):
             await self._notify(entity)
 
     async def _notify(self, entity):

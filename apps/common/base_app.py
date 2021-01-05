@@ -23,6 +23,7 @@ from common.const import (
     ARG_ENTITY_ID,
     ARG_ATTRIBUTE,
     ARG_VALUE,
+    ARG_STATE,
     ARG_COMPARATOR,
     EQUALS,
     NOT_EQUAL,
@@ -277,9 +278,11 @@ class BaseApp(hass.Hass):
             return (condition_spec.get(ARG_ATTRIBUTE) in full_state) == condition_spec[ARG_EXISTS]
 
         if ARG_ENTITY_ID in condition_spec:
-            entity_value = await self.get_state(
-                entity_id=condition_spec[ARG_ENTITY_ID],
-                attribute=condition_spec.get(ARG_ATTRIBUTE))
+            entity_value = condition_spec.get(ARG_STATE, None)
+            if entity_value is None:
+                entity_value = await self.get_state(
+                    entity_id=condition_spec[ARG_ENTITY_ID],
+                    attribute=condition_spec.get(ARG_ATTRIBUTE))
             self.debug(
                 f'Entity {condition_spec[ARG_ENTITY_ID]}[{condition_spec.get(ARG_ATTRIBUTE)}]'
                 f' {entity_value}: {str(condition_spec)}')
