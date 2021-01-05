@@ -71,6 +71,7 @@ class NotifyWhen(BaseApp):
 
     async def _handle_state_change(self, entity, attribute, old, new, kwargs):
         if old == new or old is None or new is None:
+            self.debug(f'Old {old} new {new} entity {entity}')
             return
 
         if await self.condition_met(self._condition_from(entity, old)) and \
