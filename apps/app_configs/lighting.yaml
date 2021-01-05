@@ -445,7 +445,7 @@ downstairs_bathroom_fan_timeout:
     - validation
   trigger:
     entity_id: switch.downstairs_bathroom_fan
-  duration: 90
+  duration: 120
   on_timeout:
     domain: homeassistant
     service: turn_off
