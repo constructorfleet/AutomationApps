@@ -470,11 +470,9 @@ night_lights:
       - entity_id: light.porch_upper
         domain: light
         service: turn_off
-        static_color: white
       - entity_id: light.porch_lower
         domain: light
         service: turn_off
-        static_color: white
       - entity_id: light.garage_upper_1
         domain: light
         service: turn_off

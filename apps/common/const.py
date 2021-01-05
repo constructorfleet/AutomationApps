@@ -32,6 +32,7 @@ ATTR_OLD_STATE = 'old_state'
 ATTR_NEW_STATE = 'new_state'
 ATTR_ENTITY_NAME = 'entity_name'
 ATTR_RGB_COLOR = "rgb_color"
+ATTR_COLOR_NAME = "color_name"
 
 EVENT_STATE_CHANGED = 'state_changed'
 

@@ -9,7 +9,8 @@ from common.const import (
     ARG_ENTITY_ID,
     ARG_SERVICE,
     ARG_SERVICE_DATA,
-    ATTR_RGB_COLOR)
+    ATTR_RGB_COLOR,
+    ATTR_COLOR_NAME)
 from common.validation import ensure_list, entity_id, color_rgb, color_name
 
 ARG_DUSK = "dusk"
@@ -135,7 +136,7 @@ class NightLights(BaseApp):
             data[ARG_ENTITY_ID] = entity[ARG_ENTITY_ID]
             color = entity.get(ARG_STATIC_COLOR, None)
             if color:
-                data[ATTR_RGB_COLOR] = color
+                data[ATTR_RGB_COLOR if not isinstance(color, str) else ATTR_COLOR_NAME] = color
             elif holiday_colors and '_on' in entity[ARG_SERVICE]:
                 data[ATTR_RGB_COLOR] = holiday_colors[i % len(holiday_colors)]
 
