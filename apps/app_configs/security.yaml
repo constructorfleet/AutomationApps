@@ -68,6 +68,7 @@ garage_door_timeout:
     - base_app
     - validation
     - const
+    - utils
     - notification_category
     - notification_action
   dependencies:

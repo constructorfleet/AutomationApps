@@ -42,6 +42,7 @@ CHANNEL_PAYLOADS = {
 
 
 def _build_payload(
+        kw_formatter,
         category,
         target,
         response_entity_id,
@@ -49,7 +50,7 @@ def _build_payload(
 ):
     payload = {
         "title": str(category.channel.name).title(),
-        "message": KWArgFormatter().format(str(category.body), **kwargs),
+        "message": kw_formatter.format(str(category.body), **kwargs),
         "target": target,
         "data": {
             "image": kwargs.get(ATTR_IMAGE_URL, None),
@@ -92,7 +93,8 @@ class FcmNotifier(BaseApp):
             for key, value in kwargs.items():
                 extra_args[key] = value
 
-            payload = _build_payload(notification_category,
+            payload = _build_payload(self.kw_formatter,
+                                     notification_category,
                                      str(person.name).lower(),
                                      response_entity_id,
                                      **extra_args)

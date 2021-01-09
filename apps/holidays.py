@@ -143,7 +143,7 @@ class HolidayColors(BaseApp):
 
     @property
     def api_url(self):
-        return KWArgFormatter().format(
+        return self.kw_formatter.format(
             BASE_URL,
             api_key=self.configs[ARG_API_KEY],
             country=self.configs[ARG_COUNTRY],

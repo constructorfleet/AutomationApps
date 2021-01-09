@@ -24,7 +24,7 @@ class iOSNotifier(BaseApp):
         if notification_category.channel.name in person.notification_channels:
             service_data = {
                 "title": str(notification_category.channel.name).title(),
-                "message": KWArgFormatter().format(str(notification_category.body), **kwargs),
+                "message": self.kw_formatter.format(str(notification_category.body), **kwargs),
                 "data": {
                     "push": {
                         "category": str(notification_category),

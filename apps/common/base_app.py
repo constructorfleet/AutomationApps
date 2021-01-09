@@ -32,7 +32,8 @@ from common.const import (
     GREATER_THAN_EQUAL_TO
 )
 from common.listen_handle import ListenHandle, TimerHandle, StateListenHandle, EventListenHandle
-from common.utils import converge_types
+from common.utils import (converge_types,
+                          KWArgFormatter)
 from common.validation import valid_log_level, valid_entity_id
 
 # _srcfile is used when walking the stack to check when we've got the first
@@ -70,6 +71,7 @@ class BaseApp(hass.Hass):
 
     async def initialize(self):
         """Initialization of Base App class."""
+        self.kw_formatter = KWArgFormatter(self.get_state)
         self.notifier = None
         self.holidays = None
         self.data = {}
