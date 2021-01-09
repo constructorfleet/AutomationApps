@@ -34,6 +34,7 @@ ARG_PAUSE_WHEN = 'pause_when'
 ARG_DURATION = 'duration'
 ARG_EXCEPT_IF = 'except_if'
 ARG_ON_TIMEOUT = 'on_timeout'
+ARG_CONTINUE_ON_TIMEOUT = 'continue_on_timeout'
 
 SCHEMA_TRIGGER = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
@@ -111,7 +112,8 @@ class Timeout(BaseApp):
             vol.Optional(ARG_NOTIFY): vol.Schema({
                 vol.Required(ARG_NOTIFY_CATEGORY): vol.In(VALID_NOTIFICATION_CATEGORIES),
                 vol.Optional(ARG_NOTIFY_REPLACERS, default={}): dict
-            }, extra=vol.ALLOW_EXTRA)
+            }, extra=vol.ALLOW_EXTRA),
+            vol.Optional(ARG_CONTINUE_ON_TIMEOUT, default=False): vol.Boolean
         }, extra=vol.ALLOW_EXTRA)
 
     @property
@@ -222,6 +224,11 @@ class Timeout(BaseApp):
                 self._notification_category,
                 response_entity_id=self.configs[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
                 **self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS])
+
+        if not self.configs.get(ARG_CONTINUE_ON_TIMEOUT, False):
+            return
+
+        await self._reset_timer('Restarting automation...')
 
     async def _cancel_handlers(self, message):
         if self._canceling_when_handlers:

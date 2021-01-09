@@ -74,15 +74,16 @@ garage_door_timeout:
   dependencies:
     - notifiers
   trigger:
-    entity_id: input_boolean.basement_stair_motion #input_boolean.garage_door_homekit_relay
+    entity_id: input_boolean.basement_stair_motion # input_boolean.garage_door_homekit_relay
 #  reset_when:
 #    - entity_id: binary_sensor.garage_motion_sensor_1
 #      value: 'on'
   duration: 60
   log_level: DEBUG
+  continue_on_timeout: True
   notify:
     notify_category: SECURITY_COVER_TIMEOUT_DELAY
-    response_entity_id: input_boolean.garage_door_control
+    response_entity_id: input_boolean.basement_stair_motion #input_boolean.garage_door_control
     replacers:
       entity_name: Garage Door
 #      duration: {duration(state(input_boolean.garage_door_homekit_relay))}
