@@ -11,7 +11,7 @@ from aiosmtplib import SMTP
 
 _LOGGER = logging.getLogger(__name__)
 
-REPLACER_FUNCTION_TEMPLATE = re.compile(r"^{([^}]*)}$")
+REPLACER_FUNCTION_TEMPLATE = re.compile(r"^{([^\}]*)}$")
 REPLACER_FUNCTION_SPEC = re.compile(r"(([a-z.]*)\((.*)?)\)")
 
 SECOND_CONVERSION = {
