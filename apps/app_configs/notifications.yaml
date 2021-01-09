@@ -84,3 +84,4 @@ notification_action_processor:
     - notifiers
     - ios_notifier
     - fcm_notifier
+  log_level: DEBUG
