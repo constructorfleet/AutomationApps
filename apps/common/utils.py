@@ -174,11 +174,12 @@ class KWArgFormatter(Formatter):
             kwargs = {k: self._process_template(v) for k, v in kwargs.items()}
         return super().format(format_string, *args, **kwargs)
 
-    def _process_template(self, method, value):
-        sub_function = REPLACER_FUNCTION_SPEC.match(value)
+    def _process_template(self, template):
+        sub_function = REPLACER_FUNCTION_SPEC.match(template)
         if not sub_function:
-            return value
-        value = self._process_template(*list(sub_function.groups())[1:])
+            return template
+        method, value = list(sub_function.groups())[1:]
+        value = self._process_template(value)
         if method == 'state':
             return asyncio.get_event_loop().run_until_complete(self.get_state(value, attribute='all'))
         if method.startswith('duration'):
