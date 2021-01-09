@@ -169,29 +169,32 @@ class KWArgFormatter(Formatter):
     def __init__(self, get_state=None):
         self.get_state = get_state
 
-    def format(self, format_string, /, *args, **kwargs):
-        if self.get_state:
-            kwargs = {k: self._process_template(v) for k, v in kwargs.items()}
-        return super().format(format_string, *args, **kwargs)
-
-    def _process_template(self, template):
-        _LOGGER.info(template)
-        if not isinstance(template, str):
-            return template
-
-        sub_function = REPLACER_FUNCTION_SPEC.match(template)
-        if not sub_function:
-            return template
-        method, value = list(sub_function.groups())[1:]
-        value = self._process_template(value)
-        if method == 'state':
-            return asyncio.get_event_loop().run_until_complete(self.get_state(value, attribute='all'))
-        if method.startswith('duration'):
-            unit = 'seconds' if len(method.split('.')) < 2 else method.split('.')[1]
-            now = then = datetime.datetime.utcnow().timestamp()
-            if 'last_changed' in value:
-                then = datetime.datetime.fromisoformat(value['last_changed']).timestamp()
-            return datetime.timedelta(now - then).seconds/SECOND_CONVERSION.get(unit, 1)
+    # def format(self, format_string, /, *args, **kwargs):
+    #     print(str(kwargs))
+    #     if self.get_state:
+    #         print('getting state')
+    #         kwargs = {k: self._process_template(v) for k, v in kwargs.items()}
+    #     print(str(kwargs))
+    #     return super().format(format_string, *args, **kwargs)
+    #
+    # def _process_template(self, template):
+    #     _LOGGER.info(template)
+    #     if not isinstance(template, str):
+    #         return template
+    #
+    #     sub_function = REPLACER_FUNCTION_SPEC.match(template)
+    #     if not sub_function:
+    #         return template
+    #     method, value = list(sub_function.groups())[1:]
+    #     value = self._process_template(value)
+    #     if method == 'state':
+    #         return asyncio.get_event_loop().run_until_complete(self.get_state(value, attribute='all'))
+    #     if method.startswith('duration'):
+    #         unit = 'seconds' if len(method.split('.')) < 2 else method.split('.')[1]
+    #         now = then = datetime.datetime.utcnow().timestamp()
+    #         if 'last_changed' in value:
+    #             then = datetime.datetime.fromisoformat(value.get('last_changed', datetime.datetime.utcnow())).timestamp()
+    #         return datetime.timedelta(now - then).seconds/SECOND_CONVERSION.get(unit, 1)
 
     def get_value(self, key, args, kwds):
         if isinstance(key, str):
