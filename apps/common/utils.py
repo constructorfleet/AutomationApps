@@ -175,6 +175,10 @@ class KWArgFormatter(Formatter):
         return super().format(format_string, *args, **kwargs)
 
     def _process_template(self, template):
+        _LOGGER.info(template)
+        if not isinstance(template, str):
+            return template
+
         sub_function = REPLACER_FUNCTION_SPEC.match(template)
         if not sub_function:
             return template
