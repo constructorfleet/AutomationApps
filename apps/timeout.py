@@ -103,7 +103,7 @@ class Timeout(BaseApp):
                 entity_id,
                 int
             ),
-            vol.Required(ARG_ON_TIMEOUT): vol.All(
+            vol.Optional(ARG_ON_TIMEOUT): vol.All(
                 ensure_list,
                 [SCHEMA_ON_TIMEOUT]
             ),
@@ -221,8 +221,7 @@ class Timeout(BaseApp):
             await self.notifier.notify_people(
                 self._notification_category,
                 response_entity_id=self.configs[ARG_NOTIFY].get(ARG_NOTIFY_ENTITY_ID, None),
-                **self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS]
-            )
+                **self.configs[ARG_NOTIFY][ARG_NOTIFY_REPLACERS])
 
     async def _cancel_handlers(self, message):
         if self._canceling_when_handlers:

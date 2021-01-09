@@ -19,6 +19,11 @@ class NotificationCategory(Enum):
     SECURITY_COVER_CLOSED_TIMEOUT = (
         NotificationChannel.SECURITY, "Closed {entity_name}",
         [NotificationAction.ACTION_OPEN_COVER])
+    SECURITY_COVER_TIMEOUT_DELAY = (
+            NotificationChannel.SECURITY, "{entity_name} has been open for {entity_id[duration]}",
+            [NotificationAction.ACTION_TIMEOUT_DELAY_EXTEND,
+             NotificationAction.ACTION_CLOSE_COVER_CONTROL])
+
     SECURITY_LOCKED = (
         NotificationChannel.SECURITY, "Locked {entity_name} for {person_name}",
         [NotificationAction.ACTION_UNLOCK])

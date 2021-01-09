@@ -21,6 +21,7 @@ class KWArgFormatter(Formatter):
 class NotificationAction(Enum):
     ACTION_CLOSE_COVER = ("Close", "cover/close_cover")
     ACTION_OPEN_COVER = ("Open", "cover/open_cover")
+    ACTION_CLOSE_COVER_CONTROL = ("Close", "input_boolean/turn_off")
 
     ACTION_LOCK = ("Lock", "lock/lock")
     ACTION_UNLOCK = ("Unlock", "lock/unlock")
@@ -28,6 +29,7 @@ class NotificationAction(Enum):
     ACTION_TIMEOUT_DELAY_ACKNOWLEDGE = ("Acknowledge", None)
     ACTION_TIMEOUT_DELAY_SILENCE = ("Silence Temporarily",
                                     None)
+    ACTION_TIMEOUT_DELAY_EXTEND = ("Remind Me Later", None)
 
     ACTION_ALARM_DISARM = ("Disarm", "alarm_control_panel/disarm")
     ACTION_ALARM_ARM_AWAY = ("Arm Away", "alarm_control_panel/alarm_arm_away")
