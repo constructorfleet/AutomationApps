@@ -84,7 +84,7 @@ garage_door_timeout:
     response_entity_id: input_boolean.garage_door_control
     replacers:
       entity_name: garage door
-      entity_id: input_boolean.garage_door_homekit_relay
+      duration: {duration(state(input_boolean.garage_door_homekit_relay))}
 
 #front_door_lock_timeout:
 #  module: timeout

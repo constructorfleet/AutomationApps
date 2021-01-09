@@ -1,4 +1,6 @@
+import asyncio
 import datetime
+import re
 import logging
 import imghdr
 from email.headerregistry import Address
@@ -8,6 +10,15 @@ from string import Formatter
 from aiosmtplib import SMTP
 
 _LOGGER = logging.getLogger(__name__)
+
+REPLACER_FUNCTION_TEMPLATE = re.compile(r"^{([^}]*)}$")
+REPLACER_FUNCTION_SPEC = re.compile(r"(([a-z.]*)\((.*)?)\)")
+
+SECOND_CONVERSION = {
+        'seconds': 1,
+        'minutes': 60,
+        'hours': 3600
+        }
 
 
 def minutes_to_seconds(minutes):
@@ -155,6 +166,28 @@ async def send_email(
 
 
 class KWArgFormatter(Formatter):
+    def __init__(self, get_state=None):
+        self.get_state = get_state
+
+    def format(self, format_string, /, *args, **kwargs):
+        if self.get_state:
+            kwargs = {k: self._process_template(v) for k, v in kwargs.items()}
+        return super().format(format_string, *args, **kwargs)
+
+    def _process_template(self, method, value):
+        sub_function = REPLACER_FUNCTION_SPEC.match(value)
+        if not sub_function:
+            return value
+        value = self._process_template(*list(sub_function.groups())[1:])
+        if method == 'state':
+            return asyncio.get_event_loop().run_until_complete(self.get_state(value, attribute='all'))
+        if method.startswith('duration'):
+            unit = 'seconds' if len(method.split('.')) < 2 else method.split('.')[1]
+            now = then = datetime.datetime.utcnow().timestamp()
+            if 'last_changed' in value:
+                then = datetime.datetime.fromisoformat(value['last_changed']).timestamp()
+            return datetime.timedelta(now - then).seconds/SECOND_CONVERSION.get(unit, 1)
+
     def get_value(self, key, args, kwds):
         if isinstance(key, str):
             try:

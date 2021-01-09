@@ -1,4 +1,5 @@
 import sys
+import re
 import traceback
 
 import voluptuous as vol
@@ -104,8 +105,8 @@ class PersonNotifier(adbase.ADBase, adapi.ADAPI):
         self.log("Notifying {} on channel {} and category {}".format(
             name,
             notification_category.channel.name,
-            notification_category.name)
-        )
+            notification_category.name))
+
         person = await self._get_person(name)
         if person:
             self.log("Checking {} is in {}".format(notification_category.channel.name,

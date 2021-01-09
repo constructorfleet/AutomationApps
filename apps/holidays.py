@@ -4,7 +4,7 @@ import requests
 import voluptuous as vol
 from appdaemon import utils
 
-from common.base_app import BaseApp
+from common.base_app import (BaseApp)
 from common.utils import KWArgFormatter
 
 ARG_API_KEY = 'api_key'

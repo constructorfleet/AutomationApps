@@ -4,10 +4,11 @@ import imghdr
 import voluptuous as vol
 from appdaemon import utils
 
-from common.base_app import BaseApp
+from common.base_app import (BaseApp)
 import common.validation as validate
 from common.const import DOMAIN_NOTIFY
-from common.utils import KWArgFormatter, send_email
+from common.utils import (KWArgFormatter,
+                          send_email)
 from notifiers.person_notifier import ARG_EMAIL_ADDRESS, ATTR_IMAGE_PATH, ATTR_EXTENSION
 
 ARG_NAME = "name"

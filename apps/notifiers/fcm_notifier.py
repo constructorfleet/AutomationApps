@@ -2,9 +2,9 @@ import json
 
 from appdaemon import utils
 
-from common.base_app import BaseApp
-from common.const import DOMAIN_NOTIFY
+from common.base_app import (BaseApp)
 from common.utils import KWArgFormatter
+from common.const import DOMAIN_NOTIFY
 from notifiers.notification_channel import NotificationChannel
 from notifiers.person_notifier import ATTR_IMAGE_URL
 
