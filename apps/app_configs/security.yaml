@@ -77,7 +77,7 @@ garage_door_timeout:
 #  reset_when:
 #    - entity_id: binary_sensor.garage_motion_sensor_1
 #      value: 'on'
-  duration: 60
+  duration: 1
   log_level: DEBUG
   notify:
     notify_category: SECURITY_COVER_TIMEOUT_DELAY
