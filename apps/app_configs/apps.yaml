@@ -93,6 +93,12 @@ average_temperaturre:
   log_level: DEBUG
   entity_id: sensor.average_temperatue
   temp_sensors:
+    - entity_id: sensor.thermostat_temperature
+      weight: 0.0
+      max_weight: 1.7
+      trigger:
+        entity_id: binary_sensor.bed_occupancy
+        value: on
     - entity_id: sensor.living_room_temperature
       weight:  1.1
       max_weight: 1.5
