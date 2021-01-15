@@ -40,11 +40,14 @@ class WeightedValue:
     def is_valid(self):
         return self.value is not None and self.weight is not None
 
+    def __str__(self) -> str:
+        return f"{self.value} {self.weight}"
+
 
 class WeightedAveragedClimate(BaseApp):
     """Uses a weighed average to represent the current temperature."""
 
-    _values = {}
+    _values = []
 
     async def initialize_app(self):
         for sensor in self.configs[ARG_TEMP_SENSORS]:
@@ -55,11 +58,12 @@ class WeightedAveragedClimate(BaseApp):
                                     sensor_conf=sensor)
             trigger = sensor.get(ARG_TRIGGER, None)
             if trigger:
-                await  self.listen_state(self.handle_weight_trigger,
-                                         entity=trigger[ARG_ENTITY_ID],
-                                         attribute=trigger.get(ARG_ATTRIBUTE, None),
-                                         immediate=True,
-                                         sensor_conf=sensor)
+                await self.listen_state(self.handle_weight_trigger,
+                                        entity=trigger[ARG_ENTITY_ID],
+                                        attribute=trigger.get(ARG_ATTRIBUTE, None),
+                                        immediate=True,
+                                        sensor_conf=sensor)
+        self.debug(f'Initial values {self._values}')
 
     @property
     def app_schema(self):
@@ -76,8 +80,9 @@ class WeightedAveragedClimate(BaseApp):
         weight = sensor[ARG_WEIGHT]
         if self.condition_met(sensor[ARG_TRIGGER]):
             weight = sensor[ARG_MAX_WEIGHT]
+        self.debug(f'weight {weight}')
         self._values[sensor[ARG_ENTITY_ID]].weight = float(weight)
-        await  self.on_dataset_changed()
+        await self.on_dataset_changed()
 
     async def handle_temperature_changed(self, entity, attribute, old, new, kwargs):
         sensor = kwargs['sensor_conf']
@@ -85,7 +90,7 @@ class WeightedAveragedClimate(BaseApp):
             self._values[sensor[ARG_ENTITY_ID]] = WeightedValue(0.0, 0.0)
 
         self._values[sensor[ARG_ENTITY_ID]].value = float(new)
-        await  self.on_dataset_changed()
+        await self.on_dataset_changed()
 
     def _weighted_average(self):
         if self._values is None or len(self._values) == 0:

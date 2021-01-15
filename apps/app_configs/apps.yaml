@@ -90,6 +90,7 @@ bhg_call_in:
 average_temperaturre:
   module: averaging
   class: WeightedAveragedClimate
+  log_level: DEBUG
   entity_id: sensor.average_temperatue
   temp_sensors:
     - entity_id: sensor.living_room_temperature
