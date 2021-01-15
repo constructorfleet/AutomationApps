@@ -15,13 +15,8 @@ ATTR_VALUE = 'value'
 ATTR_WEIGHT = 'weight'
 
 DEFAULT_WEIGHT = {
-        ARG_MIN: 1.0,
-        ARG_MAX: 1.0
+        ARG_WEIGHT: 1.0
         }
-
-SCHEMA_WEIGHT = vol.Schema({
-
-        })
 
 SCHEMA_TEMP_SENSOR = vol.Schema({
         vol.Required(ARG_ENTITY_ID)             : cv.entity_id,
