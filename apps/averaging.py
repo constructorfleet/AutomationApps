@@ -104,4 +104,4 @@ class WeightedAveragedClimate(BaseApp):
         w_average = self._weighted_average()
         self.debug(f"w_average {w_average}")
         self.debug(f"entity_id {self.configs[ARG_ENTITY_ID]}")
-        self.set_state(self.configs[ARG_ENTITY_ID], {'state': w_average})
+        self.set_state(self.configs[ARG_ENTITY_ID], state=w_average)
