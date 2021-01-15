@@ -47,7 +47,7 @@ class WeightedValue:
 class WeightedAveragedClimate(BaseApp):
     """Uses a weighed average to represent the current temperature."""
 
-    _values = []
+    _values = {}
 
     async def initialize_app(self):
         for sensor in self.configs[ARG_TEMP_SENSORS]:
@@ -95,8 +95,8 @@ class WeightedAveragedClimate(BaseApp):
     def _weighted_average(self):
         if self._values is None or len(self._values) == 0:
             return 0.0
-        total_weight = float(sum([val.weight for val in self._values if val.is_valid]))
-        total_value = float(sum([val.weight * val.value for val in self._values if val.is_valid]))
+        total_weight = float(sum([val.weight for _, val in self._values.items() if val.is_valid]))
+        total_value = float(sum([val.weight * val.value for _, val in self._values.items() if val.is_valid]))
         return total_value / total_weight
 
     async def on_dataset_changed(self):
