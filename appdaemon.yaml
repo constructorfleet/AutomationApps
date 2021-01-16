@@ -21,6 +21,13 @@ appdaemon:
       type: hass
       ha_url: https://automation.home.prettybaked.com
       token: !secret ha_ws_token
+    MQTT:
+      type: mqtt
+      namespace: mqtt
+      client_host: mqtt.home.prettybaked.com
+      client_port: 1883
+      client_id: AppDaemon
+
 #    MQTT_States:
 #      type: hassmqtt
 #      client_host: homebridge-iot.home.prettybaked.com
