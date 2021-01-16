@@ -58,7 +58,8 @@ home_presence_app:
 
   log_level: DEBUG
   known_devices:
-    - F8:87:F1:55:ED:49 Teagan's iPhone
+    - F8:87:F1:55:ED:48 Teagan
+    - F8:10:93:71:16:54 Alan
 
   known_beacons: []
 #    - xx:xx:xx:xx:xx:xx Odianosen's Car Keys
