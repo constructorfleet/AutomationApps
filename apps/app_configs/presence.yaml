@@ -6,7 +6,7 @@ home_presence_app:
     - MQTT
   #monitor_topic: presence
   #mqtt_event: MQTT
-  user_device_domain: binary_sensor
+  user_device_domain: device_tracker
   #everyone_not_home: everyone_not_home
   #everyone_home: everyone_home
   #somebody_is_home: somebody_is_home
