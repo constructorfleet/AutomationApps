@@ -83,7 +83,7 @@ home_presence_app:
 
     living_room:
       auto_reboot_when_offline: True
-      host: !secret master_bedroom_monitor_host
+      host: !secret living_room_monitor_host
       username: !secret monitor_username
       password: !secret monitor_password
       reboot_command: sudo /sbin/reboot now
