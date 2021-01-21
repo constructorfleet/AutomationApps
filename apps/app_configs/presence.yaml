@@ -35,6 +35,7 @@ home_presence_app:
   location:
     - master_bedroom
     - kitchen
+    - living_room
 
   home_motion_sensors:
     - binary_sensor.basement_stairs_motion
@@ -58,7 +59,7 @@ home_presence_app:
 
   log_level: DEBUG
   known_devices:
-    - F8:87:F1:55:ED:48 Teagan
+    - F8:87:F1:55:ED:49 Teagan
     - F8:10:93:71:16:54 Alan
 
   known_beacons: []
@@ -73,6 +74,14 @@ home_presence_app:
       password: !secret monitor_password
 
     master_bedroom:
+      auto_reboot_when_offline: True
+      host: !secret master_bedroom_monitor_host
+      username: !secret monitor_username
+      password: !secret monitor_password
+      reboot_command: sudo /sbin/reboot now
+      time: 02:00:01
+
+    living_room:
       auto_reboot_when_offline: True
       host: !secret master_bedroom_monitor_host
       username: !secret monitor_username
