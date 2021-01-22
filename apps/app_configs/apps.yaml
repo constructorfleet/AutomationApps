@@ -91,7 +91,7 @@ average_temperaturre:
   module: averaging
   class: WeightedAveragedClimate
   log_level: DEBUG
-  entity_id: sensor.average_temperatue
+  entity_id: sensor.average_temperature
   temp_sensors:
     - entity_id: sensor.master_bathroom_temperature
       weight: 0.0
