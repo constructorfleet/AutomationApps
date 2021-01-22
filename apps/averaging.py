@@ -64,6 +64,7 @@ class WeightedAveragedClimate(BaseApp):
                                         immediate=True,
                                         sensor_conf=sensor)
         self.debug(f'Initial values {self._values}')
+        await self.on_dataset_changed()
 
     @property
     def app_schema(self):
