@@ -27,6 +27,7 @@ appdaemon:
       client_host: mqtt.home.prettybaked.com
       client_port: 1883
       client_id: AppDaemon
+      client_user: appdaemon
 
 #    MQTT_States:
 #      type: hassmqtt
