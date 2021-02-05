@@ -83,6 +83,13 @@ class NotificationCategory(Enum):
         "priority",
         True
     )
+    IMPORTANT_BHG_TRANSCRIPTION_MATCH_FAILED = (
+        NotificationChannel.IMPORTANT,
+        "Unable to process transcription from BHG, please verify manually: {transcript}",
+        None,
+        "priority",
+        True
+    )
     IMPORTANT_BHG_SCHEDULED = (
         NotificationChannel.IMPORTANT,
         "{transcript}",

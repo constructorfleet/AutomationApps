@@ -239,20 +239,23 @@ class CallBHG(BaseApp):
         self.debug('PROCESS RECORDINGS')
         for transcript in [transcript for transcript in transcripts]:
             self.debug(f'Processing transcript: {str(transcript)}')
-            if REGEX_SCHEDULED.match(transcript):
+            if REGEX_SCHEDULED.search(transcript):
                 self.debug('SCHEDULED')
                 self._set_scheduled(True)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_SCHEDULED,
                                    transcript=transcript)
                 return
-            elif REGEX_NOT_SCHEDULED.match(transcript):
+            elif REGEX_NOT_SCHEDULED.search(transcript):
                 self.debug('CLEAR')
                 self._set_scheduled(False)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_ALL_CLEAR,
                                    transcript=transcript)
                 return
-
-        self.debug("SOMETHING WENT WRONG!!!!")
+            else:
+                self.debug("SOMETHING WENT WRONG!!!!")
+                self._set_scheduled(True)
+                await self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIPTION_MATCH_FAILED,
+                                   transcript=transcript)
 
     def _set_scheduled(self, scheduled):
         if ARG_SCHEDULE_TOGGLE in self.configs:
