@@ -106,9 +106,11 @@ class CallBHG(BaseApp):
         }, extra=vol.ALLOW_EXTRA)
 
     async def _new_day(self, kwargs):
+        self.debug('NEW DAY')
         self._set_called(False)
 
     async def _cancel_retry(self, event, data, kwargs):
+        self.debug('CANCEL RETRY')
         self.info(str(data))
         action_name = data.get('actionName', None)
         if action_name == "ACTIONCANCELBHGRETRY":
@@ -120,12 +122,15 @@ class CallBHG(BaseApp):
             self.info('Wrong action name')
 
     async def _retry(self, kwargs):
+        self.debug('RETRY')
         self._retries += 1
         if self._retries > MAX_RETRY:
+            self.debug('MAX  RETRIES')
             return
         await self._call_bhg('call_bhg', {}, {})
 
     async def _daily_call(self, kwargs):
+        self.debug('DAILY CALL')
         self._retries = 0
         if self.configs[ARG_SKIP_WEEKENDS] and datetime.today().weekday() >= 5:  # Skip Weekend
             return
@@ -177,11 +182,11 @@ class CallBHG(BaseApp):
         await status_map.get(call_status, self._handle_unknown_call_status)(call_status)
 
     async def _handle_call_in_process(self, status):
-        _LOGGER.error("Call in process %s, retrying in %d sec" % (status, 10))
+        self.error("Call in process %s, retrying in %d sec" % (status, 10))
         await self.run_in(self._process_status, 10)
 
     async def _handle_call_failed(self, status):
-        _LOGGER.error("Call failed to complete due to %s, retrying in %d min" % (status, 30))
+        self.error("Call failed to complete due to %s, retrying in %d min" % (status, 30))
         await self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
         self._calling = False
         self._call_instance = None
@@ -189,24 +194,25 @@ class CallBHG(BaseApp):
                                                30 * 60)
 
     async def _handle_call_complete(self, status):
-        _LOGGER.debug("Call complete, waiting for transcript")
+        self.debug("Call complete, waiting for transcript")
         await self.run_in(self._get_transcripts, 45)
 
     async def _handle_unknown_call_status(self, status):
-        _LOGGER.warning("Unknown status %s" % status)
+        self.warning("Unknown status %s" % status)
         await self.run_in(self._process_status, 10)
 
     async def _get_transcripts(self, kwargs):
+        self.debug('Get Transcripts')
         call_inst = self._call_instance.fetch()
-        _LOGGER.debug(f"Grabbing transcripts for {call_inst.sid}")
+        self.debug(f"Grabbing transcripts for {call_inst.sid}")
         recording_sids = [recording.sid for recording in
                           self._call_instance.fetch().recordings.list() if
                           recording is not None and recording.sid]
 
-        _LOGGER.debug(f"Found recordings: {recording_sids}")
+        self.debug(f"Found recordings: {recording_sids}")
 
         if not recording_sids or len(recording_sids) == 0:
-            _LOGGER.debug("NO RECORDINGS FOUND, retry in 60")
+            self.debug("NO RECORDINGS FOUND, retry in 60")
             await self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIBE_FAILED)
             self._calling = False
             self._call_instance = None
@@ -217,7 +223,7 @@ class CallBHG(BaseApp):
                                    for transcription in self._client.transcriptions.list()
                                    if transcription and transcription.transcription_text
                                    and transcription.recording_sid in recording_sids]
-            _LOGGER.debug(f"Found transcriptions: {str(transcription_texts)}")
+            self.debug(f"Found transcriptions: {str(transcription_texts)}")
             await self._process_transcriptions(transcription_texts)
         self._call_instance = None
         self._calling = False
@@ -230,21 +236,23 @@ class CallBHG(BaseApp):
         )
 
     async def _process_transcriptions(self, transcripts):
+        self.debug('PROCESS RECORDINGS')
         for transcript in [transcript for transcript in transcripts]:
+            self.debug(f'Processing transcript: {str(transcript)}')
             if REGEX_SCHEDULED.match(transcript):
-                _LOGGER.debug('SCHEDULED')
+                self.debug('SCHEDULED')
                 self._set_scheduled(True)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_SCHEDULED,
                                    transcript=transcript)
                 return
             elif REGEX_NOT_SCHEDULED.match(transcript):
-                _LOGGER.debug('CLEAR')
+                self.debug('CLEAR')
                 self._set_scheduled(False)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_ALL_CLEAR,
                                    transcript=transcript)
                 return
 
-        _LOGGER.debug("SOMETHING WENT WRONG!!!!")
+        self.debug("SOMETHING WENT WRONG!!!!")
 
     def _set_scheduled(self, scheduled):
         if ARG_SCHEDULE_TOGGLE in self.configs:
