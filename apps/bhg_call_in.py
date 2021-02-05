@@ -197,11 +197,16 @@ class CallBHG(BaseApp):
         await self.run_in(self._process_status, 10)
 
     async def _get_transcripts(self, kwargs):
+        call_inst = self._call_instance.fetch()
+        _LOGGER.debug(f"Grabbing transcripts for {call_inst.sid}")
         recording_sids = [recording.sid for recording in
                           self._call_instance.fetch().recordings.list() if
                           recording is not None and recording.sid]
 
+        _LOGGER.debug(f"Found recordings: {recording_sids}")
+
         if not recording_sids or len(recording_sids) == 0:
+            _LOGGER.debug("NO RECORDINGS FOUND, retry in 60")
             await self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIBE_FAILED)
             self._calling = False
             self._call_instance = None
@@ -212,6 +217,7 @@ class CallBHG(BaseApp):
                                    for transcription in self._client.transcriptions.list()
                                    if transcription and transcription.transcription_text
                                    and transcription.recording_sid in recording_sids]
+            _LOGGER.debug(f"Found transcriptions: {str(transcription_texts)}")
             await self._process_transcriptions(transcription_texts)
         self._call_instance = None
         self._calling = False
@@ -226,13 +232,19 @@ class CallBHG(BaseApp):
     async def _process_transcriptions(self, transcripts):
         for transcript in [transcript for transcript in transcripts]:
             if REGEX_SCHEDULED.match(transcript):
+                _LOGGER.debug('SCHEDULED')
                 self._set_scheduled(True)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_SCHEDULED,
                                    transcript=transcript)
+                return
             elif REGEX_NOT_SCHEDULED.match(transcript):
+                _LOGGER.debug('CLEAR')
                 self._set_scheduled(False)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_ALL_CLEAR,
                                    transcript=transcript)
+                return
+
+        _LOGGER.debug("SOMETHING WENT WRONG!!!!")
 
     def _set_scheduled(self, scheduled):
         if ARG_SCHEDULE_TOGGLE in self.configs:
