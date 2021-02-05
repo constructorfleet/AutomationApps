@@ -59,7 +59,7 @@ notifiers:
         - 9412863602@vtext.com
       notifier:
         - type: ios
-          service: mobile_app_deviphone12_aj
+          service: mobile_app_deviphone12pro
         - type: ios
           service: mobile_app_dev_ipadpro
         - type: email
