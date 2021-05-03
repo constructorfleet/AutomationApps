@@ -92,6 +92,7 @@ average_temperature:
   class: WeightedAveragedClimate
   log_level: DEBUG
   entity_id: sensor.average_temperature
+  remember_last: true
   temp_sensors:
     - entity_id: sensor.master_bathroom_temperature
       weight: 0.0
@@ -101,19 +102,23 @@ average_temperature:
         value: on
     - entity_id: sensor.living_room_temperature
       weight:  1.1
-      max_weight: 1.5
+      max_weight: 1.7
       trigger:
-        entity_id: binary_sensor.dining_room_motion_timeout
+        entity_id: binary_sensor.living_room_motion_timeout
         value: on
     - entity_id: sensor.lower_hall_temperature
       weight: 1.0
       max_weight: 1.2
       trigger:
-        entity_id: binary_sensor.lower_hall_motion_timeout
-        value: on
+        - entity_id: binary_sensor.lower_hall_motion_timeout
+          value: on
+        - entity_id: binary_sensor.game_room_motion
+          value: on
     - entity_id: sensor.dining_room_temperature
       weight: 0.75
       max_weight: 1.3
       trigger:
-        entity_id: binary_sensor.dining_room_motion_timeout
-        value: on
+        - entity_id: binary_sensor.dining_room_motion_timeout
+          value: on
+        - entity_id: binary_sensor.kitchen_motion
+          value: on
