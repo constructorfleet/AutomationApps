@@ -10,6 +10,7 @@ ARG_TEMP_SENSORS = 'temp_sensors'
 ARG_WEIGHT = 'weight'
 ARG_MAX_WEIGHT = 'max_weight'
 ARG_TRIGGER = 'trigger'
+ARG_REMEMBER_LAST = 'remember_last'
 
 ATTR_VALUE = 'value'
 ATTR_WEIGHT = 'weight'
@@ -21,8 +22,10 @@ DEFAULT_WEIGHT = {
 SCHEMA_TEMP_SENSOR = vol.Schema({
         vol.Required(ARG_ENTITY_ID)             : cv.entity_id,
         vol.Required(ARG_WEIGHT)                : vol.Coerce(float),
+        vol.Optional(ARG_REMEMBER_LAST,
+                     default=False)             : vol.Coerce(bool),
         vol.Inclusive(ARG_MAX_WEIGHT, 'trigger'): vol.Coerce(float),
-        vol.Inclusive(ARG_TRIGGER, 'trigger')   : SCHEMA_STATE_CONDITION
+        vol.Inclusive(ARG_TRIGGER, 'trigger')   : vol.All(cv.ensure_list, [SCHEMA_STATE_CONDITION])
         })
 
 
@@ -48,6 +51,7 @@ class WeightedAveragedClimate(BaseApp):
     """Uses a weighed average to represent the current temperature."""
 
     _values = {}
+    _last_triggered = None
 
     async def initialize_app(self):
         for sensor in self.configs[ARG_TEMP_SENSORS]:
@@ -56,13 +60,14 @@ class WeightedAveragedClimate(BaseApp):
                                     entity=sensor[ARG_ENTITY_ID],
                                     immediate=True,
                                     sensor_conf=sensor)
-            trigger = sensor.get(ARG_TRIGGER, None)
-            if trigger:
-                await self.listen_state(self.handle_weight_trigger,
-                                        entity=trigger[ARG_ENTITY_ID],
-                                        attribute=trigger.get(ARG_ATTRIBUTE, None),
-                                        immediate=True,
-                                        sensor_conf=sensor)
+            triggers = sensor.get(ARG_TRIGGER, None)
+            if triggers:
+                for trigger in triggers:
+                    await self.listen_state(self.handle_weight_trigger,
+                                            entity=trigger[ARG_ENTITY_ID],
+                                            attribute=trigger.get(ARG_ATTRIBUTE, None),
+                                            immediate=True,
+                                            sensor_conf=sensor)
         self.debug(f'Initial values {self._values}')
         await self.on_dataset_changed()
 
@@ -79,8 +84,10 @@ class WeightedAveragedClimate(BaseApp):
             self._values[sensor[ARG_ENTITY_ID]] = WeightedValue(0.0, 0.0)
 
         weight = sensor[ARG_WEIGHT]
-        if self.condition_met(sensor[ARG_TRIGGER]):
+        if self._last_triggered == sensor[ARG_ENTITY_ID] or self.condition_met(sensor[ARG_TRIGGER]):
             weight = sensor[ARG_MAX_WEIGHT]
+            if self.configs[ARG_REMEMBER_LAST]:
+                self._last_triggered = sensor[ARG_ENTITY_ID]
         self.debug(f'weight {weight}')
         self._values[sensor[ARG_ENTITY_ID]].weight = float(weight)
         await self.on_dataset_changed()
