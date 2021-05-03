@@ -132,6 +132,7 @@ average_temperature:
 set_thermostat_offset:
   module: call_when
   class: CallWhen
+  log_level: DEBUG
   global_dependencies:
     - listen_handle
     - base_app
