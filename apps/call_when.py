@@ -46,6 +46,7 @@ class CallWhen(BaseApp):
             new_state = await self.get_state(
                 entity_id=trigger[ARG_ENTITY_ID],
                 attribute=trigger.get(ARG_ATTRIBUTE))
+            self.debug(f"Trigger state: {new_state}")
             if ARG_STATE not in trigger or new_state == trigger[ARG_STATE]:
                 await self._handle_trigger(
                     trigger[ARG_ENTITY_ID],
@@ -55,11 +56,13 @@ class CallWhen(BaseApp):
                     {}
                 )
             if ARG_STATE not in trigger:
+                self.debug(f"Listening for all changes to {trigger[ARG_ENTITY_ID]}")
                 await self.listen_state(self._handle_trigger,
                                         entity=trigger[ARG_ENTITY_ID],
                                         attribute=trigger.get(ARG_ATTRIBUTE),
                                         immediate=True)
             else:
+                self.debug(f"Listening for {trigger[ARG_STATE]} on {trigger[ARG_ENTITY_ID]}")
                 await self.listen_state(self._handle_trigger,
                                         entity=trigger[ARG_ENTITY_ID],
                                         attribute=trigger.get(ARG_ATTRIBUTE),
@@ -100,8 +103,11 @@ class CallWhen(BaseApp):
             data = {}
             for key, value in event[ARG_SERVICE_DATA].items():
                 if isinstance(value, str) and value.startswith("{{") and value.endswith("}}"):
-                    value = await self.get_state(entity_id=value.replace("{", "").replace("}", "").replace(" ", ""))
+                    entity_id = value.replace("{", "").replace("}", "").replace(" ", "")
+                    self.debug(f"Getting state for {entity_id}")
+                    value = await self.get_state(entity_id=entity_id)
 
                 data[key] = value
+            self.debug(f"Calling {event[ARG_DOMAIN]}.{event[ARG_SERVICE]} with {str(data)}")
             self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
                                       data)
