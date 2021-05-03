@@ -87,7 +87,7 @@ bhg_call_in:
     token: !secret twilio_auth_token
   log_level: DEBUG
 
-average_temperaturre:
+average_temperature:
   module: averaging
   class: WeightedAveragedClimate
   log_level: DEBUG
