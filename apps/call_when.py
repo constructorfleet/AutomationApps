@@ -97,5 +97,11 @@ class CallWhen(BaseApp):
 
         events = self.configs[ARG_CALL]
         for event in events:
+            data = {}
+            for key, value in event[ARG_SERVICE_DATA].items():
+                if isinstance(value, str) and value.startswith("{{") and value.endswith("}}"):
+                    value = await self.get_state(entity_id=value.replace("{", "").replace("}", "").replace(" ", ""))
+
+                data[key] = value
             self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
-                                      event[ARG_SERVICE_DATA])
+                                      data)
