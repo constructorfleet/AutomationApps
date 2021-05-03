@@ -105,11 +105,15 @@ class WeightedAveragedClimate(BaseApp):
             return 0.0
         total_weight = float(sum([val.weight for _, val in self._values.items() if val.is_valid]))
         total_value = float(sum([val.weight * val.value for _, val in self._values.items() if val.is_valid]))
+        if total_weight == 0:
+            return None
         return total_value / total_weight
 
     async def on_dataset_changed(self):
         """Calculate the weighted mean of a list."""
         w_average = self._weighted_average()
+        if w_average is None:
+            return
         self.debug(f"w_average {w_average}")
         self.debug(f"entity_id {self.configs[ARG_ENTITY_ID]}")
         self.set_state(self.configs[ARG_ENTITY_ID], state=w_average)
