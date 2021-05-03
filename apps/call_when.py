@@ -105,7 +105,7 @@ class CallWhen(BaseApp):
                 if isinstance(value, str) and value.startswith("{{") and value.endswith("}}"):
                     entity_id = value.replace("{", "").replace("}", "").replace(" ", "")
                     self.debug(f"Getting state for {entity_id}")
-                    value = await self.get_state(entity_id=entity_id)
+                    value = int(await self.get_state(entity_id=entity_id))
 
                 data[key] = value
             self.debug(f"Calling {event[ARG_DOMAIN]}.{event[ARG_SERVICE]} with {str(data)}")
