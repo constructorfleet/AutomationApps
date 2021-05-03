@@ -90,6 +90,12 @@ bhg_call_in:
 average_temperature:
   module: averaging
   class: WeightedAveragedClimate
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - const
+    - conditions
+    - validation
   log_level: DEBUG
   entity_id: sensor.average_temperature
   remember_last: true
@@ -122,3 +128,23 @@ average_temperature:
           value: on
         - entity_id: binary_sensor.kitchen_motion
           value: on
+
+set_thermostat_offset:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - const
+    - conditions
+    - validation
+  trigger:
+    - entity_id: sensor.thermostat_offset_helper
+  call:
+    domain: ozw
+    service: set_config_parameter
+    service_data:
+      node_id: 5
+      parameter: 48
+      instance_id: 1
+      value: '{{ sensor.thermostat_offset_helper }}'
