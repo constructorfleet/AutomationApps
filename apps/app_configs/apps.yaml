@@ -148,4 +148,4 @@ set_thermostat_offset:
       node_id: 5
       parameter: 48
       instance_id: 1
-      value: '{{ sensor.thermostat_offset_helper }}'
+      value: '{{ -sensor.thermostat_offset_helper }}'
