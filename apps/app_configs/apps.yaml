@@ -144,7 +144,7 @@ set_thermostat_offset:
   call:
     domain: ozw
     service: set_config_parameter
-    transform: 'value if key != value else (value if value >=0 else 256 - value)''
+    transform: 'value if key != value else (value if value >= 0 else 256 - value)'
     service_data:
       node_id: 5
       parameter: 48
