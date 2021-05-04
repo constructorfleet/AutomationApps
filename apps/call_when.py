@@ -20,6 +20,7 @@ from common.validation import (
 ARG_TRIGGER = 'trigger'
 ARG_CONDITION = 'condition'
 ARG_CALL = 'call'
+ARG_TRANSFORM = 'transform'
 
 SCHEMA_TRIGGER = vol.Schema({
     vol.Required(ARG_ENTITY_ID): entity_id,
@@ -30,7 +31,8 @@ SCHEMA_TRIGGER = vol.Schema({
 SCHEMA_CALL = vol.Schema({
     vol.Required(ARG_DOMAIN): str,
     vol.Required(ARG_SERVICE): str,
-    vol.Optional(ARG_SERVICE_DATA, default={}): dict
+    vol.Optional(ARG_SERVICE_DATA, default={}): dict,
+    vol.Optional(ARG_TRANSFORM): str
 })
 
 
@@ -108,6 +110,10 @@ class CallWhen(BaseApp):
                         self.debug(f"Getting state for {entity_id}")
                         value = int(await self.get_state(entity_id=entity_id))
 
+                    transform = event.get(ARG_TRANSFORM)
+                    if transform is not None:
+                        fn = lambda k, v: eval(k, v)
+                        value = fn(key, value)
                     data[key] = value
                 self.debug(f"Calling {event[ARG_DOMAIN]}.{event[ARG_SERVICE]} with {str(data)}")
                 self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
