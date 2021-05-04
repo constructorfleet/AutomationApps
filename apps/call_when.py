@@ -100,14 +100,17 @@ class CallWhen(BaseApp):
 
         events = self.configs[ARG_CALL]
         for event in events:
-            data = {}
-            for key, value in event[ARG_SERVICE_DATA].items():
-                if isinstance(value, str) and value.startswith("{{") and value.endswith("}}"):
-                    entity_id = value.replace("{", "").replace("}", "").replace(" ", "")
-                    self.debug(f"Getting state for {entity_id}")
-                    value = int(await self.get_state(entity_id=entity_id))
+            try:
+                data = {}
+                for key, value in event[ARG_SERVICE_DATA].items():
+                    if isinstance(value, str) and value.startswith("{{") and value.endswith("}}"):
+                        entity_id = value.replace("{", "").replace("}", "").replace(" ", "")
+                        self.debug(f"Getting state for {entity_id}")
+                        value = int(await self.get_state(entity_id=entity_id))
 
-                data[key] = value
-            self.debug(f"Calling {event[ARG_DOMAIN]}.{event[ARG_SERVICE]} with {str(data)}")
-            self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
-                                      data)
+                    data[key] = value
+                self.debug(f"Calling {event[ARG_DOMAIN]}.{event[ARG_SERVICE]} with {str(data)}")
+                self.publish_service_call(event[ARG_DOMAIN], event[ARG_SERVICE],
+                                          data)
+            except Exception:
+                self.error("Unexpected error calling service.")
