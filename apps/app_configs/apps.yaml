@@ -142,11 +142,16 @@ set_thermostat_offset:
   trigger:
     - entity_id: sensor.thermostat_offset_helper
   call:
-    domain: ozw
-    service: set_config_parameter
-    transform: 'value if key != value else (value if value >= 0 else 256 - value)'
-    service_data:
-      node_id: 5
-      parameter: 48
-      instance_id: 1
-      value: '{{ sensor.thermostat_offset_helper }}'
+    - domain: ozw
+      service: set_config_parameter
+      transform: 'value if key != value else (value if value >= 0 else 256 - value)'
+      service_data:
+        node_id: 5
+        parameter: 48
+        instance_id: 1
+        value: '{{ sensor.thermostat_offset_helper }}'
+    - domain: mqtt
+      service: publish
+      service_data:
+        topic:
+        payload: '{"node": 5}
