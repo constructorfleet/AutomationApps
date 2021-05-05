@@ -95,6 +95,7 @@ class CallWhen(BaseApp):
 
     async def _handle_trigger(self, entity, attribute, old, new, kwargs):
         if new == old:
+            self.debug("No change");
             return
         if not await self.conditions_met:
             self.debug("Conditions not met")
@@ -105,14 +106,16 @@ class CallWhen(BaseApp):
             try:
                 data = {}
                 for key, value in event[ARG_SERVICE_DATA].items():
+                    self.debug(f"{key}: {value}")
                     if isinstance(value, str) and value.startswith("{{") and value.endswith("}}"):
                         entity_id = value.replace("{", "").replace("}", "").replace(" ", "")
                         self.debug(f"Getting state for {entity_id}")
                         value = int(await self.get_state(entity_id=entity_id))
 
-                    transform = event.get(ARG_TRANSFORM)
+                    transform = event.get(ARG_TRANSFORM, None)
+                    self.debug(f"f{transform} {value}")
                     if transform is not None:
-                        fn = lambda key, value: eval(key, value)
+                        fn = lambda key, value: eval(transform)
                         value = fn(key, value)
                     data[key] = value
                 self.debug(f"Calling {event[ARG_DOMAIN]}.{event[ARG_SERVICE]} with {str(data)}")
