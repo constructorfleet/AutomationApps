@@ -112,7 +112,7 @@ class CallWhen(BaseApp):
 
                     transform = event.get(ARG_TRANSFORM)
                     if transform is not None:
-                        fn = lambda k, v: eval(k, v)
+                        fn = lambda key, value: eval(key, value)
                         value = fn(key, value)
                     data[key] = value
                 self.debug(f"Calling {event[ARG_DOMAIN]}.{event[ARG_SERVICE]} with {str(data)}")
