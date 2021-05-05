@@ -153,5 +153,5 @@ set_thermostat_offset:
     - domain: mqtt
       service: publish
       service_data:
-        topic:
-        payload: '{"node": 5}
+        topic: OpenZWave/1/command/requestnodestate/
+        payload: '{"node": 5}'
