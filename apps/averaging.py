@@ -90,6 +90,7 @@ class WeightedAveragedClimate(BaseApp):
                 self._last_triggered = sensor[ARG_ENTITY_ID]
         self.debug(f'weight {weight}')
         self._values[sensor[ARG_ENTITY_ID]].weight = float(weight)
+        self.debug(f'weighted value {self._values[sensor[ARG_ENTITY_ID]].value * self._values[sensor[ARG_ENTITY_ID]].weight}')
         await self.on_dataset_changed()
 
     async def handle_temperature_changed(self, entity, attribute, old, new, kwargs):
