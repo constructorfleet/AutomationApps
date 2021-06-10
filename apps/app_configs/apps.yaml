@@ -128,3 +128,24 @@ average_temperature:
           value: on
         - entity_id: binary_sensor.kitchen_motion
           value: on
+thermostat_offset:
+  module: call_when
+  class: CallWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - const
+    - validation
+  trigger:
+    - entity_id: sensor.thermostat_internal_offset
+    - entity_id: sensor.thermostat_offset_helper
+  condition:
+    - entity_id: sensor.thermostat_internal_offset
+      comparator: '!='
+      value: 'sensor.thermostat_offset_helper'
+  call:
+    domain: mqtt
+    service: publish
+    service_data:
+      transform: '{"ValueIDKey": 13510798976221201, "Value": (value if value >= 0 else (256-value)) }'
+      payload: '{{sensor.thermostat_offset_helper}}'
