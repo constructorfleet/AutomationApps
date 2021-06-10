@@ -136,13 +136,9 @@ thermostat_offset:
     - base_app
     - const
     - validation
+  log_level: DEBUG
   trigger:
-    - entity_id: sensor.thermostat_internal_offset
     - entity_id: sensor.thermostat_offset_helper
-  condition:
-    - entity_id: sensor.thermostat_internal_offset
-      comparator: '!='
-      value: 'sensor.thermostat_offset_helper'
   call:
     domain: mqtt
     service: publish
