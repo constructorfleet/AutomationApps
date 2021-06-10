@@ -7,9 +7,8 @@ from asyncio import Lock
 from datetime import datetime
 
 import voluptuous as vol
+from appdaemon.plugins.hass import hassapi as hass
 
-import hassmqttapi as hassmqtt
-import hassapi as hass
 from common.const import (
     ARG_LOG_LEVEL,
     ARG_DEPENDENCIES,
@@ -73,7 +72,7 @@ class BaseApp(hass.Hass):
         """Initialization of Base App class."""
         self.kw_formatter = KWArgFormatter(self.get_state)
         self.notifier = None
-        self.holidays = None
+        self.holidays = []
         self.data = {}
         self._data_save_handle = None
         self._data_lock = Lock()
@@ -187,8 +186,8 @@ class BaseApp(hass.Hass):
     async def record_data(self, key, value):
         async with self._data_lock:
             if key not in self.data:
-                self.data[key] = None
-            self.data[key] = value
+                self.data[key] = []
+            self.data[key].push(value)
 
             if self._data_save_handle is not None:
                 return
