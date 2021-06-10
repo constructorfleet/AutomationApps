@@ -2,10 +2,8 @@ from datetime import datetime
 
 import requests
 import voluptuous as vol
-from appdaemon import utils
 
 from common.base_app import (BaseApp)
-from common.utils import KWArgFormatter
 
 ARG_API_KEY = 'api_key'
 ARG_COUNTRY = 'country'
@@ -128,8 +126,10 @@ class HolidayColors(BaseApp):
         self.debug('File %s' % self._persistent_data_file)
         self.debug('Data {}'.format(str(self.data)))
         if self._for_year != datetime.now().year:
-            self.debug('Retrieving holidays')
-            await self._retrieve_holidays()
+            self._for_year = datetime.now().year
+            for year in [self._for_year - 1, self._for_year, self._for_year + 1]:
+                self.debug('Retrieving holidays')
+                await self._retrieve_holidays(year)
 
         self.debug(str(self._holidays))
 
@@ -142,12 +142,12 @@ class HolidayColors(BaseApp):
         }, extra=vol.ALLOW_EXTRA)
 
     @property
-    def api_url(self):
+    def api_url(self, year=None):
         return self.kw_formatter.format(
             BASE_URL,
             api_key=self.configs[ARG_API_KEY],
             country=self.configs[ARG_COUNTRY],
-            year=str(datetime.now().year)
+            year=str(datetime.now().year) if year else str(year)
         )
 
     def get_closest_holiday_colors(self):
@@ -164,7 +164,7 @@ class HolidayColors(BaseApp):
         self.info('Holiday %s', holiday)
         return HOLIDAY_COLORS.get(holiday, [(255, 255, 255)])
 
-    async def _retrieve_holidays(self):
+    async def _retrieve_holidays(self, year):
         await self.clear_data()
         response = requests.get(self.api_url)
         try:
@@ -174,8 +174,8 @@ class HolidayColors(BaseApp):
             if not holidays:
                 self.error('Unable to parse holidays from response')
                 return
-            self._for_year = datetime.now().year
-            await self.record_data(KEY_YEAR, self._for_year)
+
+            await self.record_data(KEY_YEAR, year)
 
             for holiday in holidays:
                 name = holiday.get('name', '')
@@ -200,7 +200,6 @@ class HolidayColors(BaseApp):
         for name, holiday_date in self.data.items():
             if name == KEY_YEAR and name not in HOLIDAY_COLORS.keys():
                 continue
-
             self._holidays[name] = self._parse_holiday_date(holiday_date)
 
         self.debug("Holidays %%s", str(self._holidays))
