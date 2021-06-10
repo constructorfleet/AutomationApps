@@ -463,68 +463,9 @@ night_lights:
     - utils
   dependencies:
     - holidays
-  dawn:
-    offset: 60
-    entities:
-      - entity_id: light.porch_upper
-        domain: light
-        service: turn_off
-      - entity_id: light.porch_lower
-        domain: light
-        service: turn_off
-      - entity_id: light.garage_upper_1
-        domain: light
-        service: turn_off
-      - entity_id: light.garage_upper_2
-        domain: light
-        service: turn_off
-      - entity_id: light.garage_lower_1
-        domain: light
-        service: turn_off
-      - entity_id: light.garage_lower_2
-        domain: light
-        service: turn_off
-      - entity_id: light.hue_outdoor_bollard_1
-        domain: light
-        service: turn_off
-      - entity_id: light.hue_outdoor_bollard_2
-        domain: light
-        service: turn_off
   dusk:
     offset: 60
     entities:
-      - entity_id: light.porch_upper
-        domain: light
-        service: turn_on
-        static_color: white
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.porch_lower
-        domain: light
-        service: turn_on
-        static_color: white
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_east_upper
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_west_upper
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_east_lower
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.garage_west_lower
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
       - entity_id: light.hue_outdoor_bollard_1
         domain: light
         service: turn_on
@@ -535,3 +476,13 @@ night_lights:
         service: turn_on
         service_data:
           brightness_pct: 100
+      - entity_id: light.hue_outdoor_bollard_3
+          domain: light
+          service: turn_on
+          service_data:
+            brightness_pct: 100
+      - entity_id: light.hue_lightstrip_outdoor_1
+          domain: light
+          service: turn_on
+          service_data:
+            brightness_pct: 100
