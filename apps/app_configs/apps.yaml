@@ -144,9 +144,4 @@ thermostat_offset:
     service: publish
     service_data:
       topic: 'OpenZWave/1/command/setvalue/'
-      payload_template: |
-        {%- set value = states.sensor.thermostat_offset_helper.state | int -%}
-        {%- set value = value if value >= 0 else (256 - value) -%}
-        {
-          "ValueIDKey": 13510798976221201, "Value": {{ value | int }}
-        }
+      payload_template: '{%- set value = states.sensor.thermostat_offset_helper.state | int -%}{ "ValueIDKey": 13510798976221201, "Value": {{ value if value >= 0 else (256-value) }} }'
