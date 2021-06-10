@@ -100,6 +100,12 @@ average_temperature:
   entity_id: sensor.average_temperature
   remember_last: true
   temp_sensors:
+    - entity_id: sensor.thermostat_actual_temperature
+      weight: 1.0
+      max_weight: 0.0
+      trigger:
+        entity_id: binary_sensor.front_door_open
+        value: on
     - entity_id: sensor.upper_landing_temperature
       weight: 0.8
       max_weight: 1.7
