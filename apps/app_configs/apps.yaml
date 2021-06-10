@@ -128,20 +128,20 @@ average_temperature:
           value: on
         - entity_id: binary_sensor.kitchen_motion
           value: on
-thermostat_offset:
-  module: call_when
-  class: CallWhen
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  log_level: DEBUG
-  trigger:
-    - entity_id: sensor.thermostat_offset_helper
-  call:
-    domain: mqtt
-    service: publish
-    service_data:
-      topic: 'OpenZWave/1/command/setvalue/'
-      payload_template: '{%- set value = states.sensor.thermostat_offset_helper.state | int -%}{ "ValueIDKey": 13510798976221201, "Value": {{ value if value >= 0 else (256-value) }} }'
+#thermostat_offset:
+#  module: call_when
+#  class: CallWhen
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - validation
+#  log_level: DEBUG
+#  trigger:
+#    - entity_id: sensor.thermostat_offset_helper
+#  call:
+#    domain: mqtt
+#    service: publish
+#    service_data:
+#      topic: 'OpenZWave/1/command/setvalue/'
+#      payload_template: '{%- set value = states.sensor.thermostat_offset_helper.state | int -%}{ "ValueIDKey": 13510798976221201, "Value": {{ value if value >= 0 else (256-value) }} }'
