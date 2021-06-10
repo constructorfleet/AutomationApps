@@ -477,12 +477,12 @@ night_lights:
         service_data:
           brightness_pct: 100
       - entity_id: light.hue_outdoor_bollard_3
-          domain: light
-          service: turn_on
-          service_data:
-            brightness_pct: 100
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
       - entity_id: light.hue_lightstrip_outdoor_1
-          domain: light
-          service: turn_on
-          service_data:
-            brightness_pct: 100
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
