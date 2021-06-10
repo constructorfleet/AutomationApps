@@ -53,6 +53,13 @@ notifiers:
         - type: email
           channels:
             - IMPORTANT
+#    - name: Persia
+#      email_address:
+#        - 7203615129@mms.att.net
+#      notifier:
+#        - type: email
+#          channels:
+#            - INFO
     - name: Alan
       email_address:
         - alan.janis@gmail.com
