@@ -1,2 +1,2 @@
+homeassistant==2015.1.5
 appdaemon==4.0.1
-homeassistant==0.115.6
