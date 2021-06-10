@@ -147,5 +147,10 @@ thermostat_offset:
     domain: mqtt
     service: publish
     service_data:
-      transform: '{"ValueIDKey": 13510798976221201, "Value": (value if value >= 0 else (256-value)) }'
-      payload: '{{sensor.thermostat_offset_helper}}'
+      topic: 'OpenZWave/1/command/setvalue/'
+      payload_template: |
+        {%- set value = states.sensor.thermostat_offset_helper.state | int -%}
+        {%- set value = value if value >= 0 else (256 - value) -%}
+        {
+          "ValueIDKey": 13510798976221201, "Value": {{ value | int }}
+        }
