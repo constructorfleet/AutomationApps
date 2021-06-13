@@ -106,7 +106,7 @@ average_temperature:
       trigger:
         entity_id: binary_sensor.front_door_open
         value: on
-    - entity_id: sensor.upper_landing_temperature
+    - entity_id: sensor.master_bathroom_temperature
       weight: 0.8
       max_weight: 1.7
       trigger:
