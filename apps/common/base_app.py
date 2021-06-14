@@ -38,6 +38,8 @@ from common.validation import valid_log_level, valid_entity_id
 # _srcfile is used when walking the stack to check when we've got the first
 # caller stack frame.
 #
+from custom_plugins import hassmqtt
+
 if hasattr(sys, 'frozen'):  # support for py2exe
     _srcfile = "logging%s__init__%s" % (os.sep, __file__[-4:])
 elif __file__[-4:].lower() in ['.pyc', '.pyo']:
