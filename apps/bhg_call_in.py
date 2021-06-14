@@ -15,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 REGEX_SCHEDULED = re.compile(r'(not){0} scheduled to visit [a-z ]+ end of dosing hours on [A-za-z .]+ ',
                              re.RegexFlag.IGNORECASE)
-REGEX_NOT_SCHEDULED = re.compile(r'not scheduled to come [a-z ]+ treatment center on [A-za-z0-9 .]+ please call ',
+REGEX_NOT_SCHEDULED = re.compile(r'not scheduled to come [a-z ]+ treatment center on [A-za-z0-9 .,]+ please call ',
                                  re.RegexFlag.IGNORECASE)
 
 ARG_CREDENTIALS = "twilio_credential"
