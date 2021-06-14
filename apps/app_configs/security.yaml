@@ -1,22 +1,22 @@
-doorbell:
-  module: security
-  class: Doorbell
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  dependencies:
-    - notifiers
-  doorbell:
-    entity_id: binary_sensor.motion_doorbell
-  image_processing:
-    sensor: image_processing.doods_front_door
-    confidence: 80
-    class: person
-    notify_interval: 2
-  camera: camera.front_yard
-  base_image_url: https://automation.prettybaked.com/local/camera_snapshot/
+# doorbell:
+#   module: security
+#   class: Doorbell
+#   global_dependencies:
+#     - listen_handle
+#     - base_app
+#     - const
+#     - validation
+#   dependencies:
+#     - notifiers
+#   doorbell:
+#     entity_id: binary_sensor.motion_doorbell
+#   image_processing:
+#     sensor: image_processing.doods_front_door
+#     confidence: 80
+#     class: person
+#     notify_interval: 2
+#   camera: camera.front_yard
+#   base_image_url: https://automation.prettybaked.com/local/camera_snapshot/
 #
 #unlock:
 #  module: security
