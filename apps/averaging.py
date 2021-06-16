@@ -95,6 +95,7 @@ class WeightedAveragedClimate(BaseApp):
 
     async def handle_temperature_changed(self, entity, attribute, old, new, kwargs):
         sensor = kwargs['sensor_conf']
+        self.debug(f"entity_id {sensor[ARG_ENTITY_ID]}")
         if sensor[ARG_ENTITY_ID] not in self._values:
             self._values[sensor[ARG_ENTITY_ID]] = WeightedValue(0.0, 0.0)
 
@@ -116,5 +117,4 @@ class WeightedAveragedClimate(BaseApp):
         if w_average is None:
             return
         self.debug(f"w_average {w_average}")
-        self.debug(f"entity_id {self.configs[ARG_ENTITY_ID]}")
-        self.set_state(self.configs[ARG_ENTITY_ID], state=w_average)
+        await self.set_state(self.configs[ARG_ENTITY_ID], state=w_average)
