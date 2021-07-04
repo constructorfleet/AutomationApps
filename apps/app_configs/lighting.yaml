@@ -466,6 +466,11 @@ night_lights:
   dusk:
     offset: 60
     entities:
+      - entity_id: light.garage_soffit_light
+        domain: light
+        service: turn_on
+        service_data:
+          brightness_pct: 100
       - entity_id: light.hue_outdoor_bollard_1
         domain: light
         service: turn_on
