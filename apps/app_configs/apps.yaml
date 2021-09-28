@@ -100,12 +100,12 @@ average_temperature:
   entity_id: sensor.average_temperature
   remember_last: true
   temp_sensors:
-    - entity_id: sensor.master_bathroom_temperature
-      weight: 0.8
-      max_weight: 1.7
-      trigger:
-        entity_id: binary_sensor.bed_occupancy
-        value: on
+#    - entity_id: sensor.master_bathroom_temperature
+#      weight: 0.8
+#      max_weight: 1.7
+#      trigger:
+#        entity_id: binary_sensor.bed_occupancy
+#        value: on
     - entity_id: sensor.living_room_temperature
       weight:  2.0
       max_weight: 4.0
