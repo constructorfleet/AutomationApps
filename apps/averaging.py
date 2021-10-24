@@ -52,6 +52,7 @@ class WeightedAveragedClimate(BaseApp):
 
     _values = {}
     _last_triggered = None
+    _current_average = 0
 
     async def initialize_app(self):
         for sensor in self.configs[ARG_TEMP_SENSORS]:
@@ -117,4 +118,6 @@ class WeightedAveragedClimate(BaseApp):
         if w_average is None:
             return
         self.debug(f"w_average {w_average}")
-        await self.set_state(self.configs[ARG_ENTITY_ID], state=w_average)
+        if abs(w_average - self._current_average) > 0.1:
+            await self.set_state(self.configs[ARG_ENTITY_ID], state=w_average)
+            self._current_average = w_average
