@@ -48,7 +48,6 @@ class DecodeBase64CallWhen(BaseApp):
     async def initialize_app(self):
         trigger = self.configs[ARG_TRIGGER]
         for attribute in trigger[ARG_ATTR_CONTAINS].keys():
-            self.debug(f"Listening for all changes to {trigger[ARG_ENTITY_ID]}")
             self._last_attributes[attribute] = ''
             await self.listen_state(self._handle_trigger,
                                     entity=trigger[ARG_ENTITY_ID],
@@ -87,13 +86,13 @@ class DecodeBase64CallWhen(BaseApp):
     async def _check_conditions(self):
         for attribute, expected_values in self.args[ARG_TRIGGER][ARG_ATTR_CONTAINS].items():
             for value in expected_values:
-                self.debug(f"VALUE {value}")
-                self.debug(f"ATTRIBUTE {self._last_attributes.get(attribute, '')}")
                 if value.lower() not in self._last_attributes.get(attribute, '').lower():
                     return False
 
         return True
 
     async def _call(self, services):
+        self.debug(f"Services {services}")
         for service in services:
+            self.debug(f"Service {service}")
             await self.publish_service_call(service[ARG_DOMAIN], service[ARG_SERVICE], **service[ARG_SERVICE_DATA])
