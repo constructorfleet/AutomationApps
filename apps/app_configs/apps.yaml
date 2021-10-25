@@ -150,7 +150,7 @@ genesis_email_processor:
     domain: input_boolean
     service: turn_on
     service_data:
-      entity_id: input_boolean.
+      entity_id: input_boolean.genesis_gv70_remote_start
   call_unmet:
     domain: input_boolean
     service: turn_off
