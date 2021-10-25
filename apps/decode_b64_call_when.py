@@ -92,7 +92,5 @@ class DecodeBase64CallWhen(BaseApp):
         return True
 
     async def _call(self, services):
-        self.debug(f"Services {services}")
         for service in services:
-            self.debug(f"Service {service}")
             await self.publish_service_call(service[ARG_DOMAIN], service[ARG_SERVICE], service[ARG_SERVICE_DATA])
