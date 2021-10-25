@@ -86,10 +86,9 @@ class DecodeBase64CallWhen(BaseApp):
 
     async def _check_conditions(self):
         for attribute, expected_values in self.args[ARG_TRIGGER][ARG_ATTR_CONTAINS].items():
-            if not all([value.lower() in self._last_attributes.get(attribute, '').lower()
-                        for value
-                        in expected_values]):
-                return False
+            for value in expected_values:
+                if value.lower() not in self._last_attributes.get(attribute, '').lower():
+                    return False
 
         return True
 
