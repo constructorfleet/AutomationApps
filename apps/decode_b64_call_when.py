@@ -75,6 +75,7 @@ class DecodeBase64CallWhen(BaseApp):
             return
         if attribute == 'body':
             new = base64.b64decode(new)
+        self.debug(new)
         self._last_attributes[attribute] = new
 
         met = await self._check_conditions()
