@@ -79,12 +79,12 @@ class DecodeBase64CallWhen(BaseApp):
 
         met = await self._check_conditions()
         if not met:
-            await self._call(self.args[ARG_CALL_UNMET])
+            await self._call(self.configs[ARG_CALL_UNMET])
         else:
-            await self._call(self.args[ARG_CALL_MET])
+            await self._call(self.configs[ARG_CALL_MET])
 
     async def _check_conditions(self):
-        for attribute, expected_values in self.args[ARG_TRIGGER][ARG_ATTR_CONTAINS].items():
+        for attribute, expected_values in self.configs[ARG_TRIGGER][ARG_ATTR_CONTAINS].items():
             for value in expected_values:
                 if value.lower() not in self._last_attributes.get(attribute, '').lower():
                     return False
