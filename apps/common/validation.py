@@ -547,3 +547,23 @@ def _parse_time(time_str):
     except ValueError:
         # ValueError if value cannot be converted to an int or not in range
         return None
+
+
+def schema_with_slug_keys(value_schema):
+    """Ensure dicts have slugs as keys.
+    Replacement of vol.Schema({cv.slug: value_schema}) to prevent misleading
+    "Extra keys" errors from voluptuous.
+    """
+    schema = vol.Schema({str: value_schema})
+
+    def verify(value: dict) -> dict:
+        """Validate all keys are slugs and then the value_schema."""
+        if not isinstance(value, dict):
+            raise vol.Invalid("expected dictionary")
+
+        for key in value.keys():
+            slugified(key)
+
+        return schema(value)
+
+    return verify

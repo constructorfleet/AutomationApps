@@ -128,6 +128,35 @@ average_temperature:
           value: on
         - entity_id: binary_sensor.kitchen_motion
           value: on
+
+genesis_email_processor:
+  module: decode_b64_call_when
+  class: DecodeBase64CallWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - const
+    - conditions
+    - validation
+  log_level: DEBUG
+  trigger:
+    entity_id: sensor.genesis_gv70_remote_start
+    attr_contains:
+      body:
+        - remote start
+        - successful
+        - marlowe ave
+  call_met:
+    domain: input_boolean
+    service: turn_on
+    service_data:
+      entity_id: input_boolean.
+  call_unmet:
+    domain: input_boolean
+    service: turn_off
+    service_data:
+      entity_id: input_boolean.genesis_gv70_remote_start
+
 #thermostat_offset:
 #  module: call_when
 #  class: CallWhen

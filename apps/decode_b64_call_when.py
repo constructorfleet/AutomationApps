@@ -37,7 +37,8 @@ SCHEMA_TRIGGER = vol.Schema({
 
 SCHEMA_CALL = vol.Schema({
     vol.Required(ARG_DOMAIN): str,
-    vol.Required(ARG_SERVICE): str
+    vol.Required(ARG_SERVICE): str,
+    vol.Optional(ARG_SERVICE_DATA, default={}): dict
 })
 
 
@@ -93,4 +94,4 @@ class DecodeBase64CallWhen(BaseApp):
 
     async def _call(self, services):
         for service in services:
-            await self.publish_service_call(service[ARG_DOMAIN], service[ARG_SERVICE])
+            await self.publish_service_call(service[ARG_DOMAIN], service[ARG_SERVICE], **service[ARG_SERVICE_DATA])
