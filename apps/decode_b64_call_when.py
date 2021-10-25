@@ -74,7 +74,7 @@ class DecodeBase64CallWhen(BaseApp):
             self.debug("No change")
             return
         if attribute == 'body':
-            new = base64.b64decode(new).decode('ascii')
+            new = base64.b64decode(new).decode('utf-8')
         self.debug(new)
         self._last_attributes[attribute] = new
 
