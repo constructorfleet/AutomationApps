@@ -46,14 +46,14 @@ class DecodeBase64CallWhen(BaseApp):
     _last_attributes = {}
 
     async def initialize_app(self):
-        for trigger in self.configs[ARG_TRIGGER]:
-            for attribute in trigger[ARG_ATTR_CONTAINS].keys():
-                self.debug(f"Listening for all changes to {trigger[ARG_ENTITY_ID]}")
-                self._last_attributes[attribute] = ''
-                await self.listen_state(self._handle_trigger,
-                                        entity=trigger[ARG_ENTITY_ID],
-                                        attribute=attribute,
-                                        immediate=True)
+        trigger = self.configs[ARG_TRIGGER]
+        for attribute in trigger[ARG_ATTR_CONTAINS].keys():
+            self.debug(f"Listening for all changes to {trigger[ARG_ENTITY_ID]}")
+            self._last_attributes[attribute] = ''
+            await self.listen_state(self._handle_trigger,
+                                    entity=trigger[ARG_ENTITY_ID],
+                                    attribute=attribute,
+                                    immediate=True)
 
     @property
     def app_schema(self):
