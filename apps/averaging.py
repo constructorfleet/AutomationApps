@@ -18,17 +18,17 @@ ATTR_VALUE = 'value'
 ATTR_WEIGHT = 'weight'
 
 DEFAULT_WEIGHT = {
-        ARG_WEIGHT: 1.0
-        }
+    ARG_WEIGHT: 1.0
+}
 
 SCHEMA_TEMP_SENSOR = vol.Schema({
-        vol.Required(ARG_ENTITY_ID)             : cv.entity_id,
-        vol.Required(ARG_WEIGHT)                : vol.Coerce(float),
-        vol.Optional(ARG_REMEMBER_LAST,
-                     default=False)             : vol.Coerce(bool),
-        vol.Inclusive(ARG_MAX_WEIGHT, 'trigger'): vol.Coerce(float),
-        vol.Inclusive(ARG_TRIGGER, 'trigger')   : vol.All(cv.ensure_list, [SCHEMA_STATE_CONDITION])
-        })
+    vol.Required(ARG_ENTITY_ID): cv.entity_id,
+    vol.Required(ARG_WEIGHT): vol.Coerce(float),
+    vol.Optional(ARG_REMEMBER_LAST,
+                 default=False): vol.Coerce(bool),
+    vol.Inclusive(ARG_MAX_WEIGHT, 'trigger'): vol.Coerce(float),
+    vol.Inclusive(ARG_TRIGGER, 'trigger'): vol.All(cv.ensure_list, [SCHEMA_STATE_CONDITION])
+})
 
 
 class WeightedValue:
@@ -77,9 +77,9 @@ class WeightedAveragedClimate(BaseApp):
     @property
     def app_schema(self):
         return vol.Schema({
-                vol.Required(ARG_TEMP_SENSORS): vol.All(cv.ensure_list, [SCHEMA_TEMP_SENSOR]),
-                vol.Required(ARG_ENTITY_ID)   : cv.entity_id
-                }, extra=vol.ALLOW_EXTRA)
+            vol.Required(ARG_TEMP_SENSORS): vol.All(cv.ensure_list, [SCHEMA_TEMP_SENSOR]),
+            vol.Required(ARG_ENTITY_ID): cv.entity_id
+        }, extra=vol.ALLOW_EXTRA)
 
     async def handle_weight_trigger(self, entity, attribute, old, new, kwargs):
         sensor = kwargs['sensor_conf']
@@ -90,9 +90,9 @@ class WeightedAveragedClimate(BaseApp):
         is_met = any(result
                      for result
                      in await asyncio.gather(*[self.condition_met(trigger)
-                                              for trigger
-                                              in sensor[ARG_TRIGGER]
-                                              ])
+                                               for trigger
+                                               in sensor[ARG_TRIGGER]
+                                               ])
                      )
         if self._last_triggered == sensor[ARG_ENTITY_ID] or is_met:
             weight = sensor[ARG_MAX_WEIGHT]
@@ -100,7 +100,8 @@ class WeightedAveragedClimate(BaseApp):
                 self._last_triggered = sensor[ARG_ENTITY_ID]
         self.debug(f'weight {weight}')
         self._values[sensor[ARG_ENTITY_ID]].weight = float(weight)
-        self.debug(f'weighted value {self._values[sensor[ARG_ENTITY_ID]].value * self._values[sensor[ARG_ENTITY_ID]].weight}')
+        self.debug(
+            f'weighted value {self._values[sensor[ARG_ENTITY_ID]].value * self._values[sensor[ARG_ENTITY_ID]].weight}')
         await self.on_dataset_changed()
 
     async def handle_temperature_changed(self, entity, attribute, old, new, kwargs):
