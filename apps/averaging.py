@@ -87,7 +87,13 @@ class WeightedAveragedClimate(BaseApp):
             self._values[sensor[ARG_ENTITY_ID]] = WeightedValue(0.0, 0.0)
 
         weight = sensor[ARG_WEIGHT]
-        is_met = any(result for result in await asyncio.gather([self.condition_met(trigger) for trigger in sensor[ARG_TRIGGER]]))
+        is_met = any(result
+                     for result
+                     in await asyncio.gather(*[self.condition_met(trigger)
+                                              for trigger
+                                              in sensor[ARG_TRIGGER]
+                                              ])
+                     )
         if self._last_triggered == sensor[ARG_ENTITY_ID] or is_met:
             weight = sensor[ARG_MAX_WEIGHT]
             if self.configs[ARG_REMEMBER_LAST]:
