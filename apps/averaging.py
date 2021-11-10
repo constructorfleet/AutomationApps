@@ -85,7 +85,7 @@ class WeightedAveragedClimate(BaseApp):
             self._values[sensor[ARG_ENTITY_ID]] = WeightedValue(0.0, 0.0)
 
         weight = sensor[ARG_WEIGHT]
-        if self._last_triggered == sensor[ARG_ENTITY_ID] or self.condition_met(sensor[ARG_TRIGGER]):
+        if self._last_triggered == sensor[ARG_ENTITY_ID] or await self.condition_met(sensor[ARG_TRIGGER]):
             weight = sensor[ARG_MAX_WEIGHT]
             if self.configs[ARG_REMEMBER_LAST]:
                 self._last_triggered = sensor[ARG_ENTITY_ID]
