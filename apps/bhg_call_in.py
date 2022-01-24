@@ -68,6 +68,7 @@ class CallBHG(BaseApp):
         self._calling = False
         self._retry_handle = None
         self._retries = 0
+        self._status_checks = 0
         self._client = Client(
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_ACCOUNT_SID],
             self.configs[ARG_CREDENTIALS][ARG_CREDENTIALS_TOKEN]
@@ -155,7 +156,7 @@ class CallBHG(BaseApp):
 
         if self._call_instance is not None:
             return
-
+        self._status_checks = 0;
         self._call_instance = self._client.calls.create(
             to=self.configs[ARG_CALL_TO],
             from_=self.configs[ARG_CALL_FROM],
@@ -165,6 +166,7 @@ class CallBHG(BaseApp):
         await self.run_in(self._process_status, 5)
 
     async def _process_status(self, kwargs):
+        self._status_checks = self._status_checks + 1
         call_status = self._call_instance.fetch().status
         status_map = {
             CallInstance.Status.BUSY: self._handle_call_failed,
@@ -183,6 +185,8 @@ class CallBHG(BaseApp):
 
     async def _handle_call_in_process(self, status):
         self.error("Call in process %s, retrying in %d sec" % (status, 10))
+        if self._status_checks > 8:
+            self._call_instance.update(status='completed')
         await self.run_in(self._process_status, 10)
 
     async def _handle_call_failed(self, status):
