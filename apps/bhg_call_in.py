@@ -40,7 +40,7 @@ TURN_OFF_SERVICE = "turn_off"
 TURN_ON_SERVICE = "turn_on"
 RETRY_ACKNOWLEDGE_ID = "bhg_retry_acknowledge"
 
-MAX_RETRY = 5
+MAX_RETRY = 2
 
 SCHEMA_DAILY_AT = vol.Schema({
     vol.Required(ARG_FREQUENCY_HOUR): vol.All(
