@@ -13,9 +13,9 @@ from twilio.rest.api.v2010.account.call import CallInstance
 
 _LOGGER = logging.getLogger(__name__)
 
-REGEX_SCHEDULED = re.compile(r'(not){0} (scheduled)|(required) to [a-z ]+ end of (dosing hours)|(business) (?:.*)',
+REGEX_SCHEDULED = re.compile(r'are (scheduled)|(required) to [a-z ]+ (?:end of )?(dosing hours)|(business)',
                              re.RegexFlag.IGNORECASE)
-REGEX_NOT_SCHEDULED = re.compile(r'not scheduled to [a-z ]+ treatment center on (?:.*)? please call on your next',
+REGEX_NOT_SCHEDULED = re.compile(r'are not (scheduled)|(required) to [a-z ]+ (?:.*)? next scheduled',
                                  re.RegexFlag.IGNORECASE)
 
 ARG_CREDENTIALS = "twilio_credential"
