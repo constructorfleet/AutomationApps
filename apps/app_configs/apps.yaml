@@ -81,7 +81,7 @@ bhg_call_in:
       minute: 15
     - hour: 8
       minute: 30
-  skip_weekends: true
+  skip_weekends: false
   twilio_credential:
     account_sid: !secret twilio_account_sid
     token: !secret twilio_auth_token
