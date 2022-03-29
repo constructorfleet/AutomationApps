@@ -106,7 +106,7 @@ class CallBHG(BaseApp):
             await self.get_state(
                 entity_id=self.args[ARG_BHG_LAST_CALLED]
             ),
-            '%Y-%d-%h'
+            '%Y-%d-%m'
         ).timestamp()
         if last_called != get_today_timestamp():
             await self._shift_tomorrow_to_today()
