@@ -316,7 +316,7 @@ class CallBHG(BaseApp):
                     SERVICE_SELECT_OPTION,
                     {
                         ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
-                        'option': 'Not Schedule'
+                        'option': 'Not Scheduled'
                     }
                 )
                 return
