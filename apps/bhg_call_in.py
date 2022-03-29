@@ -103,7 +103,7 @@ class CallBHG(BaseApp):
                                      schedule[ARG_FREQUENCY_MINUTE]))
 
         last_called_state = await self.get_state(
-            entity_id=self.args[ARG_BHG_LAST_CALLED]
+            entity_id=self.configs[ARG_BHG_LAST_CALLED]
         )
         self.log(last_called_state)
         last_called = datetime.strptime(
@@ -138,9 +138,9 @@ class CallBHG(BaseApp):
             DOMAIN_INPUT_SELECT,
             SERVICE_SELECT_OPTION,
             {
-                ARG_ENTITY_ID: self.args[ARG_BHG_TODAY_ENTITY],
+                ARG_ENTITY_ID: self.configs[ARG_BHG_TODAY_ENTITY],
                 'option': await self.get_state(
-                    entity_id=self.args[ARG_BHG_TOMORROW_ENTITY]
+                    entity_id=self.configs[ARG_BHG_TOMORROW_ENTITY]
                 )
             }
         )
@@ -148,7 +148,7 @@ class CallBHG(BaseApp):
             DOMAIN_INPUT_SELECT,
             SERVICE_SELECT_OPTION,
             {
-                ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                ARG_ENTITY_ID: self.configs[ARG_BHG_TOMORROW_ENTITY],
                 'option': 'Not Called'
             }
         )
@@ -190,7 +190,7 @@ class CallBHG(BaseApp):
             DOMAIN_INPUT_DATETIME,
             SERVICE_SET_DATETIME,
             {
-                ARG_ENTITY_ID: self.args[ARG_BHG_LAST_CALLED],
+                ARG_ENTITY_ID: self.configs[ARG_BHG_LAST_CALLED],
                 "timestamp": get_today_timestamp()
             }
         )
@@ -252,7 +252,7 @@ class CallBHG(BaseApp):
             DOMAIN_INPUT_SELECT,
             SERVICE_SELECT_OPTION,
             {
-                ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                ARG_ENTITY_ID: self.configs[ARG_BHG_TOMORROW_ENTITY],
                 'option': '!UNKNOWN!'
             }
         )
@@ -286,7 +286,7 @@ class CallBHG(BaseApp):
                 DOMAIN_INPUT_SELECT,
                 SERVICE_SELECT_OPTION,
                 {
-                    ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                    ARG_ENTITY_ID: self.configs[ARG_BHG_TOMORROW_ENTITY],
                     'option': '!UNKNOWN!'
                 }
             )
@@ -324,7 +324,7 @@ class CallBHG(BaseApp):
                     DOMAIN_INPUT_SELECT,
                     SERVICE_SELECT_OPTION,
                     {
-                        ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                        ARG_ENTITY_ID: self.configs[ARG_BHG_TOMORROW_ENTITY],
                         'option': 'Scheduled for UA'
                     }
                 )
@@ -338,7 +338,7 @@ class CallBHG(BaseApp):
                     DOMAIN_INPUT_SELECT,
                     SERVICE_SELECT_OPTION,
                     {
-                        ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                        ARG_ENTITY_ID: self.configs[ARG_BHG_TOMORROW_ENTITY],
                         'option': 'Not Scheduled'
                     }
                 )
@@ -352,13 +352,13 @@ class CallBHG(BaseApp):
                     DOMAIN_INPUT_SELECT,
                     SERVICE_SELECT_OPTION,
                     {
-                        ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                        ARG_ENTITY_ID: self.configs[ARG_BHG_TOMORROW_ENTITY],
                         'option': '!UNKNOWN!'
                     }
                 )
 
     def _set_scheduled(self, scheduled):
-        if ARG_SCHEDULE_TOGGLE in self.configs:
+        if self.configs.get(ARG_SCHEDULE_TOGGLE, None) is not None:
             self.publish_service_call(DOMAIN_FLAG_SERVICE,
                                       TURN_ON_SERVICE if scheduled else TURN_OFF_SERVICE,
                                       {
@@ -367,7 +367,7 @@ class CallBHG(BaseApp):
         self._set_called(True)
 
     def _set_called(self, called):
-        if ARG_CALLED_TOGGLE in self.configs:
+        if self.configs.get(ARG_CALLED_TOGGLE, None) is not None:
             self.publish_service_call(DOMAIN_FLAG_SERVICE,
                                       TURN_ON_SERVICE if called else TURN_OFF_SERVICE,
                                       {
