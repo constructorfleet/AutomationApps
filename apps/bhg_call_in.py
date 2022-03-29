@@ -5,7 +5,8 @@ from urllib import parse
 
 import voluptuous as vol
 from common.base_app import BaseApp
-from common.const import ARG_ENTITY_ID
+from common.const import ARG_ENTITY_ID, DOMAIN_INPUT_SELECT, SERVICE_SELECT_OPTION, DOMAIN_INPUT_DATETIME, \
+    SERVICE_SET_DATETIME
 from common.validation import entity_id, ensure_list
 from notifiers.notification_category import NotificationCategory
 from twilio.rest import Client
@@ -34,6 +35,9 @@ ARG_SCHEDULE_TOGGLE = "schedule_toggle"
 ARG_CALLED_TOGGLE = "called_toggle"
 ARG_TIMEOUT = "timeout"
 ARG_SKIP_WEEKENDS = "skip_weekends"
+ARG_BHG_TODAY_ENTITY = "bhg_today_entity"
+ARG_BHG_TOMORROW_ENTITY = "bhg_tomorrow_entity"
+ARG_BHG_LAST_CALLED = "bhg_last_called_entity"
 
 DOMAIN_FLAG_SERVICE = "homeassistant"
 TURN_OFF_SERVICE = "turn_off"
@@ -103,12 +107,33 @@ class CallBHG(BaseApp):
             vol.Required(ARG_CREDENTIALS): SCHEMA_CREDENTIALS_CONFIG,
             vol.Optional(ARG_TIMEOUT, default=3): vol.Range(1, 5),
             vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id,
-            vol.Optional(ARG_CALLED_TOGGLE): entity_id
+            vol.Optional(ARG_CALLED_TOGGLE): entity_id,
+            vol.Required(ARG_BHG_LAST_CALLED): entity_id,
+            vol.Required(ARG_BHG_TODAY_ENTITY): entity_id,
+            vol.Required(ARG_BHG_TOMORROW_ENTITY): entity_id
         }, extra=vol.ALLOW_EXTRA)
 
     async def _new_day(self, kwargs):
         self.debug('NEW DAY')
         self._set_called(False)
+        self.publish_service_call(
+            DOMAIN_INPUT_SELECT,
+            SERVICE_SELECT_OPTION,
+            {
+                ARG_ENTITY_ID: self.args[ARG_BHG_TODAY_ENTITY],
+                'option': await self.get_state(
+                    entity_id=self.args[ARG_BHG_TOMORROW_ENTITY]
+                )
+            }
+        )
+        self.publish_service_call(
+            DOMAIN_INPUT_SELECT,
+            SERVICE_SELECT_OPTION,
+            {
+                ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                'option': 'Not Called'
+            }
+        )
 
     async def _cancel_retry(self, event, data, kwargs):
         self.debug('CANCEL RETRY')
@@ -138,6 +163,14 @@ class CallBHG(BaseApp):
         await self._call_bhg('call_bhg', {}, {})
 
     async def _call_bhg(self, event, data, kwargs):
+        self.publish_service_call(
+            DOMAIN_INPUT_DATETIME,
+            SERVICE_SET_DATETIME,
+            {
+                ARG_ENTITY_ID: self.args[ARG_BHG_LAST_CALLED],
+                "timestamp": datetime.today().timestamp(),
+            }
+        )
         if self._retry_handle:
             await self._retry_handle.cancel()
         self._retry_handle = None
@@ -192,6 +225,14 @@ class CallBHG(BaseApp):
     async def _handle_call_failed(self, status):
         self.error("Call failed to complete due to %s, retrying in %d min" % (status, 30))
         await self._notify(NotificationCategory.IMPORTANT_BHG_CALL_FAILED)
+        self.publish_service_call(
+            DOMAIN_INPUT_SELECT,
+            SERVICE_SELECT_OPTION,
+            {
+                ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                'option': '!UNKNOWN!'
+            }
+        )
         self._calling = False
         self._call_instance = None
         self._retry_handle = await self.run_in(self._retry,
@@ -218,6 +259,14 @@ class CallBHG(BaseApp):
         if not recording_sids or len(recording_sids) == 0:
             self.debug("NO RECORDINGS FOUND, retry in 60")
             await self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIBE_FAILED)
+            self.publish_service_call(
+                DOMAIN_INPUT_SELECT,
+                SERVICE_SELECT_OPTION,
+                {
+                    ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                    'option': '!UNKNOWN!'
+                }
+            )
             self._calling = False
             self._call_instance = None
             await self.run_in(self._retry,
@@ -248,18 +297,42 @@ class CallBHG(BaseApp):
                 self._set_scheduled(True)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_SCHEDULED,
                                    transcript=transcript)
+                self.publish_service_call(
+                    DOMAIN_INPUT_SELECT,
+                    SERVICE_SELECT_OPTION,
+                    {
+                        ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                        'option': 'Scheduled for UA'
+                    }
+                )
                 return
             elif REGEX_NOT_SCHEDULED.search(transcript):
                 self.debug('CLEAR')
                 self._set_scheduled(False)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_ALL_CLEAR,
                                    transcript=transcript)
+                self.publish_service_call(
+                    DOMAIN_INPUT_SELECT,
+                    SERVICE_SELECT_OPTION,
+                    {
+                        ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                        'option': 'Not Schedule'
+                    }
+                )
                 return
             else:
                 self.debug("SOMETHING WENT WRONG!!!!")
                 self._set_scheduled(True)
                 await self._notify(NotificationCategory.IMPORTANT_BHG_TRANSCRIPTION_MATCH_FAILED,
                                    transcript=transcript)
+                self.publish_service_call(
+                    DOMAIN_INPUT_SELECT,
+                    SERVICE_SELECT_OPTION,
+                    {
+                        ARG_ENTITY_ID: self.args[ARG_BHG_TOMORROW_ENTITY],
+                        'option': '!UNKNOWN!'
+                    }
+                )
 
     def _set_scheduled(self, scheduled):
         if ARG_SCHEDULE_TOGGLE in self.configs:

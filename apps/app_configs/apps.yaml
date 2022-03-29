@@ -85,6 +85,9 @@ bhg_call_in:
   twilio_credential:
     account_sid: !secret twilio_account_sid
     token: !secret twilio_auth_token
+  bhg_today_entity: input_select.bhg_today
+  bhg_tomorrow_entity: input_select.bhg_tomorrow
+  bhg_last_called_entity: input_datetime.bhg_last_called
   log_level: DEBUG
 
 average_temperature:
