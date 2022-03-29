@@ -63,13 +63,13 @@ SCHEMA_CREDENTIALS_CONFIG = vol.Schema({
 })
 
 
-def get_today_timestamp():
+def get_today():
     return datetime.now().replace(
         hour=0,
         minute=0,
         second=0,
         microsecond=0
-    ).timestamp()
+    ).strftime("%Y-%m-%d")
 
 
 class CallBHG(BaseApp):
@@ -105,12 +105,7 @@ class CallBHG(BaseApp):
         last_called_state = await self.get_state(
             entity_id=self.configs[ARG_BHG_LAST_CALLED]
         )
-        self.log(last_called_state)
-        last_called = datetime.strptime(
-            last_called_state,
-            '%Y-%d-%m'
-        ).timestamp()
-        if last_called != get_today_timestamp():
+        if last_called_state != get_today():
             await self._shift_tomorrow_to_today()
 
     @property
@@ -191,7 +186,7 @@ class CallBHG(BaseApp):
             SERVICE_SET_DATETIME,
             {
                 ARG_ENTITY_ID: self.configs[ARG_BHG_LAST_CALLED],
-                "timestamp": get_today_timestamp()
+                "date": get_today()
             }
         )
         if self._retry_handle:
