@@ -126,8 +126,8 @@ class CallBHG(BaseApp):
             vol.Optional(ARG_SKIP_WEEKENDS, default=False): vol.Coerce(bool),
             vol.Required(ARG_CREDENTIALS): SCHEMA_CREDENTIALS_CONFIG,
             vol.Optional(ARG_TIMEOUT, default=3): vol.Range(1, 5),
-            vol.Optional(ARG_SCHEDULE_TOGGLE, default=None): entity_id,
-            vol.Optional(ARG_CALLED_TOGGLE, default=None): entity_id,
+            vol.Optional(ARG_SCHEDULE_TOGGLE): entity_id,
+            vol.Optional(ARG_CALLED_TOGGLE): entity_id,
             vol.Required(ARG_BHG_LAST_CALLED): entity_id,
             vol.Required(ARG_BHG_TODAY_ENTITY): entity_id,
             vol.Required(ARG_BHG_TOMORROW_ENTITY): entity_id
