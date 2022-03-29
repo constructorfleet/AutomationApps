@@ -63,6 +63,15 @@ SCHEMA_CREDENTIALS_CONFIG = vol.Schema({
 })
 
 
+def get_today_timestamp():
+    return datetime.now().replace(
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0
+    ).timestamp()
+
+
 class CallBHG(BaseApp):
     """Calls a NGH to determine if Alan needs to go in."""
 
@@ -93,6 +102,15 @@ class CallBHG(BaseApp):
                                      schedule[ARG_FREQUENCY_HOUR],
                                      schedule[ARG_FREQUENCY_MINUTE]))
 
+        last_called = datetime.strptime(
+            await self.get_state(
+                entity_id=self.args[ARG_BHG_LAST_CALLED]
+            ),
+            '%Y-%d-%h'
+        ).timestamp()
+        if last_called != get_today_timestamp():
+            await self._shift_tomorrow_to_today()
+
     @property
     def app_schema(self):
         return vol.Schema({
@@ -113,9 +131,7 @@ class CallBHG(BaseApp):
             vol.Required(ARG_BHG_TOMORROW_ENTITY): entity_id
         }, extra=vol.ALLOW_EXTRA)
 
-    async def _new_day(self, kwargs):
-        self.debug('NEW DAY')
-        self._set_called(False)
+    async def _shift_tomorrow_to_today(self):
         self.publish_service_call(
             DOMAIN_INPUT_SELECT,
             SERVICE_SELECT_OPTION,
@@ -134,6 +150,11 @@ class CallBHG(BaseApp):
                 'option': 'Not Called'
             }
         )
+
+    async def _new_day(self, kwargs):
+        self.debug('NEW DAY')
+        self._set_called(False)
+        await self._shift_tomorrow_to_today()
 
     async def _cancel_retry(self, event, data, kwargs):
         self.debug('CANCEL RETRY')
@@ -168,7 +189,7 @@ class CallBHG(BaseApp):
             SERVICE_SET_DATETIME,
             {
                 ARG_ENTITY_ID: self.args[ARG_BHG_LAST_CALLED],
-                "timestamp": datetime.today().timestamp(),
+                "timestamp": get_today_timestamp()
             }
         )
         if self._retry_handle:
