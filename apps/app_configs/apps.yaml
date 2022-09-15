@@ -86,47 +86,47 @@ bhg_call_in:
   bhg_last_called_entity: input_datetime.bhg_last_called
   log_level: DEBUG
 
-average_temperature:
-  module: averaging
-  class: WeightedAveragedClimate
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - conditions
-    - validation
-  log_level: DEBUG
-  entity_id: sensor.average_temperature
-  remember_last: true
-  temp_sensors:
-#    - entity_id: sensor.master_bathroom_temperature
-#      weight: 0.8
+#average_temperature:
+#  module: averaging
+#  class: WeightedAveragedClimate
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - conditions
+#    - validation
+#  log_level: DEBUG
+#  entity_id: sensor.average_temperature
+#  remember_last: true
+#  temp_sensors:
+##    - entity_id: sensor.master_bathroom_temperature
+##      weight: 0.8
+##      max_weight: 1.7
+##      trigger:
+##        entity_id: binary_sensor.bed_occupancy
+##        value: on
+#    - entity_id: sensor.living_room_temperature
+#      weight:  2.0
+#      max_weight: 4.0
+#      trigger:
+#        entity_id: binary_sensor.living_room_motion_timeout
+#        value: on
+#    - entity_id: sensor.lower_hall_temperature
+#      weight: 1.5
+#      max_weight: 2.2
+#      trigger:
+#        - entity_id: binary_sensor.lower_hall_motion_timeout
+#          value: on
+#        - entity_id: binary_sensor.game_room_motion
+#          value: on
+#    - entity_id: sensor.dining_room_temperature
+#      weight: 0.5
 #      max_weight: 1.7
 #      trigger:
-#        entity_id: binary_sensor.bed_occupancy
-#        value: on
-    - entity_id: sensor.living_room_temperature
-      weight:  2.0
-      max_weight: 4.0
-      trigger:
-        entity_id: binary_sensor.living_room_motion_timeout
-        value: on
-    - entity_id: sensor.lower_hall_temperature
-      weight: 1.5
-      max_weight: 2.2
-      trigger:
-        - entity_id: binary_sensor.lower_hall_motion_timeout
-          value: on
-        - entity_id: binary_sensor.game_room_motion
-          value: on
-    - entity_id: sensor.dining_room_temperature
-      weight: 0.5
-      max_weight: 1.7
-      trigger:
-        - entity_id: binary_sensor.dining_room_motion_timeout
-          value: on
-        - entity_id: binary_sensor.kitchen_motion
-          value: on
+#        - entity_id: binary_sensor.dining_room_motion_timeout
+#          value: on
+#        - entity_id: binary_sensor.kitchen_motion
+#          value: on
 
 genesis_email_processor:
   module: decode_b64_call_when
