@@ -1,0 +1,18 @@
+james_wakeup_alert:
+  module: notify_when
+  class: NotifyWhen
+  global_dependencies:
+    - listen_handle
+    - base_app
+    - validation
+  dependencies:
+    - notifiers
+  entity_id: sensor.james_wake_up_alert
+  to:
+    comparator: '>'
+    value: 0
+  from:
+    comparator: '='
+    value: 0
+  notify:
+    notify_category: JAMES_ALERT_WAKEUP_TEAGAN
