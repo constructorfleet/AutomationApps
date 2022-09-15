@@ -19,7 +19,7 @@ appdaemon:
   plugins:
     HASS:
       type: hass
-      ha_url: https://automation.home.prettybaked.com
+      ha_url: http://10.0.12.242:8123
       token: !secret ha_ws_token
     MQTT:
       type: mqtt
