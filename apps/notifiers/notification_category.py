@@ -98,6 +98,14 @@ class NotificationCategory(Enum):
         True
     )
 
+    JAMES_ALERT_WAKEUP_TEAGAN = (
+        NotificationChannel.JAMES_ALERT,
+        "Are you awake, James is concerned?",
+        None,
+        "priority",
+        True
+    )
+
     SAFETY_LEAK_DETECTED = (
         NotificationChannel.SAFETY,
         "There appears to be a water leak around {entity_name}",
