@@ -7,6 +7,7 @@ class NotificationChannel(Enum):
     TRAINING = auto()
     WARNING = auto()
     IMPORTANT = auto()
+    JAMES_ALERT = auto()
     SAFETY = auto()
     INFO = auto()
 
