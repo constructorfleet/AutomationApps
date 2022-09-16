@@ -125,7 +125,7 @@ class HolidayColors(BaseApp):
     async def initialize_app(self):
         self.debug('File %s' % self._persistent_data_file)
         self.debug('Data {}'.format(str(self.data)))
-        if self._for_year != datetime.now().year:
+        if self._for_year is None or self._for_year != datetime.now().year:
             self._for_year = datetime.now().year
             for year in [self._for_year - 1, self._for_year, self._for_year + 1]:
                 self.debug('Retrieving holidays')
@@ -141,7 +141,6 @@ class HolidayColors(BaseApp):
                 vol.All(vol.Length(min=2, max=2), vol.Upper)
         }, extra=vol.ALLOW_EXTRA)
 
-    @property
     def api_url(self, year=None):
         return self.kw_formatter.format(
             BASE_URL,
@@ -166,7 +165,7 @@ class HolidayColors(BaseApp):
 
     async def _retrieve_holidays(self, year):
         await self.clear_data()
-        response = requests.get(self.api_url)
+        response = requests.get(self.api_url, year)
         try:
             response.raise_for_status()
             json = response.json()
