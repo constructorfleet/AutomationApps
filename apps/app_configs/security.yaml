@@ -60,61 +60,61 @@
 ##    - device_tracker.2019_jeep_compass
 ##  cover: cover.garage_door
 #
-garage_door_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - validation
-    - const
-    - utils
-    - notification_category
-    - notification_action
-  dependencies:
-    - notifiers
-  trigger:
-    entity_id: input_boolean.garage_door_homekit_relay
-#  reset_when:
-#    - entity_id: binary_sensor.garage_motion_sensor_1
-#      value: 'on'
-  duration: 60
-  log_level: DEBUG
-  continue_on_timeout: True
-  notify:
-    notify_category: SECURITY_COVER_TIMEOUT_DELAY
-    response_entity_id: cover.garage_door
-    replacers:
-      entity_name: Garage Door
-#      duration: {duration(state(input_boolean.garage_door_homekit_relay))}
+#garage_door_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - validation
+#    - const
+#    - utils
+#    - notification_category
+#    - notification_action
+#  dependencies:
+#    - notifiers
+#  trigger:
+#    entity_id: input_boolean.garage_door_homekit_relay
+##  reset_when:
+##    - entity_id: binary_sensor.garage_motion_sensor_1
+##      value: 'on'
+#  duration: 60
+#  log_level: DEBUG
+#  continue_on_timeout: True
+#  notify:
+#    notify_category: SECURITY_COVER_TIMEOUT_DELAY
+#    response_entity_id: cover.garage_door
+#    replacers:
+#      entity_name: Garage Door
+##      duration: {duration(state(input_boolean.garage_door_homekit_relay))}
 
-front_door_lock_timeout:
-  module: timeout
-  class: Timeout
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-  dependencies:
-    - notifiers
-  trigger:
-    entity_id: lock.front_door_homekit_lock
-    state: 'unlocked'
-  pause_when:
-    - entity_id: input_boolean.front_door_open_relay
-      value: 'on'
-  duration: 1
-  on_timeout:
-    domain: lock
-    service: lock
-    service_data:
-      entity_id: lock.front_door_homekit_lock
-  notify:
-    notify_category: SECURITY_LOCK_TIMEOUT
-    response_entity_id: lock.front_door_homekit_lock
-    replacers:
-      entity_name: front door
+#front_door_lock_timeout:
+#  module: timeout
+#  class: Timeout
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - validation
+#  dependencies:
+#    - notifiers
+#  trigger:
+#    entity_id: lock.front_door_homekit_lock
+#    state: 'unlocked'
+#  pause_when:
+#    - entity_id: input_boolean.entry_room_front_door_open_relay_homekit
+#      value: 'on'
+#  duration: 1
+#  on_timeout:
+#    domain: lock
+#    service: lock
+#    service_data:
+#      entity_id: lock.entry_room_front_door_homekit_lock
+#  notify:
+#    notify_category: SECURITY_LOCK_TIMEOUT
+#    response_entity_id: lock.front_door_homekit_lock
+#    replacers:
+#      entity_name: front door
 
 #alarm_system:
 #  module: security

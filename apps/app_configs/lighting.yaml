@@ -452,42 +452,42 @@
 #    service_data:
 #      entity_id: switch.downstairs_bathroom_fan
 
-night_lights:
-  module: night_lights
-  class: NightLights
-  global_dependencies:
-    - listen_handle
-    - base_app
-    - const
-    - validation
-    - utils
-  dependencies:
-    - holidays
-  dusk:
-    offset: 60
-    entities:
-      - entity_id: light.garage_soffit_light
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.hue_outdoor_bollard_1
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.hue_outdoor_bollard_2
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.hue_outdoor_bollard_3
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
-      - entity_id: light.hue_lightstrip_outdoor_1
-        domain: light
-        service: turn_on
-        service_data:
-          brightness_pct: 100
+#night_lights:
+#  module: night_lights
+#  class: NightLights
+#  global_dependencies:
+#    - listen_handle
+#    - base_app
+#    - const
+#    - validation
+#    - utils
+#  dependencies:
+#    - holidays
+#  dusk:
+#    offset: 60
+#    entities:
+#      - entity_id: light.garage_soffit_light
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.hue_outdoor_bollard_1
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.hue_outdoor_bollard_2
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.hue_outdoor_bollard_3
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
+#      - entity_id: light.hue_lightstrip_outdoor_1
+#        domain: light
+#        service: turn_on
+#        service_data:
+#          brightness_pct: 100
