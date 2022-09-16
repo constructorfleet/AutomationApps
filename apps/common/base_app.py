@@ -189,7 +189,7 @@ class BaseApp(hass.Hass):
         async with self._data_lock:
             if key not in self.data:
                 self.data[key] = []
-            self.data[key].push(value)
+            self.data[key].append(value)
 
             if self._data_save_handle is not None:
                 return
