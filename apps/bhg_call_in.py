@@ -207,7 +207,7 @@ class CallBHG(BaseApp):
 
         if self._call_instance is not None:
             return
-        self._status_checks = 0;
+        self._status_checks = 0
         self._call_instance = self._client.calls.create(
             to=self.configs[ARG_CALL_TO],
             from_=self.configs[ARG_CALL_FROM],
@@ -238,7 +238,7 @@ class CallBHG(BaseApp):
         self.error("Call in process %s, retrying in %d sec" % (status, 10))
         if self._status_checks > 8:
             self._call_instance.update(status='completed')
-        await self.run_in(self._process_status, 30)
+        await self.run_in(self._process_status, 15)
 
     async def _handle_call_failed(self, status):
         self.error("Call failed to complete due to %s, retrying in %d min" % (status, 30))
