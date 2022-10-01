@@ -238,7 +238,7 @@ class CallBHG(BaseApp):
         self.error("Call in process %s, retrying in %d sec" % (status, 10))
         if self._status_checks > 8:
             self._call_instance.update(status='completed')
-        await self.run_in(self._process_status, 10)
+        await self.run_in(self._process_status, 30)
 
     async def _handle_call_failed(self, status):
         self.error("Call failed to complete due to %s, retrying in %d min" % (status, 30))
