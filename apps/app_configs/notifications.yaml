@@ -47,7 +47,7 @@ notifiers:
         - teagan.glenn@icloud.com
       notifier:
         - type: ios
-          service: mobile_app_teagans_iphone
+          service: mobile_app_iphone
         - type: ios
           service: mobile_app_sub_etha
         - type: email
