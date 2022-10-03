@@ -8,55 +8,6 @@ holidays:
     - utils
   api_key: !secret holiday_api_key
 
-#tracker_groups:
-#  module: tracking
-#  class: TrackerGroup
-#  global_dependencies:
-#    - base_app
-#    - validation
-#    - utils
-#    - const
-#    - helpers
-#  groups:
-#    - group_name: jeep_cherokee
-#      entity_id:
-#        - device_tracker.2015_jeep_cherokee
-#        - person.teagan
-#        - person.grace
-#        - person.alan
-#        - person.persia
-#    - group_name: jeep_compass
-#      entity_id:
-#        - device_tracker.2019_jeep_compass
-#        - person.teagan
-#        - person.grace
-#        - person.alan
-#        - person.persia
-#    - group_name: 2011_subaru_impreza_wagon
-#      entity_id:
-#        - device_tracker.2019_jeep_compass
-#        - person.teagan
-#        - person.grace
-#        - person.alan
-#        - person.persia
-#  max_distance: 1
-
-#close_enough_to_home:
-#  module: tracking
-#  class: CloseEnoughToHome
-#  global_dependencies:
-#    - base_app
-#    - validation
-#    - utils
-#  entity_id:
-#    - device_tracker.2011_subaru_impreza_wagon
-#    - device_tracker.2015_jeep_cherokee
-#    - device_tracker.2019_jeep_compass
-#  zones_assume_home:
-#    - Garage Radius
-#    - home
-#  minutes_before_assume_home: 60
-
 bhg_call_in:
   module: bhg_call_in
   class: CallBHG
@@ -86,48 +37,6 @@ bhg_call_in:
   bhg_last_called_entity: input_datetime.bhg_last_called
   log_level: DEBUG
 
-#average_temperature:
-#  module: averaging
-#  class: WeightedAveragedClimate
-#  global_dependencies:
-#    - listen_handle
-#    - base_app
-#    - const
-#    - conditions
-#    - validation
-#  log_level: DEBUG
-#  entity_id: sensor.average_temperature
-#  remember_last: true
-#  temp_sensors:
-##    - entity_id: sensor.master_bathroom_temperature
-##      weight: 0.8
-##      max_weight: 1.7
-##      trigger:
-##        entity_id: binary_sensor.bed_occupancy
-##        value: on
-#    - entity_id: sensor.living_room_temperature
-#      weight:  2.0
-#      max_weight: 4.0
-#      trigger:
-#        entity_id: binary_sensor.living_room_motion_timeout
-#        value: on
-#    - entity_id: sensor.lower_hall_temperature
-#      weight: 1.5
-#      max_weight: 2.2
-#      trigger:
-#        - entity_id: binary_sensor.lower_hall_motion_timeout
-#          value: on
-#        - entity_id: binary_sensor.game_room_motion
-#          value: on
-#    - entity_id: sensor.dining_room_temperature
-#      weight: 0.5
-#      max_weight: 1.7
-#      trigger:
-#        - entity_id: binary_sensor.dining_room_motion_timeout
-#          value: on
-#        - entity_id: binary_sensor.kitchen_motion
-#          value: on
-
 genesis_email_processor:
   module: decode_b64_call_when
   class: DecodeBase64CallWhen
@@ -155,21 +64,3 @@ genesis_email_processor:
     service: turn_off
     service_data:
       entity_id: input_boolean.genesis_gv70_remote_start
-
-#thermostat_offset:
-#  module: call_when
-#  class: CallWhen
-#  global_dependencies:
-#    - listen_handle
-#    - base_app
-#    - const
-#    - validation
-#  log_level: DEBUG
-#  trigger:
-#    - entity_id: sensor.thermostat_offset_helper
-#  call:
-#    domain: mqtt
-#    service: publish
-#    service_data:
-#      topic: 'OpenZWave/1/command/setvalue/'
-#      payload_template: '{%- set value = states.sensor.thermostat_offset_helper.state | int -%}{ "ValueIDKey": 13510798976221201, "Value": {{ value if value >= 0 else (256-value) }} }'

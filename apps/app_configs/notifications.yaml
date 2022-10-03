@@ -53,17 +53,10 @@ notifiers:
         - type: email
           channels:
             - IMPORTANT
-#    - name: Persia
-#      email_address:
-#        - 7203615129@mms.att.net
-#      notifier:
-#        - type: email
-#          channels:
-#            - INFO
     - name: Alan
       email_address:
-        - alan.janis@gmail.com
-        - 9412863602@vtext.com
+        - alan.janis@icloud.com
+        - 9412863602@mypixmessages.com
       notifier:
         - type: ios
           service: mobile_app_alan_iphone
@@ -72,10 +65,6 @@ notifiers:
         - type: email
           channels:
             - IMPORTANT
-    # - name: Grace
-    #   notifier:
-    #     - name: ios
-    #       service: mobile_app_graces_iphone
 
 notification_action_processor:
   module: notification_action_processor
