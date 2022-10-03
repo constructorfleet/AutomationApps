@@ -47,7 +47,7 @@ notifiers:
         - teagan.glenn@icloud.com
       notifier:
         - type: ios
-          service: mobile_app_agrajag
+          service: mobile_app_iphone
         - type: ios
           service: mobile_app_sub_etha
         - type: email
@@ -66,7 +66,7 @@ notifiers:
         - 9412863602@vtext.com
       notifier:
         - type: ios
-          service: mobile_app_deviphone12pro
+          service: mobile_app_alan_iphone
         - type: ios
           service: mobile_app_dev_ipadpro
         - type: email
