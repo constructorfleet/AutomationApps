@@ -21,20 +21,22 @@ appdaemon:
       type: hass
       ha_url: http://10.0.12.242:8123
       token: !secret ha_ws_token
+      namespace: default
     MQTT:
       type: mqtt
       namespace: mqtt
-      client_host: mqtt.home.prettybaked.com
+      client_host: 10.0.12.242
       client_port: 1883
       client_id: AppDaemon
       client_user: appdaemon
 
-#    MQTT_States:
-#      type: hassmqtt
-#      client_host: homebridge-iot.home.prettybaked.com
-#      client_id: rules
-#      verbose: false
-#      delay: 30
-#      client_topics:
-#        - events/#
-#        - states/#
+      #    MQTT_States:
+      #type: hassmqtt
+      #client_host: 10.0.12.242
+      #client_port: 1883
+      #client_id: rules
+      #verbose: false
+      #delay: 30
+      #client_topics:
+      #  - events/#
+      #  - states/#
