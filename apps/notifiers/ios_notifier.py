@@ -56,8 +56,7 @@ class iOSNotifier(BaseApp):
                     service_data['data']['action_data'][key] = value
 
             self.log("Invoking service {} with {}".format(service, service_data))
-            self.publish_service_call(
-                DOMAIN_NOTIFY,
-                service,
-                service_data
+            self.call_service(
+                "notify/{0}".format(service),
+                **service_data
             )

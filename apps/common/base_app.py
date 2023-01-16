@@ -38,7 +38,7 @@ from common.validation import valid_log_level, valid_entity_id
 # _srcfile is used when walking the stack to check when we've got the first
 # caller stack frame.
 #
-# from custom_plugins import hassmqtt
+#from custom_plugins import hassmqtt
 
 if hasattr(sys, 'frozen'):  # support for py2exe
     _srcfile = "logging%s__init__%s" % (os.sep, __file__[-4:])
@@ -222,15 +222,15 @@ class BaseApp(hass.Hass):
 
     def publish_service_call(self, domain, service, kwargs):
         self.debug("Publish Domain %s Service %s with args %s" % (domain, service, str(kwargs)))
-        # if isinstance(self, hassmqtt.HassMqtt):
-        #     return self.publish_event(
-        #         EVENT_CALL_SERVICE,
-        #         {
-        #             ATTR_DOMAIN: domain,
-        #             ATTR_SERVICE: service,
-        #             ATTR_SERVICE_DATA: kwargs or {}
-        #         }
-        #     )
+        #if isinstance(self, hassmqtt.HassMqtt):
+        #    return self.publish_event(
+        #        EVENT_CALL_SERVICE,
+        #        {
+        #            ATTR_DOMAIN: domain,
+        #            ATTR_SERVICE: service,
+        #            ATTR_SERVICE_DATA: kwargs or {}
+        #        }
+        #    )
         return self.call_service('{0}/{1}'.format(domain, service), **kwargs)
 
     def publish_event(self, event, event_data, qos=0, retain=False, namespace='default'):

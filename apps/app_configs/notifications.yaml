@@ -45,23 +45,33 @@ notifiers:
     - name: Teagan
       email_address:
         - teagan.glenn@icloud.com
+        - 7204325361@vtext.com
       notifier:
         - type: ios
-          service: mobile_app_iphone
+          service: mobile_app_iphone12
+          channels:
+            - IMPORTANT
         - type: ios
-          service: mobile_app_sub_etha
+          service: mobile_app_ipad
+          channels:
+            - IMPORTANT
         - type: email
           channels:
             - IMPORTANT
     - name: Alan
       email_address:
-        - alan.janis@icloud.com
+        - alanjanis@icloud.com
+        - 9412863602@vtext.com
         - 9412863602@mypixmessages.com
       notifier:
         - type: ios
-          service: mobile_app_alan_iphone
+          service: mobile_app_deviphone12pro
+          channels:
+            - IMPORTANT
         - type: ios
           service: mobile_app_dev_ipadpro
+          channels:
+            - IMPORTANT
         - type: email
           channels:
             - IMPORTANT
